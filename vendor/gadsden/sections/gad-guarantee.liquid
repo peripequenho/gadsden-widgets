@@ -1,0 +1,193 @@
+
+{%- assign s = section.settings -%}
+{%- capture ico_chat -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" stroke-linejoin="round"/><path d="M8 10h8M8 13h5" stroke-linecap="round"/></svg>{%- endcapture -%}
+{%- capture ico_tienda -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9l1.5-5h13L20 9" stroke-linejoin="round"/><path d="M4 9h16v1.5a2.7 2.7 0 0 1-5.3 0 2.7 2.7 0 0 1-5.4 0A2.7 2.7 0 0 1 4 10.5z" stroke-linejoin="round"/><path d="M5.5 13v7h13v-7M10 20v-4h4v4" stroke-linejoin="round"/></svg>{%- endcapture -%}
+{%- capture ico_escudo -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endcapture -%}
+{%- capture ico_plata -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M7 9.5v5M17 9.5v5" stroke-linecap="round"/></svg>{%- endcapture -%}
+{%- capture ico_calendario -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4" stroke-linecap="round"/></svg>{%- endcapture -%}
+
+<style>
+  #ct-gar-{{ section.id }} {
+    --ct-carbon: #0B0B0B; --ct-menta: #9FE1CB; --ct-anillo: {{ s.ring_size }}px;
+    position: relative; overflow: hidden; background: {{ s.background }}; color: {{ s.text_color }};
+    padding: {{ s.padding_top }}px 16px {{ s.padding_bottom }}px;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__wrap { position: relative; max-width: 560px; margin: 0 auto; }
+  #ct-gar-{{ section.id }} .ct-gar__fila { display: flex; align-items: center; gap: 14px; }
+  
+  #ct-gar-{{ section.id }} .ct-gar__anillo {
+    position: relative; flex: none; width: var(--ct-anillo); height: var(--ct-anillo);
+    margin-left: calc(var(--ct-anillo) * -{{ s.ring_offset | divided_by: 100.0 }} - 16px);
+  }
+  #ct-gar-{{ section.id }} .ct-gar__anillo svg { width: 100%; height: 100%; display: block; }
+  #ct-gar-{{ section.id }} .ct-gar__arco {
+    fill: none; stroke-width: 10; stroke-linecap: round; transform-origin: 50px 50px;
+    transition: stroke-dasharray 1.2s cubic-bezier(.22, 1, .36, 1) .15s;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__num {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__num b { font-size: calc(var(--ct-anillo) * .3); font-weight: 800; letter-spacing: -.03em; }
+  #ct-gar-{{ section.id }} .ct-gar__num small { margin-top: 2px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .6; }
+  #ct-gar-{{ section.id }} .ct-gar__cap {
+    margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .6;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__titulo { margin: 0 0 8px; font-size: 22px; line-height: 1.12; text-wrap: balance; }
+  #ct-gar-{{ section.id }} .ct-gar__chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 100px;
+    background: var(--ct-carbon); color: var(--ct-menta); font-size: 12px; font-weight: 700;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__chip svg { width: 14px; height: 14px; }
+  #ct-gar-{{ section.id }} .ct-gar__texto { margin: 14px 0 0; font-size: 15px; line-height: 1.45; color: #3d3c39; }
+  #ct-gar-{{ section.id }} .ct-gar__lista:empty { display: none; }
+  #ct-gar-{{ section.id }} .ct-gar__lista {
+    list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__lista li { display: flex; gap: 10px; align-items: center; font-size: 14px; line-height: 1.25; font-weight: 700; }
+  #ct-gar-{{ section.id }} .ct-gar__ico {
+    flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--ct-carbon); color: var(--ct-menta);
+  }
+  #ct-gar-{{ section.id }} .ct-gar__ico svg { width: 19px; height: 19px; }
+  #ct-gar-{{ section.id }} .ct-gar__btn {
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 18px; min-height: 54px; border-radius: 12px; background: var(--ct-carbon); color: #fff;
+    font-weight: 800; font-size: 15px; letter-spacing: .03em; text-transform: uppercase; text-decoration: none;
+  }
+  #ct-gar-{{ section.id }} .ct-gar__btn svg { width: 18px; height: 18px; color: var(--ct-menta); }
+
+  
+  @media (min-width: 990px) {
+    #ct-gar-{{ section.id }} { --ct-anillo: calc({{ s.ring_size }}px * 1.15); padding-top: 56px; padding-bottom: 56px; }
+    #ct-gar-{{ section.id }} .ct-gar__wrap { max-width: 880px; }
+    #ct-gar-{{ section.id }} .ct-gar__fila { gap: 36px; }
+    #ct-gar-{{ section.id }} .ct-gar__anillo { margin-left: 0; }
+    #ct-gar-{{ section.id }} .ct-gar__titulo { font-size: 34px; }
+    #ct-gar-{{ section.id }} .ct-gar__cap { font-size: 13px; }
+    #ct-gar-{{ section.id }} .ct-gar__chip { font-size: 14px; padding: 6px 14px; }
+    #ct-gar-{{ section.id }} .ct-gar__texto { max-width: 62ch; margin-top: 24px; font-size: 17px; }
+    #ct-gar-{{ section.id }} .ct-gar__lista { grid-template-columns: repeat(2, max-content); gap: 16px 48px; margin-top: 22px; }
+    #ct-gar-{{ section.id }} .ct-gar__lista li { font-size: 16px; }
+  }
+</style>
+
+<section id="ct-gar-{{ section.id }}" class="ct-gar">
+  <div class="ct-gar__wrap">
+    <div class="ct-gar__fila">
+      <div class="ct-gar__anillo" data-anillo role="img" aria-label="{{ s.days }} días de garantía directa">
+        
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="ct-gar__arco" data-resto cx="50" cy="50" r="45" style="stroke: {{ s.ring_secondary }}"/>
+          <circle class="ct-gar__arco" data-arco cx="50" cy="50" r="45" style="stroke: {{ s.ring_primary }}"/>
+        </svg>
+        <span class="ct-gar__num"><b data-num>{{ s.days }}</b><small>días</small></span>
+      </div>
+      <div>
+        {%- if s.caption != blank -%}<p class="ct-gar__cap">{{ s.caption }}</p>{%- endif -%}
+        <h2 class="ct-gar__titulo">{{ s.heading }}</h2>
+        {%- if s.chip != blank -%}
+          <span class="ct-gar__chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ s.chip }}
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if s.text != blank -%}<p class="ct-gar__texto">{{ s.text }}</p>{%- endif -%}
+    <ul class="ct-gar__lista">
+      {%- for i in (1..3) -%}
+        {%- assign k = 'point_' | append: i -%}
+        {%- assign ki = 'point_' | append: i | append: '_icon' -%}
+        {%- if s[k] != blank -%}
+          <li><span class="ct-gar__ico">
+            {%- case s[ki] -%}
+              {%- when 'chat' -%}{{ ico_chat }}
+              {%- when 'tienda' -%}{{ ico_tienda }}
+              {%- when 'plata' -%}{{ ico_plata }}
+              {%- when 'calendario' -%}{{ ico_calendario }}
+              {%- else -%}{{ ico_escudo }}
+            {%- endcase -%}
+          </span><span>{{ s[k] }}</span></li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    {%- if s.button_label != blank -%}
+      <a class="ct-gar__btn" href="#ct-oferta" data-ct-oferta>{{ s.button_label }}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-gar-{{ section.id }}');
+    if (!raiz) return;
+    const arco = raiz.querySelector('[data-arco]'), resto = raiz.querySelector('[data-resto]'), num = raiz.querySelector('[data-num]');
+    const C = 2 * Math.PI * 45, pc = C / 100, hueco = 5, total = {{ s.days }};
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // mismo dibujo que MagicUI: arco principal desde arriba; el resto, en gris, con un hueco a cada lado
+    const pintar = (p) => {
+      arco.style.strokeDasharray = `${p * pc} ${C}`;
+      arco.style.transform = 'rotate(-90deg)';
+      const r = Math.max(0, 100 - p - hueco * 2);
+      resto.style.strokeDasharray = `${r * pc} ${C}`;
+      resto.style.transform = `rotate(${-90 + (p + hueco) * 3.6}deg)`;
+      resto.style.opacity = r > 0 ? 1 : 0;
+    };
+    pintar(0); num.textContent = 0;
+    const llenar = () => {
+      requestAnimationFrame(() => pintar(100));
+      if (quieto) { num.textContent = total; return; }
+      const t0 = performance.now(), dur = 1300;
+      const paso = (t) => {
+        const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        num.textContent = Math.round(e * total);
+        if (k < 1) requestAnimationFrame(paso);
+      };
+      requestAnimationFrame(paso);
+    };
+    if (window.Shopify?.designMode) { pintar(100); num.textContent = total; }
+    else new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { io.disconnect(); llenar(); } }, { threshold: 0.5 }).observe(raiz);
+
+    raiz.querySelector('[data-ct-oferta]')?.addEventListener('click', (e) => {
+      const oferta = document.querySelector('[id$="__main"]');
+      if (!oferta) return;
+      e.preventDefault();
+      oferta.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Garantía",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    { "type": "range", "id": "days", "label": "Días de garantía directa (número del anillo)", "min": 1, "max": 90, "step": 1, "default": 7 },
+    { "type": "text", "id": "caption", "label": "Texto de arriba", "default": "Garantía" },
+    { "type": "text", "id": "heading", "label": "Titular", "default": "7 días de garantía directa" },
+    { "type": "text", "id": "chip", "label": "Chip", "default": "+ 30 días de garantía de la tienda" },
+    { "type": "textarea", "id": "text", "label": "Texto" },
+    { "type": "text", "id": "point_1", "label": "Título del punto 1" },
+    { "type": "select", "id": "point_1_icon", "label": "Ícono del punto 1", "default": "chat", "options": [{ "value": "chat", "label": "Mensaje" }, { "value": "tienda", "label": "Tienda" }, { "value": "escudo", "label": "Escudo" }, { "value": "plata", "label": "Plata" }, { "value": "calendario", "label": "Calendario" }] },
+    { "type": "text", "id": "point_2", "label": "Título del punto 2" },
+    { "type": "select", "id": "point_2_icon", "label": "Ícono del punto 2", "default": "tienda", "options": [{ "value": "chat", "label": "Mensaje" }, { "value": "tienda", "label": "Tienda" }, { "value": "escudo", "label": "Escudo" }, { "value": "plata", "label": "Plata" }, { "value": "calendario", "label": "Calendario" }] },
+    { "type": "text", "id": "point_3", "label": "Título del punto 3" },
+    { "type": "select", "id": "point_3_icon", "label": "Ícono del punto 3", "default": "escudo", "options": [{ "value": "chat", "label": "Mensaje" }, { "value": "tienda", "label": "Tienda" }, { "value": "escudo", "label": "Escudo" }, { "value": "plata", "label": "Plata" }, { "value": "calendario", "label": "Calendario" }] },
+    { "type": "text", "id": "button_label", "label": "Botón (baja a la oferta; vacío = sin botón)" },
+    { "type": "range", "id": "ring_size", "label": "Tamaño del anillo", "min": 100, "max": 260, "step": 10, "unit": "px", "default": 160 },
+    { "type": "range", "id": "ring_offset", "label": "Cuánto se sale el anillo por la izquierda", "min": 0, "max": 60, "step": 5, "unit": "%", "default": 25 },
+    { "type": "color", "id": "ring_primary", "label": "Color del anillo", "default": "#0B0B0B" },
+    { "type": "color", "id": "ring_secondary", "label": "Color del resto del anillo", "default": "#E4E3DE" },
+    { "type": "color", "id": "background", "label": "Color de la sección", "default": "#F5F7FA" },
+    { "type": "color", "id": "text_color", "label": "Color del texto", "default": "#0B0B0B" },
+    { "type": "range", "id": "padding_top", "label": "Margen arriba", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "Margen abajo", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 }
+  ],
+  "presets": [{ "name": "Garantía" }]
+}
+{% endschema %}

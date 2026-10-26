@@ -1,0 +1,214 @@
+
+{%- liquid
+  assign s = section.settings
+  if s.before_image != blank
+    assign antes = s.before_image | image_url: width: 900
+  else
+    assign antes = 'ct-comparar-antes.jpg' | asset_url
+  endif
+  if s.after_image != blank
+    assign despues = s.after_image | image_url: width: 900
+  else
+    assign despues = 'ct-comparar-despues.jpg' | asset_url
+  endif
+-%}
+
+<style>
+  #ct-cmp-{{ section.id }} {
+    background: {{ s.background }}; color: {{ s.text_color }};
+    padding: {{ s.padding_top }}px 16px {{ s.padding_bottom }}px;
+  }
+  #ct-cmp-{{ section.id }} .ct-cmp__titulo { margin: 0 0 12px; text-align: center; line-height: 1.15; text-wrap: balance; }
+  #ct-cmp-{{ section.id }} .ct-cmp__marco {
+    position: relative; overflow: hidden; width: 100%; max-width: {{ s.max_width }}px; margin: 0 auto;
+    aspect-ratio: {{ s.ratio }}; border-radius: {{ s.corner }}px; background: #E4E3DE;
+    touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: ew-resize; outline: none;
+  }
+  #ct-cmp-{{ section.id }} .ct-cmp__marco:focus-visible { box-shadow: 0 0 0 3px #9FE1CB; }
+  #ct-cmp-{{ section.id }} .ct-cmp__img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
+  }
+  
+  #ct-cmp-{{ section.id }} .ct-cmp__despues { transform: translateX(calc((0.5 - var(--p, .5)) * 10px)) scale(1.04); }
+  #ct-cmp-{{ section.id }} .ct-cmp__antes { display: block; position: absolute; inset: 0; }
+  #ct-cmp-{{ section.id }} .ct-cmp__linea { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  #ct-cmp-{{ section.id }} .ct-cmp__linea path { fill: none; stroke: #fff; stroke-width: 2; filter: drop-shadow(0 0 4px rgba(0, 0, 0, .3)); }
+  #ct-cmp-{{ section.id }} .ct-cmp__manija {
+    position: absolute; top: 50%; left: 50%; width: 0; height: 0; pointer-events: none;
+  }
+  #ct-cmp-{{ section.id }} .ct-cmp__perilla {
+    position: absolute; left: -22px; top: -22px; display: grid; place-items: center; width: 44px; height: 44px;
+    border-radius: 50%; background: #fff; color: #0B0B0B; box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+    transition: transform .25s cubic-bezier(.34, 1.56, .64, 1);
+  }
+  #ct-cmp-{{ section.id }} .ct-cmp__marco.is-agarrado .ct-cmp__perilla { transform: scale(.9); }
+  #ct-cmp-{{ section.id }} .ct-cmp__etq {
+    position: absolute; top: 14px; padding: 5px 12px; border-radius: 100px; font-size: 13px; font-weight: 700;
+    color: #fff; background: rgba(11, 11, 11, .55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+  #ct-cmp-{{ section.id }} .ct-cmp__etq--antes { left: 14px; }
+  #ct-cmp-{{ section.id }} .ct-cmp__etq--despues { right: 14px; }
+  #ct-cmp-{{ section.id }} .ct-cmp__nota { margin: 8px 0 0; text-align: center; font-size: 12px; opacity: .6; }
+
+  
+  @media (min-width: 990px) {
+    #ct-cmp-{{ section.id }} { padding-top: 48px; padding-bottom: 48px; }
+    #ct-cmp-{{ section.id }} .ct-cmp__marco { max-width: 860px; aspect-ratio: 16 / 9; border-radius: 24px; }
+    #ct-cmp-{{ section.id }} .ct-cmp__img { object-position: center 50%; }
+  }
+</style>
+
+<section id="ct-cmp-{{ section.id }}" class="ct-cmp">
+  {%- if s.heading != blank -%}<h2 class="ct-cmp__titulo {{ s.heading_size }}">{{ s.heading }}</h2>{%- endif -%}
+  <div class="ct-cmp__marco" data-marco role="slider" tabindex="0" aria-label="Comparar antes y después"
+    aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+    <img class="ct-cmp__img ct-cmp__despues" src="{{ despues }}" alt="{{ s.after_label | escape }}" draggable="false" loading="lazy">
+    <div class="ct-cmp__antes" data-antes>
+      <img class="ct-cmp__img" src="{{ antes }}" alt="{{ s.before_label | escape }}" draggable="false" loading="lazy">
+    </div>
+    {%- if s.labels -%}
+      <span class="ct-cmp__etq ct-cmp__etq--antes" data-etq-antes>{{ s.before_label }}</span>
+      <span class="ct-cmp__etq ct-cmp__etq--despues" data-etq-despues>{{ s.after_label }}</span>
+    {%- endif -%}
+    <svg class="ct-cmp__linea" aria-hidden="true"><path data-linea /></svg>
+    <span class="ct-cmp__manija" data-manija>
+      <span class="ct-cmp__perilla">
+        <svg width="16" height="10" viewBox="0 0 16 10" aria-hidden="true">
+          <path d="M5 1 1 5l4 4M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </span>
+  </div>
+  {%- if s.note != blank -%}<p class="ct-cmp__nota">{{ s.note }}</p>{%- endif -%}
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-cmp-{{ section.id }}');
+    if (!raiz) return;
+    const marco = raiz.querySelector('[data-marco]');
+    const capaAntes = marco.querySelector('[data-antes]');
+    const linea = marco.querySelector('[data-linea]');
+    const manija = marco.querySelector('[data-manija]');
+    const etqA = marco.querySelector('[data-etq-antes]');
+    const etqD = marco.querySelector('[data-etq-despues]');
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+    let W = 1, H = 1;
+    const medir = () => { const r = marco.getBoundingClientRect(); W = r.width || 1; H = r.height || 1; };
+    medir();
+    new ResizeObserver(() => { medir(); dibujar(cur, 0); }).observe(marco);
+
+    let cur = 0.5, objetivo = null, raf = 0;
+    const ends = { x: 0.5, v: 0 };   // los extremos de la línea y su velocidad
+
+    // dibuja la línea como curva: extremos en x - bend y punto de control en x + bend (pasa justo por la manija)
+    const dibujar = (p, bend) => {
+      const x = p * W, top = (x - bend).toFixed(2), ctl = (x + bend).toFixed(2);
+      linea.setAttribute('d', `M ${top} 0 Q ${ctl} ${H / 2} ${top} ${H}`);
+      capaAntes.style.clipPath = `path("M 0 0 L ${top} 0 Q ${ctl} ${H / 2} ${top} ${H} L 0 ${H} Z")`;
+      manija.style.left = x + 'px';
+      marco.style.setProperty('--p', p);
+      marco.setAttribute('aria-valuenow', Math.round(p * 100));
+      if (etqA) etqA.style.opacity = clamp((p - 0.14) * 4, 0, 1);
+      if (etqD) etqD.style.opacity = clamp((0.86 - p) * 4, 0, 1);
+    };
+
+    // un solo loop para las dos cosas: deslizarse a un objetivo y los extremos alcanzando al medio
+    const loop = () => {
+      if (raf) return;
+      let prev = performance.now();
+      const paso = (t) => {
+        const dt = Math.min(0.033, (t - prev) / 1000);
+        prev = t;
+        if (objetivo !== null) {
+          cur += (objetivo - cur) * (1 - Math.pow(0.0004, dt));
+          if (Math.abs(objetivo - cur) < 0.0005) { cur = objetivo; objetivo = null; }
+        }
+        // la gelatina: resorte de los extremos hacia el medio
+        ends.v += ((cur - ends.x) * 620 - ends.v * 44) * dt;
+        ends.x += ends.v * dt;
+        const tope = 9 * W / 270;                         // la curva máxima escala con el ancho
+        dibujar(cur, clamp((cur - ends.x) * W * 0.5, -tope, tope));
+        const quieto = objetivo === null && Math.abs(cur - ends.x) < 0.0006 && Math.abs(ends.v) < 0.002;
+        if (quieto) { ends.x = cur; ends.v = 0; dibujar(cur, 0); raf = 0; return; }
+        raf = requestAnimationFrame(paso);
+      };
+      raf = requestAnimationFrame(paso);
+    };
+    const deslizar = (a) => { objetivo = a; loop(); };
+    const poner = (v) => { objetivo = null; cur = v; dibujar(v, clamp((cur - ends.x) * W * 0.5, -9 * W / 270, 9 * W / 270)); loop(); };
+    const enPct = (cx) => { const r = marco.getBoundingClientRect(); return r.width ? clamp((cx - r.left) / r.width, 0, 1) : cur; };
+
+    let arrastre = null;
+    marco.addEventListener('pointerdown', (e) => {
+      try { marco.setPointerCapture(e.pointerId); } catch (_) {}
+      const v = enPct(e.clientX);
+      arrastre = { v: 0, t: performance.now(), ult: v };
+      marco.classList.add('is-agarrado');
+      deslizar(v);
+    });
+    marco.addEventListener('pointermove', (e) => {
+      if (!arrastre) return;
+      const v = enPct(e.clientX), ahora = performance.now();
+      arrastre.v = (v - arrastre.ult) / Math.max(1, ahora - arrastre.t);
+      arrastre.t = ahora; arrastre.ult = v;
+      poner(v);
+    });
+    const soltar = (e) => {
+      const d = arrastre; arrastre = null;
+      marco.classList.remove('is-agarrado');
+      try { marco.releasePointerCapture(e.pointerId); } catch (_) {}
+      // flick: hasta el borde (sólo si se soltó en movimiento; si frenó antes de soltar, queda donde está)
+      if (d && performance.now() - d.t < 80 && Math.abs(d.v) > 0.0025) deslizar(d.v > 0 ? 1 : 0);
+    };
+    marco.addEventListener('pointerup', soltar);
+    marco.addEventListener('pointercancel', () => { arrastre = null; marco.classList.remove('is-agarrado'); });
+    marco.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); deslizar(clamp((objetivo ?? cur) - 0.1, 0, 1)); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); deslizar(clamp((objetivo ?? cur) + 0.1, 0, 1)); }
+    });
+
+    dibujar(0.5, 0);
+    // barrido de muestra al aparecer: también hace bailar la gelatina
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !window.Shopify?.designMode) {
+      const io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        setTimeout(() => { deslizar(0.78); setTimeout(() => { deslizar(0.25); setTimeout(() => deslizar(0.5), 650); }, 650); }, 300);
+      }, { threshold: 0.6 });
+      io.observe(marco);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Antes y después barrido",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    { "type": "paragraph", "content": "OJO: las fotos por defecto son placeholders de stock. Elegir fotos reales del día 1 y del final." },
+    { "type": "text", "id": "heading", "label": "Titular", "default": "Antes y después" },
+    {
+      "type": "select", "id": "heading_size", "label": "Tamaño del titular", "default": "h2",
+      "options": [{ "value": "h2", "label": "Chico" }, { "value": "h1", "label": "Mediano" }]
+    },
+    { "type": "image_picker", "id": "before_image", "label": "Foto antes", "info": "Vacío = assets/ct-comparar-antes.jpg (placeholder)" },
+    { "type": "image_picker", "id": "after_image", "label": "Foto después", "info": "Vacío = assets/ct-comparar-despues.jpg (placeholder)" },
+    { "type": "checkbox", "id": "labels", "label": "Mostrar etiquetas", "default": true },
+    { "type": "text", "id": "before_label", "label": "Etiqueta antes", "default": "Antes" },
+    { "type": "text", "id": "after_label", "label": "Etiqueta después", "default": "Después" },
+    { "type": "text", "id": "ratio", "label": "Proporción (ancho / alto)", "default": "4 / 5" },
+    { "type": "range", "id": "max_width", "label": "Ancho máximo", "min": 240, "max": 600, "step": 10, "unit": "px", "default": 360 },
+    { "type": "range", "id": "corner", "label": "Esquinas", "min": 0, "max": 40, "step": 2, "unit": "px", "default": 20 },
+    { "type": "text", "id": "note", "label": "Nota debajo" },
+    { "type": "color", "id": "background", "label": "Color de la sección", "default": "#F5F7FA" },
+    { "type": "color", "id": "text_color", "label": "Color del texto", "default": "#0B0B0B" },
+    { "type": "range", "id": "padding_top", "label": "Margen arriba", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 },
+    { "type": "range", "id": "padding_bottom", "label": "Margen abajo", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 24 }
+  ],
+  "presets": [{ "name": "Antes y después barrido" }]
+}
+{% endschema %}

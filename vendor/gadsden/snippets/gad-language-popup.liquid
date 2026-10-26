@@ -1,0 +1,35 @@
+
+{%- if settings.language_popup and localization.available_languages.size > 1 -%}
+  {%- liquid
+    assign codes = ''
+    for language in localization.available_languages
+      assign codes = codes | append: language.iso_code | append: ','
+    endfor
+  -%}
+  <gad-language-popup data-current="{{ localization.language.iso_code }}" data-languages="{{ codes }}">
+    <dialog class="gad-lang color-{{ settings.language_popup_scheme | default: 'scheme-1' }}" aria-labelledby="GadLangTitle">
+      {%- form 'localization', id: 'GadLanguageForm', class: 'gad-lang__form' -%}
+        <p id="GadLangTitle" class="gad-lang__title h4">{{ settings.language_popup_title | escape }}</p>
+        {%- if settings.language_popup_text != blank -%}
+          <div class="gad-lang__text rte">{{ settings.language_popup_text }}</div>
+        {%- endif -%}
+        <div class="select">
+          <select class="select__select" name="locale_code" aria-label="{{ 'localization.language_label' | t }}">
+            {%- for language in localization.available_languages -%}
+              <option value="{{ language.iso_code }}" lang="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>
+                {{ language.endonym_name | capitalize }}
+              </option>
+            {%- endfor -%}
+          </select>
+          <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+        </div>
+        <div class="gad-lang__actions">
+          <button type="submit" class="button">{{ settings.language_popup_button | escape }}</button>
+          <button type="button" class="button button--secondary" data-gad-lang-stay>
+            {{ settings.language_popup_stay | escape }}
+          </button>
+        </div>
+      {%- endform -%}
+    </dialog>
+  </gad-language-popup>
+{%- endif -%}

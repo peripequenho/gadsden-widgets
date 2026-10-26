@@ -1,0 +1,12 @@
+
+{%- liquid
+  assign out = text | replace: '{cantidad}', qty | replace: '{porcentaje}', pct
+  if out contains '{'
+    assign m_price = price | money
+    assign m_compare = compare | money
+    assign m_saved = saved | money
+    assign m_each = each | money
+    assign out = out | replace: '{precio_anterior}', m_compare | replace: '{precio_unidad}', m_each | replace: '{precio}', m_price | replace: '{ahorro}', m_saved
+  endif
+  echo out
+-%}

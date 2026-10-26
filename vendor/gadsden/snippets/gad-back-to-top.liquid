@@ -1,0 +1,13 @@
+
+{%- if settings.back_to_top -%}
+  <button
+    type="button"
+    class="gad-top gad-top--{{ settings.back_to_top_position }} color-{{ settings.back_to_top_scheme }}"
+    style="--top-x: {{ settings.back_to_top_x }}px; --top-y: {{ settings.back_to_top_y }}px;"
+    data-after="{{ settings.back_to_top_after }}"
+    aria-label="{{ 'gadsden.back_to_top' | t }}"
+    hidden
+  >
+    {%- render 'gad-icon', name: 'arrow_upward', class: 'gad-top__icon' -%}
+  </button>
+{%- endif -%}

@@ -1,0 +1,117 @@
+
+{%- liquid
+  assign type = s.car_type | default: 'classic'
+  assign drag = drag_mode | default: s.car_drag | default: 'on'
+  assign speed = 0
+  if s.car_autoplay
+    assign speed = s.car_speed | default: 5
+  endif
+
+  assign d_on = s.d_carousel
+  if d_on == nil
+    assign d_on = true
+  endif
+  if force_d_on != nil
+    assign d_on = force_d_on
+  endif
+  assign m_on = s.m_carousel
+  if m_on == nil
+    assign m_on = true
+  endif
+  if force_m_on != nil
+    assign m_on = force_m_on
+  endif
+
+  assign d_pv = d_per_view | default: s.d_per_view | default: 3
+  assign m_pv = m_per_view | default: s.m_per_view | default: 1
+  if type == 'fade'
+    assign d_pv = 1
+    assign m_pv = 1
+  endif
+  assign d_pm = s.d_per_move | default: 1
+  assign m_pm = s.m_per_move | default: 1
+  assign d_gap = s.d_gap | default: gap_d | default: 24
+  assign m_gap = s.m_gap | default: gap_m | default: 12
+  assign d_peek = s.d_peek | default: 0
+  assign m_peek = s.m_peek | default: 0
+  assign d_dots = dots_d | default: s.d_dots | default: 'hidden'
+  assign d_arrows = arrows_d | default: s.d_arrows | default: 'sides'
+  assign m_dots = dots_m | default: s.m_dots | default: 'under'
+  assign m_arrows = arrows_m | default: s.m_arrows | default: 'hidden'
+
+  assign classes = 'gad-carousel gad-carousel--' | append: type
+  if d_on
+    assign classes = classes | append: ' gad-carousel--d-on'
+  endif
+  if m_on
+    assign classes = classes | append: ' gad-carousel--m-on'
+  endif
+  if s.d_auto_height
+    assign classes = classes | append: ' gad-carousel--d-auto-height'
+  endif
+  if s.m_auto_height
+    assign classes = classes | append: ' gad-carousel--m-auto-height'
+  endif
+  if s.car_center
+    assign classes = classes | append: ' gad-carousel--center'
+  endif
+  if s.car_arrows_bare
+    assign classes = classes | append: ' gad-carousel--bare-arrows'
+  endif
+  if s.car_dots_color != blank
+    assign classes = classes | append: ' gad-carousel--dot-color'
+  endif
+  assign classes = classes | append: ' gad-carousel--d-dots-' | append: d_dots | append: ' gad-carousel--d-arrows-' | append: d_arrows
+  assign classes = classes | append: ' gad-carousel--m-dots-' | append: m_dots | append: ' gad-carousel--m-arrows-' | append: m_arrows
+  if class
+    assign classes = classes | append: ' ' | append: class
+  endif
+
+  assign arrows_scheme = s.car_arrows_scheme | default: 'scheme-1'
+  if label != blank
+    assign region_label = label
+  else
+    assign region_label = 'gadsden.carousel.region' | t
+  endif
+-%}
+<gad-carousel
+  id="Carousel-{{ key }}"
+  class="{{ classes }}"
+  role="region"
+  aria-roledescription="{{ 'gadsden.carousel.roledescription' | t }}"
+  aria-label="{{ region_label | strip_html | escape }}"
+  data-type="{{ type }}"
+  data-drag="{{ drag }}"
+  data-autoplay="{{ speed }}"
+  data-center="{% if s.car_center %}true{% else %}false{% endif %}"
+  data-d='{"on":{{ d_on }},"pv":{{ d_pv }},"pm":{{ d_pm }},"peek":{{ d_peek }},"edge":{% if s.d_edge_fit %}true{% else %}false{% endif %},"ah":{% if s.d_auto_height %}true{% else %}false{% endif %}}'
+  data-m='{"on":{{ m_on }},"pv":{{ m_pv }},"pm":{{ m_pm }},"peek":{{ m_peek }},"edge":{% if s.m_edge_fit %}true{% else %}false{% endif %},"ah":{% if s.m_auto_height %}true{% else %}false{% endif %}}'
+  data-label-slide="{{ 'gadsden.carousel.slide_of' | t: index: '[index]', count: '[count]' | escape }}"
+  data-label-dot="{{ 'gadsden.carousel.go_to' | t: index: '[index]' | escape }}"
+  style="--d-pv: {{ d_pv }}; --m-pv: {{ m_pv }}; --d-gap: {{ d_gap }}px; --m-gap: {{ m_gap }}px; --d-peek: {{ d_peek }}px; --m-peek: {{ m_peek }}px;{% if s.car_dots_color != blank %} --gad-dot-color: {{ s.car_dots_color.red }},{{ s.car_dots_color.green }},{{ s.car_dots_color.blue }};{% endif %}"
+>
+  <div class="gad-carousel__viewport">
+    <div class="gad-carousel__track">
+      {{- slides -}}
+    </div>
+  </div>
+  <button
+    type="button"
+    class="gad-carousel__arrow gad-carousel__arrow--prev color-{{ arrows_scheme }}"
+    aria-label="{{ 'gadsden.carousel.previous' | t }}"
+    aria-controls="Carousel-{{ key }}"
+    hidden
+  >
+    {%- render 'gad-arrow', dir: 'prev' -%}
+  </button>
+  <div class="gad-carousel__dots" hidden></div>
+  <button
+    type="button"
+    class="gad-carousel__arrow gad-carousel__arrow--next color-{{ arrows_scheme }}"
+    aria-label="{{ 'gadsden.carousel.next' | t }}"
+    aria-controls="Carousel-{{ key }}"
+    hidden
+  >
+    {%- render 'gad-arrow', dir: 'next' -%}
+  </button>
+</gad-carousel>

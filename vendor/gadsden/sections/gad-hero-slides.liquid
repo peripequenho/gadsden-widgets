@@ -1,0 +1,1245 @@
+{%- liquid
+  assign s = section.settings
+  assign drag = 'off'
+  if s.car_drag
+    assign drag = 'on'
+  endif
+  assign dots = 'hidden'
+  if s.show_dots and section.blocks.size > 1
+    assign dots = 'over'
+  endif
+  assign arrows = 'hidden'
+  if s.show_arrows and section.blocks.size > 1
+    assign arrows = 'sides'
+  endif
+-%}
+
+{%- style -%}
+  #GadHero-{{ section.id }} {
+    {%- case s.height_desktop -%}
+      {%- when 'px' -%}--h-d: {{ s.height_desktop_px }}px;
+      {%- when 'screen' -%}--h-d: 100svh;
+      {%- else -%}--h-d: 0px;
+    {%- endcase -%}
+    {%- case s.height_mobile -%}
+      {%- when 'px' -%}--h-m: {{ s.height_mobile_px }}px;
+      {%- when 'screen' -%}--h-m: 100svh;
+      {%- else -%}--h-m: 0px;
+    {%- endcase -%}
+  }
+{%- endstyle -%}
+{%- if s.transparent_header -%}
+  <span class="gad-th-flag{% if s.th_logo == 'secondary' %} gad-th-flag--logo2{% endif %}{% if s.th_hide_bars %} gad-th-flag--hide-bars{% endif %}" hidden></span>
+  {%- style -%}
+    :root {
+      --gad-th-link: {{ s.th_link }};
+      --gad-th-active: {{ s.th_active }};
+      --gad-th-hover: {{ s.th_hover }};
+    }
+    #GadHero-{{ section.id }} .gad-hero__content {
+      padding-top: calc(var(--pt, 0px) * 0.75 + var(--header-height, 0px));
+    }
+    @media screen and (min-width: 750px) {
+      #GadHero-{{ section.id }} .gad-hero__content {
+        padding-top: calc(var(--pt, 0px) + var(--header-height, 0px));
+      }
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+{%- capture slides -%}
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign b = block.settings
+      assign key = section.id | append: '-' | append: block.id
+      assign has_d = false
+      if b.bg_video != blank or b.bg_image != blank
+        assign has_d = true
+      endif
+      assign has_m = false
+      if b.bg_video_mobile != blank or b.bg_image_mobile != blank
+        assign has_m = true
+      endif
+      assign ov_d = b.overlay_opacity | divided_by: 100.0
+      assign ov_m = b.overlay_opacity_mobile | divided_by: 100.0
+      assign ov_color_m = b.overlay_color_mobile | default: b.overlay_color
+      assign has_text = false
+      if b.pretitle != blank or b.heading != blank or b.subtitle != blank or b.text != blank or b.button_label_1 != blank or b.button_label_2 != blank
+        assign has_text = true
+      endif
+      assign eager = false
+      if forloop.first and section.index < 3
+        assign eager = true
+      endif
+    -%}
+    {%- render 'gad-colors', s: b, key: key -%}
+    <div
+      id="GadHeroSlide-{{ block.id }}"
+      class="gad-hero__slide {% render 'gad-scheme', s: b, key: key %}"
+      style="--ov-d: {{ b.overlay_color | color_modify: 'alpha', ov_d }}; --ov-m: {{ ov_color_m | color_modify: 'alpha', ov_m }};{% case b.max_width %}{% when 'px' %} --box-w: {{ b.max_width_px }}px;{% when 'pct' %} --box-w: {{ b.max_width_pct }}%;{% endcase %}{% if b.heading_accent != blank %} --gad-hl: {{ b.heading_accent }};{% endif %}"
+      {{ block.shopify_attributes }}
+    >
+      {%- if has_d or has_m -%}
+        <div class="gad-hero__media" aria-hidden="true">
+          {%- if has_d -%}
+            <div class="gad-hero__media-d{% unless has_m %} is-shared{% endunless %}">
+              {%- if b.bg_video != blank -%}
+                {%- render 'gad-video', video: b.bg_video, poster: b.bg_image, autoplay: true, loop: true, cover: true, width: 2400 -%}
+              {%- else -%}
+                {%- liquid
+                  if eager
+                    assign loading = 'eager'
+                    assign priority = 'high'
+                  else
+                    assign loading = 'lazy'
+                    assign priority = 'auto'
+                  endif
+                -%}
+                {{ b.bg_image | image_url: width: 3000 | image_tag: loading: loading, fetchpriority: priority, sizes: '100vw', widths: '750, 1100, 1500, 1920, 2400, 3000', alt: '' }}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if has_m -%}
+            <div class="gad-hero__media-m{% unless has_d %} is-shared{% endunless %}">
+              {%- if b.bg_video_mobile != blank -%}
+                {%- assign poster_m = b.bg_image_mobile | default: b.bg_image -%}
+                {%- render 'gad-video', video: b.bg_video_mobile, poster: poster_m, autoplay: true, loop: true, cover: true, width: 1200 -%}
+              {%- else -%}
+                {%- liquid
+                  if eager
+                    assign loading = 'eager'
+                  else
+                    assign loading = 'lazy'
+                  endif
+                -%}
+                {{ b.bg_image_mobile | image_url: width: 1500 | image_tag: loading: loading, sizes: '100vw', widths: '375, 550, 750, 1100, 1500', alt: '' }}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      <span class="gad-hero__overlay" aria-hidden="true"></span>
+
+      {%- if has_text -%}
+        <div class="gad-hero__content gad-pad{% unless b.full_width %} page-width{% endunless %} gad-hero--v-{{ b.v_pos }} gad-hero--h-{{ b.h_pos }} gad-hero--m-v-{{ b.m_v_pos }}" style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;">
+          <div class="gad-hero__box gad-hero--a-{{ b.align }} gad-hero--m-a-{{ b.m_align }}">
+            {%- if b.pretitle != blank -%}
+              <p class="gad-hero__pre {{ b.small_size }}">{{ b.pretitle }}</p>
+            {%- endif -%}
+            {%- if b.heading != blank -%}
+              <h2 class="gad-hero__title gad-hl {{ b.heading_size }}">{{ b.heading }}</h2>
+            {%- endif -%}
+            {%- if b.subtitle != blank -%}
+              <p class="gad-hero__sub {{ b.small_size }}">{{ b.subtitle }}</p>
+            {%- endif -%}
+            {%- if b.text != blank -%}
+              <div class="gad-hero__text rte">{{ b.text }}</div>
+            {%- endif -%}
+            {%- if b.button_label_1 != blank or b.button_label_2 != blank -%}
+              <div class="gad-buttons gad-hero__buttons">
+                {%- for i in (1..2) -%}
+                  {%- liquid
+                    assign k_label = 'button_label_' | append: i
+                    assign k_link = 'button_link_' | append: i
+                    assign k_outline = 'button_outline_' | append: i
+                  -%}
+                  {%- if b[k_label] != blank -%}
+                    <a
+                      {% if b[k_link] == blank %}
+                        role="link" aria-disabled="true"
+                      {% else %}
+                        href="{{ b[k_link] }}"
+                      {% endif %}
+                      class="button{% if b[k_outline] %} button--secondary{% else %} button--primary{% endif %}"
+                    >
+                      {{- b[k_label] | escape -}}
+                    </a>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if b.sound_button -%}
+        {%- if b.bg_video != blank or b.bg_video_mobile != blank -%}
+          <button
+            type="button"
+            class="gad-hero__sound color-{{ b.sound_scheme }}"
+            aria-pressed="false"
+            aria-label="{{ 'gadsden.video.unmute' | t }}"
+            data-label-mute="{{ 'gadsden.video.mute' | t }}"
+            data-label-unmute="{{ 'gadsden.video.unmute' | t }}"
+          >
+            {%- render 'gad-icon', name: 'volume_off', filled: true, class: 'gad-hero__icon-muted' -%}
+            {%- render 'gad-icon', name: 'volume_up', filled: true, class: 'gad-hero__icon-sound' -%}
+          </button>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div
+  id="GadHero-{{ section.id }}"
+  class="gad-hero{% if section.blocks.size < 2 %} gad-hero--single{% endif %}"
+  {% render 'gad-section-attrs', s: s %}
+>
+  {%- if section.blocks.size > 0 -%}
+    {%- render 'gad-carousel',
+      s: s,
+      key: section.id,
+      slides: slides,
+      drag_mode: drag,
+      d_per_view: 1,
+      m_per_view: 1,
+      dots_d: dots,
+      dots_m: dots,
+      arrows_d: arrows,
+      arrows_m: 'hidden',
+      gap_d: 0,
+      gap_m: 0,
+      class: 'gad-hero__carousel'
+    -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .gad-hero__carousel {
+    --d-gap: 0px;
+    --m-gap: 0px;
+  }
+
+  .gad-hero__slide {
+    position: relative;
+    display: flex;
+    min-height: var(--h-m, 0px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .gad-hero__media,
+  .gad-hero__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .gad-hero__media {
+    z-index: -2;
+  }
+
+  .gad-hero__media > div,
+  .gad-hero__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gad-hero__media img {
+    object-fit: cover;
+  }
+
+  .gad-hero__media-d:not(.is-shared) {
+    display: none;
+  }
+
+  .gad-hero__overlay {
+    z-index: -1;
+    background: var(--ov-m);
+    pointer-events: none;
+  }
+
+  .gad-hero__content {
+    display: flex;
+    flex: 1 1 auto;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .gad-hero__content.page-width {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .gad-hero__content:not(.page-width) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .gad-hero--m-v-top {
+    align-items: flex-start;
+  }
+
+  .gad-hero--m-v-bottom {
+    align-items: flex-end;
+  }
+
+  .gad-hero__box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 100%;
+    color: rgb(var(--color-foreground));
+  }
+
+  .gad-hero__box .gad-hero__title,
+  .gad-hero__box .gad-hero__pre,
+  .gad-hero__box .gad-hero__sub {
+    margin: 0;
+    color: inherit;
+  }
+
+  .gad-hero__pre,
+  .gad-hero__sub {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .gad-hero__text p {
+    margin: 0 0 0.8em;
+  }
+
+  .gad-hero__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .gad-hero__buttons {
+    margin-top: 0.8rem;
+  }
+
+  .gad-hero--m-a-left {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .gad-hero--m-a-center {
+    text-align: center;
+    align-items: center;
+  }
+
+  .gad-hero--m-a-right {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .gad-hero--m-a-center .gad-hero__buttons {
+    justify-content: center;
+  }
+
+  .gad-hero--m-a-right .gad-hero__buttons {
+    justify-content: flex-end;
+  }
+
+  .gad-hero__sound {
+    position: absolute;
+    right: 1.6rem;
+    bottom: 1.6rem;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    font-size: 2.2rem;
+    cursor: pointer;
+  }
+
+  .gad-hero__icon-sound,
+  .gad-hero__sound[aria-pressed='true'] .gad-hero__icon-muted {
+    display: none;
+  }
+
+  .gad-hero__sound[aria-pressed='true'] .gad-hero__icon-sound {
+    display: inline-flex;
+  }
+
+  .gad-hero .gad-carousel--bare-arrows .gad-carousel__arrow {
+    filter: drop-shadow(0 0 0.3rem rgba(0, 0, 0, 0.55));
+  }
+
+  .gad-hero .gad-carousel__dots {
+    margin-bottom: 1.6rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-hero__slide {
+      min-height: var(--h-d, 0px);
+    }
+
+    .gad-hero__media-d {
+      display: block !important;
+    }
+
+    .gad-hero__media-m:not(.is-shared) {
+      display: none;
+    }
+
+    .gad-hero__overlay {
+      background: var(--ov-d);
+    }
+
+    .gad-hero__content.page-width {
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
+
+    .gad-hero__content:not(.page-width) {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+
+    .gad-hero__content {
+      align-items: center;
+    }
+
+    .gad-hero--v-top {
+      align-items: flex-start;
+    }
+
+    .gad-hero--v-bottom {
+      align-items: flex-end;
+    }
+
+    .gad-hero--h-left {
+      justify-content: flex-start;
+    }
+
+    .gad-hero--h-right {
+      justify-content: flex-end;
+    }
+
+    .gad-hero__box {
+      max-width: var(--box-w, none);
+    }
+
+    .gad-hero--a-left {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .gad-hero--a-center {
+      text-align: center;
+      align-items: center;
+    }
+
+    .gad-hero--a-right {
+      text-align: right;
+      align-items: flex-end;
+    }
+
+    .gad-hero--a-left .gad-hero__buttons {
+      justify-content: flex-start;
+    }
+
+    .gad-hero--a-center .gad-hero__buttons {
+      justify-content: center;
+    }
+
+    .gad-hero--a-right .gad-hero__buttons {
+      justify-content: flex-end;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.gad-hero__sound');
+    if (!btn) return;
+    const videos = btn.closest('.gad-hero__slide').querySelectorAll('video');
+    const unmute = btn.getAttribute('aria-pressed') !== 'true';
+    videos.forEach((v) => {
+      v.muted = !unmute;
+      if (unmute && v.offsetParent !== null && v.paused) v.play().catch(() => {});
+    });
+    btn.setAttribute('aria-pressed', String(unmute));
+    btn.setAttribute('aria-label', unmute ? btn.dataset.labelMute : btn.dataset.labelUnmute);
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Hero de diapositivas",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Alto"
+    },
+    {
+      "type": "select",
+      "id": "height_desktop",
+      "label": "Alto mínimo en desktop",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Ajustado al contenido"
+        },
+        {
+          "value": "px",
+          "label": "En píxeles"
+        },
+        {
+          "value": "screen",
+          "label": "Alto de pantalla"
+        }
+      ],
+      "default": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop_px",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "label": "Píxeles en desktop",
+      "default": 600
+    },
+    {
+      "type": "select",
+      "id": "height_mobile",
+      "label": "Alto mínimo en mobile",
+      "options": [
+        {
+          "value": "fit",
+          "label": "Ajustado al contenido"
+        },
+        {
+          "value": "px",
+          "label": "En píxeles"
+        },
+        {
+          "value": "screen",
+          "label": "Alto de pantalla"
+        }
+      ],
+      "default": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile_px",
+      "min": 0,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "label": "Píxeles en mobile",
+      "default": 450,
+      "info": "Es un mínimo: si el contenido no entra, la diapositiva crece."
+    },
+    {
+      "type": "header",
+      "content": "Cabecera transparente"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_header",
+      "label": "Cabecera transparente sobre esta sección",
+      "default": false,
+      "info": "Conviene con esta sección arriba de todo. Al bajar, la cabecera fija se ve normal."
+    },
+    {
+      "type": "color",
+      "id": "th_link",
+      "label": "Links e íconos",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "th_active",
+      "label": "Link de la página actual",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "th_hover",
+      "label": "Link al pasar el mouse",
+      "default": "#DDDDDD"
+    },
+    {
+      "type": "select",
+      "id": "th_logo",
+      "label": "Logo",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Principal"
+        },
+        {
+          "value": "secondary",
+          "label": "Secundario"
+        }
+      ],
+      "default": "secondary",
+      "info": "El secundario se carga en Configuración del tema > Logo. Sin secundario, usa el principal."
+    },
+    {
+      "type": "checkbox",
+      "id": "th_hide_bars",
+      "label": "Ocultar las barras de anuncios y cintas de la cabecera en esta página",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Pase de diapositivas"
+    },
+    {
+      "type": "select",
+      "id": "car_type",
+      "label": "Tipo de pase",
+      "options": [
+        {
+          "value": "loop",
+          "label": "Deslizar"
+        },
+        {
+          "value": "fade",
+          "label": "Fundido"
+        }
+      ],
+      "default": "loop"
+    },
+    {
+      "type": "checkbox",
+      "id": "car_drag",
+      "label": "Permitir arrastrar con el mouse o el dedo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "car_autoplay",
+      "label": "Pase automático",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "car_speed",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "label": "Segundos por diapositiva",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Mostrar puntos",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "car_dots_color",
+      "label": "Color de los puntos",
+      "info": "Vacío: blanco con sombra, para que se vea sobre cualquier foto."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Mostrar flechas",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "car_arrows_scheme",
+      "label": "Colores de las flechas",
+      "default": "scheme-4",
+      "info": "Con flechas transparentes se usa sólo el color del texto de la combinación."
+    },
+    {
+      "type": "checkbox",
+      "id": "car_arrows_bare",
+      "label": "Flechas transparentes",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Relleno del contenido"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 48,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Diapositiva",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Fondo en desktop"
+        },
+        {
+          "type": "image_picker",
+          "id": "bg_image",
+          "label": "Imagen"
+        },
+        {
+          "type": "video",
+          "id": "bg_video",
+          "label": "Video",
+          "info": "Se reproduce solo y sin sonido. Si cargás imagen y video, la imagen queda como miniatura mientras el video carga."
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Color del velo",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Opacidad del velo",
+          "default": 40
+        },
+        {
+          "type": "header",
+          "content": "Fondo en mobile"
+        },
+        {
+          "type": "image_picker",
+          "id": "bg_image_mobile",
+          "label": "Imagen",
+          "info": "Vacía: usa la de desktop."
+        },
+        {
+          "type": "video",
+          "id": "bg_video_mobile",
+          "label": "Video"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color_mobile",
+          "label": "Color del velo",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Opacidad del velo",
+          "default": 40
+        },
+        {
+          "type": "checkbox",
+          "id": "sound_button",
+          "label": "Botón para activar el sonido del video",
+          "default": false
+        },
+        {
+          "type": "color_scheme",
+          "id": "sound_scheme",
+          "label": "Colores del botón de sonido",
+          "default": "scheme-1"
+        },
+        {
+          "type": "header",
+          "content": "Título"
+        },
+        {
+          "type": "text",
+          "id": "pretitle",
+          "label": "Antetítulo"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Título",
+          "default": "Título de la diapositiva",
+          "info": "Marcá en negrita las palabras que querés resaltar."
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "label": "Tamaño del título",
+          "options": [
+            {
+              "value": "h2",
+              "label": "Chico"
+            },
+            {
+              "value": "h1",
+              "label": "Mediano"
+            },
+            {
+              "value": "h0",
+              "label": "Grande"
+            },
+            {
+              "value": "hxl",
+              "label": "Extra grande"
+            }
+          ],
+          "default": "h0"
+        },
+        {
+          "type": "color",
+          "id": "heading_accent",
+          "label": "Color de las palabras resaltadas",
+          "info": "Vacío: el acento de la combinación de colores."
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Texto debajo del título"
+        },
+        {
+          "type": "select",
+          "id": "small_size",
+          "label": "Tamaño del antetítulo y del texto de abajo",
+          "options": [
+            {
+              "value": "h6",
+              "label": "Chico"
+            },
+            {
+              "value": "h5",
+              "label": "Mediano"
+            },
+            {
+              "value": "h4",
+              "label": "Grande"
+            },
+            {
+              "value": "h3",
+              "label": "Extra grande"
+            }
+          ],
+          "default": "h5"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto"
+        },
+        {
+          "type": "header",
+          "content": "Botones"
+        },
+        {
+          "type": "text",
+          "id": "button_label_1",
+          "label": "Texto del botón 1",
+          "default": "Ver más",
+          "info": "Sin texto, el botón no aparece."
+        },
+        {
+          "type": "url",
+          "id": "button_link_1",
+          "label": "Enlace del botón 1"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_outline_1",
+          "label": "Botón 1 con contorno",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "button_label_2",
+          "label": "Texto del botón 2"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "Enlace del botón 2"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_outline_2",
+          "label": "Botón 2 con contorno",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Colores"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "Combinación de colores",
+          "default": "scheme-4",
+          "info": "Sin imagen ni video, el fondo de la combinación queda como fondo de la diapositiva."
+        },
+        {
+          "type": "checkbox",
+          "id": "custom_colors",
+          "label": "Usar colores propios",
+          "default": false,
+          "info": "Pisan a la combinación de colores elegida arriba."
+        },
+        {
+          "type": "color",
+          "id": "cc_bg",
+          "label": "Fondo",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color_background",
+          "id": "cc_bg_gradient",
+          "label": "Degradé de fondo",
+          "info": "Si cargás un degradé, reemplaza al color de fondo."
+        },
+        {
+          "type": "color",
+          "id": "cc_text",
+          "label": "Texto",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "cc_accent",
+          "label": "Acento",
+          "default": "#334FB4"
+        },
+        {
+          "type": "color",
+          "id": "cc_btn_bg",
+          "label": "Fondo del botón lleno",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "cc_btn_text",
+          "label": "Texto del botón lleno",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "cc_outline",
+          "label": "Botón de contorno y enlaces",
+          "default": "#121212"
+        },
+        {
+          "type": "header",
+          "content": "Diseño en desktop"
+        },
+        {
+          "type": "checkbox",
+          "id": "full_width",
+          "label": "Contenido a todo el ancho de la página",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "max_width",
+          "label": "Ancho máximo del contenido",
+          "options": [
+            {
+              "value": "none",
+              "label": "Sin límite"
+            },
+            {
+              "value": "px",
+              "label": "En píxeles"
+            },
+            {
+              "value": "pct",
+              "label": "En porcentaje"
+            }
+          ],
+          "default": "px"
+        },
+        {
+          "type": "range",
+          "id": "max_width_px",
+          "min": 200,
+          "max": 1600,
+          "step": 20,
+          "unit": "px",
+          "label": "Ancho máximo en píxeles",
+          "default": 760
+        },
+        {
+          "type": "range",
+          "id": "max_width_pct",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Ancho máximo en porcentaje",
+          "default": 60
+        },
+        {
+          "type": "select",
+          "id": "v_pos",
+          "label": "Posición vertical",
+          "options": [
+            {
+              "value": "top",
+              "label": "Arriba"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "bottom",
+              "label": "Abajo"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "h_pos",
+          "label": "Posición horizontal",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Alineación del texto",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "header",
+          "content": "Diseño en mobile"
+        },
+        {
+          "type": "paragraph",
+          "content": "En mobile el contenido usa siempre todo el ancho."
+        },
+        {
+          "type": "select",
+          "id": "m_v_pos",
+          "label": "Posición vertical",
+          "options": [
+            {
+              "value": "top",
+              "label": "Arriba"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "bottom",
+              "label": "Abajo"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "select",
+          "id": "m_align",
+          "label": "Alineación del texto",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "center"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero de diapositivas",
+      "blocks": [
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

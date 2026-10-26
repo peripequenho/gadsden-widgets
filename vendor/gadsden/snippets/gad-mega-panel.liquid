@@ -1,0 +1,155 @@
+
+{%- liquid
+  assign products = blank
+  if link.links == blank
+    if link.type == 'collection_link'
+      assign products = link.object.products
+    elsif link.type == 'catalog_link'
+      assign products = collections.all.products
+    endif
+  endif
+-%}
+{%- if link.links != blank or products != blank -%}
+  <ul class="gad-mp gad-mp--{{ context }}{% if images %} gad-mp--images{% endif %} list-unstyled" role="list">
+    {%- if link.links != blank -%}
+      {%- for child in link.links -%}
+        {%- liquid
+          assign img = blank
+          case child.type
+            when 'collection_link'
+              assign img = child.object.featured_image
+            when 'product_link'
+              assign img = child.object.featured_media.preview_image
+          endcase
+        -%}
+        <li class="gad-mp__item">
+          <a href="{{ child.url }}" class="gad-mp__card{% if child.current %} gad-mp__card--active{% endif %}"{% if child.current %} aria-current="page"{% endif %}>
+            {%- if images -%}
+              <span class="gad-mp__media">
+                {%- if img != blank -%}
+                  {{ img | image_url: width: 400 | image_tag: loading: 'lazy', alt: '', sizes: '200px', widths: '200, 400' }}
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'gad-mp__ph' }}
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+            <span class="gad-mp__title">{{ child.title | escape }}</span>
+          </a>
+          {%- if child.links != blank -%}
+            <ul class="gad-mp__sub list-unstyled" role="list">
+              {%- for grand in child.links -%}
+                <li><a href="{{ grand.url }}" class="gad-mp__sublink link"{% if grand.current %} aria-current="page"{% endif %}>{{ grand.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for p in products limit: 8 -%}
+        <li class="gad-mp__item">
+          <a href="{{ p.url }}" class="gad-mp__card">
+            {%- if images -%}
+              <span class="gad-mp__media">
+                {%- if p.featured_media -%}
+                  {{ p.featured_media | image_url: width: 400 | image_tag: loading: 'lazy', alt: '', sizes: '200px', widths: '200, 400' }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'gad-mp__ph' }}
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+            <span class="gad-mp__title">{{ p.title | escape }}</span>
+            <span class="gad-mp__price">{{ p.price | money }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+      <li class="gad-mp__all"><a href="{{ link.url }}" class="link underlined-link">{{ 'gadsden.menu.view_all' | t }}</a></li>
+    {%- endif -%}
+  </ul>
+{%- endif -%}
+
+{% stylesheet %}
+  .gad-mp {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 2.4rem 2rem;
+    margin: 0;
+  }
+
+  .gad-mp.gad-mp--mobile {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem 1.2rem;
+    padding: 1rem 3rem 2rem;
+  }
+
+  .gad-mp--mobile:not(.gad-mp--images) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .gad-mp .gad-mp__card {
+    display: grid;
+    gap: 0.6rem;
+    color: rgb(var(--color-foreground));
+    text-decoration: none;
+  }
+
+  .gad-mp__media {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border-radius: 0.8rem;
+    background: rgba(var(--color-foreground), 0.04);
+  }
+
+  .gad-mp__media img,
+  .gad-mp__ph {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .gad-mp__card:hover .gad-mp__media img {
+    transform: scale(1.04);
+  }
+
+  .gad-mp__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .gad-mp--mobile:not(.gad-mp--images) .gad-mp__card {
+    padding: 1.1rem 0;
+  }
+
+  .gad-mp--mobile .gad-mp__title {
+    font-size: 1.4rem;
+    line-height: 1.35;
+  }
+
+  .gad-mp__price {
+    font-size: 1.4rem;
+    opacity: 0.8;
+  }
+
+  .gad-mp__sub {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  .gad-mp__sublink {
+    color: rgba(var(--color-foreground), 0.75);
+    font-size: 1.4rem;
+    text-decoration: none;
+  }
+
+  .gad-mp__sublink:hover {
+    color: rgb(var(--color-foreground));
+  }
+
+  .gad-mp__all {
+    grid-column: 1 / -1;
+    font-size: 1.4rem;
+  }
+{% endstylesheet %}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin simulado</title>
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; background: #f4f5f7; }
+  header { background: #1f2937; color: #fff; padding: 8px 14px; display: flex; gap: 14px; align-items: center; }
+  iframe { width: 100%; height: calc(100vh - 34px); border: 0; display: block; background: #fff; }
+  #log { opacity: .7; }
+</style>
+</head>
+<body>
+<!--
+  El admin de Tiendanube simulado para probar el panel sin la tienda (BUILD.md, "Cómo se corre"): mete /panel/ en un
+  iframe y contesta los mensajes de Nexo como el admin (app/connected, app/auth/sessionToken, app/store/info...). El
+  token va firmado con el secreto del modo desarrollador ("THE_SECRET"), así que el Worker tiene que correr con
+  SESION_DESARROLLO=1 (en .dev.vars). ?tienda=<id> elige la tienda (por defecto, la demo); ?idioma=pt la hace de Brasil
+  (Nuvemshop: el panel sale en portugués).
+-->
+<header><b>Admin simulado</b><span>Mis aplicaciones &gt; Gadsden Widgets</span><span id="log"></span></header>
+<iframe id="app" src="/panel/" title="Gadsden Widgets"></iframe>
+<script>
+  const tienda = new URLSearchParams(location.search).get("tienda") || "8359789";
+  const pt = new URLSearchParams(location.search).get("idioma") === "pt";
+  const b64 = (u8) => btoa(String.fromCharCode(...u8)).replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");
+  const enc = (o) => b64(new TextEncoder().encode(JSON.stringify(o)));
+  async function token() {
+    const base = `${enc({ alg: "HS256", typ: "JWT" })}.${enc({ storeId: Number(tienda), exp: Math.floor(Date.now() / 1000) + 300 })}`;
+    const clave = await crypto.subtle.importKey("raw", new TextEncoder().encode("THE_SECRET"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    return `${base}.${b64(new Uint8Array(await crypto.subtle.sign("HMAC", clave, new TextEncoder().encode(base))))}`;
+  }
+  const respuestas = {
+    "app/connected": async () => undefined,
+    "app/auth/sessionToken": async () => ({ token: await token() }),
+    "app/store/info": async () => ({ id: tienda, name: "Tienda de prueba", url: new URLSearchParams(location.search).get("url") || "lgademo.mitiendanube.com", country: pt ? "BR" : "AR", language: pt ? "pt" : "es", languages: [pt ? "pt" : "es"], currency: pt ? "BRL" : "ARS" }),
+    "app/navigate/pathname": async () => ({ pathname: "/" }),
+    "app/device": async () => ({ isMobileDevice: innerWidth < 600 }),
+  };
+  window.mensajes = [];
+  addEventListener("message", async (e) => {
+    const m = e.data;
+    if (!m || typeof m.type !== "string" || !m.type.startsWith("app/")) return;
+    window.mensajes.push(m.type);
+    document.getElementById("log").textContent = m.type;
+    const r = respuestas[m.type];
+    if (r) e.source.postMessage({ type: m.type, payload: await r(m.payload) }, "*");
+  });
+</script>
+</body>
+</html>

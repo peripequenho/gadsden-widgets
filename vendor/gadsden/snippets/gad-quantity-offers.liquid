@@ -1,0 +1,164 @@
+
+{%- liquid
+  assign b = block.settings
+  assign variant = product.selected_or_first_available_variant
+  assign selected = b.preselected | plus: 0
+  assign has_quantity_block = false
+  for blk in section.blocks
+    if blk.type == 'quantity_selector'
+      assign has_quantity_block = true
+    endif
+  endfor
+  assign show_units = false
+  if b.unit_variants and product.has_only_default_variant == false
+    assign show_units = true
+  endif
+-%}
+<gad-quantity-offers
+  id="GadOffers-{{ section.id }}"
+  class="gad-pblock gad-offers gad-offers--{{ b.style }}"
+  style="--mt: {{ b.margin_top }}px; --mb: {{ b.margin_bottom }}px;{% if b.accent != blank %} --gad-offer-acc: {{ b.accent.red }}, {{ b.accent.green }}, {{ b.accent.blue }};{% endif %}"
+  data-form="{{ product_form_id }}"
+  data-section="{{ section.id }}"
+  data-gad-qty-offers
+  {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+>
+  <div id="GadOffersInner-{{ section.id }}" data-gad-sync>
+    {%- if b.title != blank -%}
+      <p class="gad-offers__title">{{ b.title }}</p>
+    {%- endif -%}
+    {%- liquid
+      assign group_label = b.title | strip_html
+      if group_label == blank
+        assign group_label = 'gadsden.offers.label' | t
+      endif
+    -%}
+    <div class="gad-offers__list" role="radiogroup" aria-label="{{ group_label | escape }}">
+      {%- for i in (1..4) -%}
+        {%- liquid
+          assign k_on = 'offer_' | append: i | append: '_on'
+          assign k_qty = 'offer_' | append: i | append: '_qty'
+          assign k_pct = 'offer_' | append: i | append: '_pct'
+          assign k_label = 'offer_' | append: i | append: '_label'
+          assign k_badge = 'offer_' | append: i | append: '_badge'
+          assign k_image = 'offer_' | append: i | append: '_image'
+          assign k_benefits = 'offer_' | append: i | append: '_benefits'
+          assign qty = b[k_qty]
+          assign pct = b[k_pct]
+          assign k_fixed = 'offer_' | append: i | append: '_fixed'
+          assign k_price_text = 'offer_' | append: i | append: '_price_text'
+          assign k_compare_text = 'offer_' | append: i | append: '_compare_text'
+          assign k_benefit = 'offer_' | append: i | append: '_benefit'
+          assign k_benefit_style = 'offer_' | append: i | append: '_benefit_style'
+          assign k_badge_style = 'offer_' | append: i | append: '_badge_style'
+          assign full = variant.price | times: qty
+          assign off = full | times: pct | divided_by: 100
+          assign fixed = b[k_fixed] | default: 0 | times: 100
+          assign total = full | minus: off | minus: fixed | at_least: 0
+          assign compare_unit = variant.compare_at_price | default: variant.price
+          assign compare_full = compare_unit | times: qty
+          assign saved = compare_full | minus: total
+          assign each = total | divided_by: qty
+          assign saved_pct = 0
+          if compare_full > 0
+            assign saved_pct = saved | times: 100.0 | divided_by: compare_full | round
+          endif
+          assign saved_pct = saved_pct | append: '%'
+          assign units = false
+          if show_units
+            if qty != 1 or b.unit_variants_single
+              assign units = true
+            endif
+          endif
+          assign is_selected = false
+          if i == selected
+            assign is_selected = true
+          endif
+        -%}
+        {%- unless b[k_on] -%}{%- continue -%}{%- endunless -%}
+        <label class="gad-offers__item gad-offers__item--badge-{{ b[k_badge_style] | default: 'top' }}{% if is_selected %} is-selected{% endif %}">
+          <input
+            type="radio"
+            name="gad-offer-{{ section.id }}"
+            value="{{ qty }}"
+            class="gad-offers__input"
+            {% if is_selected %}
+              checked
+            {% endif %}
+          >
+          {%- if b[k_badge] != blank -%}
+            <span class="gad-offers__badge color-{{ b.badge_scheme }}">{%- render 'gad-offer-text', text: b[k_badge], qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}</span>
+          {%- endif -%}
+          <span class="gad-offers__radio" aria-hidden="true"></span>
+          {%- if b[k_image] != blank -%}
+            {{ b[k_image] | image_url: width: 160 | image_tag: class: 'gad-offers__img', loading: 'lazy', alt: '' }}
+          {%- endif -%}
+          <span class="gad-offers__main">
+            <span class="gad-offers__label-row">
+              <span class="gad-offers__label">
+                {%- if b[k_label] != blank -%}{%- render 'gad-offer-text', text: b[k_label], qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}{%- else -%}{{ qty }}{%- endif -%}
+              </span>
+              {%- if b[k_benefit] != blank -%}
+                <span class="gad-offers__pill gad-offers__pill--{{ b[k_benefit_style] | default: 'outline' }}">{%- render 'gad-offer-text', text: b[k_benefit], qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}</span>
+              {%- endif -%}
+            </span>
+            {%- if b[k_benefits] != blank -%}
+              <span class="gad-offers__benefits">
+                {%- assign lines = b[k_benefits] | newline_to_br | split: '<br />' -%}
+                {%- for line in lines -%}
+                  {%- assign l = line | strip -%}
+                  {%- if l != blank -%}<span>{{ l }}</span>{%- endif -%}
+                {%- endfor -%}
+              </span>
+            {%- endif -%}
+          </span>
+          <span class="gad-offers__prices">
+            <span class="gad-offers__price">
+              {%- if b[k_price_text] != blank -%}{%- render 'gad-offer-text', text: b[k_price_text], qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}{%- else -%}{{ total | money }}{%- endif -%}
+            </span>
+            {%- if saved > 0 -%}
+              <s class="gad-offers__compare">
+                {%- if b[k_compare_text] != blank -%}{%- render 'gad-offer-text', text: b[k_compare_text], qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}{%- else -%}{{ compare_full | money }}{%- endif -%}
+              </s>
+              {%- if b.saving_text != blank -%}
+                <span class="gad-offers__saving">{%- render 'gad-offer-text', text: b.saving_text, qty: qty, price: total, compare: compare_full, saved: saved, each: each, pct: saved_pct -%}</span>
+              {%- endif -%}
+            {%- endif -%}
+          </span>
+          {%- if units -%}
+            <span class="gad-offers__units">
+              {%- if b.pickers_label != blank -%}<span class="gad-offers__units-label">{{ b.pickers_label | escape }}</span>{%- endif -%}
+              {%- for n in (1..qty) -%}
+                <span class="gad-offers__unit">
+                  <span class="gad-offers__unit-number">#{{ n }}</span>
+                  {%- for option in product.options_with_values -%}
+                    <span class="select gad-offers__select">
+                      <select class="select__select gad-offers__variant" aria-label="{{ option.name | escape }} #{{ n }}">
+                        {%- for value in option.values -%}
+                          <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>{{ value }}</option>
+                        {%- endfor -%}
+                      </select>
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  {%- endfor -%}
+                </span>
+              {%- endfor -%}
+            </span>
+          {%- endif -%}
+        </label>
+      {%- endfor -%}
+    </div>
+    {%- if show_units -%}
+      <script type="application/json" data-gad-offer-variants>
+        [
+          {%- for v in product.variants -%}
+            {"id": {{ v.id }}, "options": {{ v.options | json }}, "available": {{ v.available | json }}}{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        ]
+      </script>
+    {%- endif -%}
+    {%- unless has_quantity_block -%}
+      <input type="hidden" name="quantity" value="1" form="{{ product_form_id }}" data-gad-offers-qty>
+    {%- endunless -%}
+  </div>
+</gad-quantity-offers>

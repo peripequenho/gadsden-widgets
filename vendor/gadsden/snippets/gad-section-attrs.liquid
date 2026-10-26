@@ -1,0 +1,8 @@
+
+{%- liquid
+  assign vis = s.visibility | default: 'all'
+  assign anchor = s.anchor | handleize
+-%}
+{%- if vis != 'all' %} data-gad-visibility="{{ vis }}"{% endif -%}
+{%- if anchor != blank %} id="{{ anchor }}" data-gad-anchor{% endif -%}
+{%- if s.title_scale != blank and s.title_scale != '100' %} data-gad-hs="{{ s.title_scale }}"{% endif -%}{%- if s.text_scale != blank and s.text_scale != '100' %} data-gad-ts="{{ s.text_scale }}"{% endif -%}

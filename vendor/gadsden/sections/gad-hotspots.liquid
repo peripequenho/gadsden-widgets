@@ -1,0 +1,996 @@
+
+{%- assign s = section.settings -%}
+{%- assign is_full = false -%}
+{%- if s.layout == 'full' -%}{%- assign is_full = true -%}{%- endif -%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<div
+  class="gad-hs gad-hsf gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;{% if s.point_color != blank %} --hs-c: {{ s.point_color }};{% endif %} --gad-hsf-max: {{ s.image_max_width }}px; --gad-hsf-pd: {{ s.point_size_d }}px; --gad-hsf-pm: {{ s.point_size_m }}px; --gad-hsf-w: {{ s.popup_width_d }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="{% if is_full and s.full_width %}gad-hsf__full{% else %}page-width{% endif %}">
+    {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: s.heading_align, align_m: s.heading_align_m -%}
+    {%- if is_full -%}
+      <gad-hotspots-full class="gad-hsf__wrap">
+        <div class="gad-hsf__media{% if s.image_radius %} gad-hsf__media--radius{% endif %}">
+          {%- if s.image != blank -%}
+            {%- if s.image_mobile != blank -%}
+              {{ s.image | image_url: width: 2000 | image_tag: loading: 'lazy', class: 'gad-hsf__img small-hide', alt: s.image.alt, sizes: '(min-width: 750px) min(100vw, 1000px), 100vw', widths: '600, 900, 1200, 1600, 2000' }}
+              {{ s.image_mobile | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'gad-hsf__img medium-hide large-up-hide', alt: s.image_mobile.alt, sizes: '100vw', widths: '400, 600, 900, 1200' }}
+            {%- else -%}
+              {{ s.image | image_url: width: 2000 | image_tag: loading: 'lazy', class: 'gad-hsf__img', alt: s.image.alt, sizes: '(min-width: 750px) min(100vw, 1000px), 100vw', widths: '400, 600, 900, 1200, 1600, 2000' }}
+            {%- endif -%}
+          {%- else -%}
+            {{ 'product-apparel-1' | placeholder_svg_tag: 'gad-hs__ph gad-hsf__img' }}
+          {%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign b = block.settings
+              assign mx = b.x
+              assign my = b.y
+              if b.mobile_position
+                assign mx = b.x_mobile
+                assign my = b.y_mobile
+              endif
+            -%}
+            <div
+              class="gad-hsf__spot"
+              style="--x: {{ b.x }}%; --y: {{ b.y }}%; --xm: {{ mx }}%; --ym: {{ my }}%;"
+              {{ block.shopify_attributes }}
+            >
+              <button
+                type="button"
+                class="gad-hsf__point color-{{ s.point_scheme }}{% if s.point_pulse %} gad-hsf__point--pulse{% endif %}"
+                aria-expanded="false"
+                aria-controls="GadHsf-{{ block.id }}"
+                aria-label="{{ b.title | default: b.text | strip_html | truncate: 60 | escape }}"
+              >
+                <span class="material-symbols-outlined" aria-hidden="true" translate="no">add</span>
+              </button>
+              <div class="gad-hsf__pop color-{{ s.popup_scheme }}" id="GadHsf-{{ block.id }}" role="dialog" hidden>
+                {%- if b.title != blank -%}<p class="gad-hsf__pop-title h4">{{ b.title }}</p>{%- endif -%}
+                {%- if b.text != blank -%}<div class="gad-hsf__pop-text rte">{{ b.text }}</div>{%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+        <div class="gad-hsf__veil" hidden></div>
+      </gad-hotspots-full>
+    {%- else -%}
+      <gad-hotspots class="gad-hs__wrap gad-hs__wrap--{{ s.layout }}">
+        <div class="gad-hs__media">
+          {%- if s.image != blank -%}
+            {{ s.image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: s.image.alt, sizes: '(min-width: 990px) 55vw, 100vw', widths: '600, 900, 1200, 1600' }}
+          {%- else -%}
+            {{ 'product-apparel-1' | placeholder_svg_tag: 'gad-hs__ph' }}
+          {%- endif -%}
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="gad-hs__point"
+              style="left: {{ block.settings.x }}%; top: {{ block.settings.y }}%;"
+              data-gad-hs="{{ forloop.index }}"
+              aria-controls="GadHs-{{ block.id }}"
+              aria-label="{{ forloop.index }}. {{ block.settings.title | strip_html | escape }}"
+            >
+              {%- if s.numbered -%}{{ forloop.index }}{%- endif -%}
+            </button>
+          {%- endfor -%}
+        </div>
+        <ol class="gad-hs__list list-unstyled" role="list">
+          {%- for block in section.blocks -%}
+            <li class="gad-hs__item" id="GadHs-{{ block.id }}" data-gad-hs="{{ forloop.index }}" {{ block.shopify_attributes }}>
+              <span class="gad-hs__num" aria-hidden="true">{% if s.numbered %}{{ forloop.index }}{% endif %}</span>
+              <div>
+                {%- if block.settings.title != blank -%}<h3 class="gad-hs__title h4">{{ block.settings.title }}</h3>{%- endif -%}
+                {%- if block.settings.text != blank -%}<div class="gad-hs__text rte">{{ block.settings.text }}</div>{%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ol>
+      </gad-hotspots>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Disposición al costado: igual que gad-hotspots. */
+  .gad-hs__wrap {
+    display: grid;
+    gap: 3.2rem;
+    align-items: center;
+    --hs: var(--hs-c, rgb(var(--color-button)));
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-hs__wrap {
+      grid-template-columns: 1.2fr 1fr;
+    }
+
+    .gad-hs__wrap--image_right .gad-hs__media {
+      order: 2;
+    }
+  }
+
+  .gad-hs__media {
+    position: relative;
+  }
+
+  .gad-hs__media img,
+  .gad-hs__ph {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1.2rem;
+  }
+
+  .gad-hs__ph {
+    aspect-ratio: 4 / 3;
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  .gad-hs__point {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    translate: -50% -50%;
+    border: 0.3rem solid #fff;
+    border-radius: 50%;
+    background: var(--hs);
+    color: #fff;
+    font: inherit;
+    font-size: 1.3rem;
+    font-weight: 700;
+    box-shadow: 0 0 0 0 var(--hs);
+    cursor: pointer;
+    animation: gadHsPulse 2s infinite;
+  }
+
+  .gad-hs__point.is-active {
+    scale: 1.2;
+    animation: none;
+  }
+
+  html.gad-reduce .gad-hs__point {
+    animation: none;
+  }
+
+  @keyframes gadHsPulse {
+    70% {
+      box-shadow: 0 0 0 1.2rem transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  .gad-hs__list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  .gad-hs__item {
+    display: flex;
+    gap: 1.4rem;
+    padding: 1.4rem 1.6rem;
+    border-radius: 1rem;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+
+  .gad-hs__item.is-active {
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  .gad-hs__num {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    background: var(--hs);
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .gad-hs__title {
+    margin: 0 0 0.4rem;
+  }
+
+  .gad-hs__text p {
+    margin: 0;
+  }
+
+  /* Disposición a todo el ancho, con una ventana por punto. */
+  .gad-hsf__full {
+    padding: 0;
+  }
+
+  .gad-hsf .gad-heading__text {
+    margin-top: 2rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-hsf__full {
+      padding: 0 5rem;
+    }
+  }
+
+  .gad-hsf .gad-heading,
+  .gad-hsf .title-wrapper {
+    margin-bottom: 2.5rem;
+  }
+
+  .gad-hsf__media {
+    position: relative;
+    max-width: var(--gad-hsf-max);
+    margin: 0 auto;
+  }
+
+  .gad-hsf__img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gad-hsf__media--radius .gad-hsf__img {
+    border-radius: 2rem;
+  }
+
+  .gad-hsf__spot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    z-index: 1;
+  }
+
+  .gad-hsf__spot.is-open {
+    z-index: 7;
+  }
+
+  .gad-hsf__point {
+    display: grid;
+    place-items: center;
+    width: var(--gad-hsf-pd);
+    height: var(--gad-hsf-pd);
+    padding: 0;
+    translate: -50% -50%;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--color-background));
+    color: rgba(var(--color-foreground), 0.9);
+    cursor: pointer;
+  }
+
+  .gad-hsf__point .material-symbols-outlined {
+    font-size: calc(var(--gad-hsf-pd) * 0.57);
+  }
+
+  .gad-hsf__point--pulse {
+    animation: gadHsfRipple 1.8s infinite;
+  }
+
+  html.gad-reduce .gad-hsf__point--pulse {
+    animation: none;
+  }
+
+  @keyframes gadHsfRipple {
+    0% {
+      box-shadow: 0 0 0 0 rgba(var(--color-background), 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 1.2rem rgba(var(--color-background), 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(var(--color-background), 0);
+    }
+  }
+
+  .gad-hsf__pop {
+    position: absolute;
+    top: 0;
+    left: calc(var(--gad-hsf-pd) / 2 + 1rem);
+    width: var(--gad-hsf-w);
+    padding: 1rem 1.25rem;
+    translate: 0 -50%;
+    border-radius: 0.3rem;
+    background: rgb(var(--color-background));
+    color: rgba(var(--color-foreground), 0.9);
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    z-index: 6;
+  }
+
+  .gad-hsf__pop--left {
+    left: auto;
+    right: calc(var(--gad-hsf-pd) / 2 + 1rem);
+  }
+
+  .gad-hsf__pop-title {
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+  }
+
+  .gad-hsf__pop-text {
+    font-size: 1.3rem;
+    line-height: 1.3;
+  }
+
+  .gad-hsf__pop-text > * {
+    margin: 0;
+    font-size: 1.1em;
+    line-height: inherit;
+  }
+
+  /* Va con dos clases para ganarle a div:empty de Dawn. */
+  .gad-hsf__wrap .gad-hsf__veil {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .gad-hsf__wrap .gad-hsf__veil[hidden] {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .gad-hsf__spot {
+      left: var(--xm);
+      top: var(--ym);
+    }
+
+    .gad-hsf__point {
+      width: var(--gad-hsf-pm);
+      height: var(--gad-hsf-pm);
+    }
+
+    .gad-hsf__point .material-symbols-outlined {
+      font-size: calc(var(--gad-hsf-pm) * 0.74);
+    }
+
+    /* En mobile la ventana ocupa todo el ancho, fija y centrada a la altura del punto (la ubica el JS). */
+    .gad-hsf__pop,
+    .gad-hsf__pop--left {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--gad-hsf-top, 50%);
+      width: auto;
+      translate: 0 -50%;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadHotspots extends HTMLElement {
+    connectedCallback() {
+      this.addEventListener('click', (e) => {
+        const el = e.target.closest('[data-gad-hs]');
+        if (el) this.select(el.dataset.gadHs, el.classList.contains('gad-hs__point'));
+      });
+      this.addEventListener('shopify:block:select', (e) => {
+        const li = e.target.closest('[data-gad-hs]');
+        if (li) this.select(li.dataset.gadHs, false);
+      });
+    }
+
+    select(n, fromPoint) {
+      this.querySelectorAll('[data-gad-hs]').forEach((el) => el.classList.toggle('is-active', el.dataset.gadHs === n));
+      const li = this.querySelector(`.gad-hs__item[data-gad-hs="${n}"]`);
+      if (fromPoint && li && li.getBoundingClientRect().top > window.innerHeight) li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }
+
+  if (!customElements.get('gad-hotspots')) customElements.define('gad-hotspots', GadHotspots);
+
+  class GadHotspotsFull extends HTMLElement {
+    connectedCallback() {
+      this.veil = this.querySelector('.gad-hsf__veil');
+      this.addEventListener('click', (e) => {
+        const btn = e.target.closest('.gad-hsf__point');
+        if (btn) {
+          const spot = btn.closest('.gad-hsf__spot');
+          spot.classList.contains('is-open') ? this.close() : this.open(spot);
+          return;
+        }
+        if (e.target === this.veil) this.close();
+      });
+      this.onDocClick = (e) => {
+        if (!this.contains(e.target)) this.close();
+      };
+      this.onKey = (e) => {
+        if (e.key === 'Escape') this.close();
+      };
+      this.onScroll = () => this.place();
+      this.addEventListener('shopify:block:select', (e) => {
+        const spot = e.target.closest('.gad-hsf__spot');
+        if (spot) this.open(spot);
+      });
+      this.addEventListener('shopify:block:deselect', () => this.close());
+    }
+
+    open(spot) {
+      this.close();
+      this.current = spot;
+      spot.classList.add('is-open');
+      spot.querySelector('.gad-hsf__point').setAttribute('aria-expanded', 'true');
+      const pop = spot.querySelector('.gad-hsf__pop');
+      pop.hidden = false;
+      pop.classList.remove('gad-hsf__pop--left');
+      if (window.matchMedia('(min-width: 750px)').matches && pop.getBoundingClientRect().right > window.innerWidth - 8) {
+        pop.classList.add('gad-hsf__pop--left');
+      }
+      if (window.matchMedia('(max-width: 749px)').matches) this.veil.hidden = false;
+      this.place();
+      document.addEventListener('click', this.onDocClick);
+      document.addEventListener('keydown', this.onKey);
+      window.addEventListener('scroll', this.onScroll, { passive: true });
+    }
+
+    place() {
+      if (!this.current) return;
+      const r = this.current.querySelector('.gad-hsf__point').getBoundingClientRect();
+      this.current.querySelector('.gad-hsf__pop').style.setProperty('--gad-hsf-top', `${r.top + r.height / 2}px`);
+      // El velo arranca en el borde de arriba de la sección: lo que está arriba no se oscurece.
+      const top = this.closest('.shopify-section').getBoundingClientRect().top;
+      this.veil.style.top = `${Math.max(0, top)}px`;
+    }
+
+    close() {
+      if (!this.current) return;
+      this.current.classList.remove('is-open');
+      this.current.querySelector('.gad-hsf__point').setAttribute('aria-expanded', 'false');
+      this.current.querySelector('.gad-hsf__pop').hidden = true;
+      this.veil.hidden = true;
+      this.current = null;
+      document.removeEventListener('click', this.onDocClick);
+      document.removeEventListener('keydown', this.onKey);
+      window.removeEventListener('scroll', this.onScroll);
+    }
+  }
+
+  if (!customElements.get('gad-hotspots-full')) customElements.define('gad-hotspots-full', GadHotspotsFull);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Puntos sobre imagen",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Cada detalle <strong>pensado</strong>",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alineación del encabezado",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "info": "Volanta, título y texto de arriba."
+    },
+    {
+      "type": "select",
+      "id": "heading_align_m",
+      "label": "Alineación del encabezado en mobile",
+      "default": "same",
+      "options": [
+        {
+          "value": "same",
+          "label": "Igual que en desktop"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Imagen para mobile",
+      "info": "Vacía: usa la de desktop. Sólo en la disposición a todo el ancho."
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Disposición",
+      "options": [
+        {
+          "value": "image_left",
+          "label": "A la izquierda"
+        },
+        {
+          "value": "image_right",
+          "label": "A la derecha"
+        },
+        {
+          "value": "full",
+          "label": "A todo el ancho, con ventana por punto"
+        }
+      ],
+      "default": "image_left",
+      "info": "\"A todo el ancho\": la imagen centrada y cada punto abre una ventana con su texto."
+    },
+    {
+      "type": "checkbox",
+      "id": "numbered",
+      "label": "Numerar los puntos",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "point_color",
+      "label": "Color de los puntos",
+      "info": "Vacío: el color de los botones."
+    },
+    {
+      "type": "header",
+      "content": "A todo el ancho"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Usar todo el ancho de la página",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "image_max_width",
+      "label": "Ancho máximo de la imagen",
+      "min": 400,
+      "max": 2000,
+      "step": 50,
+      "unit": "px",
+      "default": 1000
+    },
+    {
+      "type": "checkbox",
+      "id": "image_radius",
+      "label": "Imagen con bordes redondeados",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "point_scheme",
+      "label": "Combinación de los puntos",
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "point_pulse",
+      "label": "Onda alrededor de los puntos",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "point_size_d",
+      "label": "Tamaño de los puntos en desktop",
+      "min": 24,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "point_size_m",
+      "label": "Tamaño de los puntos en mobile",
+      "min": 20,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color_scheme",
+      "id": "popup_scheme",
+      "label": "Combinación de las ventanas",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "popup_width_d",
+      "label": "Ancho de las ventanas en desktop",
+      "min": 150,
+      "max": 480,
+      "step": 10,
+      "unit": "px",
+      "default": 240,
+      "info": "En mobile la ventana ocupa todo el ancho."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Punto",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "range",
+          "id": "x",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición horizontal",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "y",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición vertical",
+          "default": 50
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "Título",
+          "default": "Característica"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Explicá en una línea qué hace esta parte.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_position",
+          "label": "Otra posición en mobile",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "x_mobile",
+          "label": "Posición horizontal en mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "y_mobile",
+          "label": "Posición vertical en mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Puntos sobre imagen",
+      "blocks": [
+        {
+          "type": "point",
+          "settings": {
+            "x": 30,
+            "y": 35
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "x": 62,
+            "y": 50
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "x": 45,
+            "y": 75
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

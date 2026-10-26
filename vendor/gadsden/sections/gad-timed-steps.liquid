@@ -1,0 +1,352 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+-%}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+
+<style>
+  
+  #ax-uso-{{ uid }}{
+    --tinta:#141210;--papel:#E6DFCE;--papel-2:#D6CDB6;--lima:#93D920;--lima-honda:#6BA512;
+    --impacto:'Archivo Black','Arial Black',Haettenschweiler,Impact,sans-serif;
+    --texto:'Barlow Semi Condensed','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif;
+    background:var(--papel);color:var(--tinta);font-family:var(--texto);
+    padding:44px 0 40px;border-bottom:4px solid var(--tinta);
+    background-image:radial-gradient(var(--papel-2) 1.1px,transparent 1.2px);background-size:7px 7px;
+  }
+  #ax-uso-{{ uid }} h1,#ax-uso-{{ uid }} h2,#ax-uso-{{ uid }} h3{color:inherit}
+  #ax-uso-{{ uid }} .ax-pad{padding:0 20px}
+
+  #ax-uso-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--tinta);color:var(--papel);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 16px}
+  #ax-uso-{{ uid }} .ax-eye span{display:inline-block;transform:skewX(9deg)}
+  #ax-uso-{{ uid }} h2{margin:0 0 12px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(25px,7.2vw,34px);line-height:1.02;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block}
+  #ax-uso-{{ uid }} h2 span{display:inline-block}
+  #ax-uso-{{ uid }} h2 em{font-style:normal;background:var(--lima);padding:1px 8px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-uso-{{ uid }} .ax-lead{font-size:16.5px;line-height:1.5;max-width:52ch;margin:0;opacity:.88}
+
+  
+  #ax-uso-{{ uid }} .ax-crono{display:flex;align-items:center;gap:12px;margin:16px 0 0;
+    background:var(--tinta);color:var(--papel);width:max-content;max-width:100%;
+    padding:10px 16px 9px;transform:skewX(-9deg)}
+  #ax-uso-{{ uid }} .ax-crono>*{transform:skewX(9deg)}
+  #ax-uso-{{ uid }} .ax-crono-tag{font-family:var(--impacto);font-size:9px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--papel);opacity:.7}
+  #ax-uso-{{ uid }} .ax-crono b{font-family:var(--impacto);font-size:clamp(24px,7vw,30px);
+    color:var(--lima);line-height:1;white-space:nowrap}
+  
+  #ax-uso-{{ uid }} .ax-dig{display:inline-block;min-width:3.8ch;text-align:right;
+    font-variant-numeric:tabular-nums}
+
+  
+  #ax-uso-{{ uid }} .ax-pasos{
+    display:flex;gap:12px;margin:24px 0 0;padding:0 20px 4px;
+    overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;align-items:stretch}
+  #ax-uso-{{ uid }} .ax-pasos::-webkit-scrollbar{display:none}
+  #ax-uso-{{ uid }} .ax-pasos:focus-visible{outline:3px solid var(--lima-honda);outline-offset:-3px}
+
+  
+  #ax-uso-{{ uid }} .ax-paso{
+    flex:0 0 78%;scroll-snap-align:center;
+    display:flex;flex-direction:column;border:3px solid var(--tinta);background:var(--tinta)}
+
+  
+  #ax-uso-{{ uid }} .ax-foto{position:relative;aspect-ratio:4/5;overflow:hidden;
+    background:var(--tinta);display:block}
+  #ax-uso-{{ uid }} .ax-foto img{width:100%;height:100%;object-fit:cover;display:block}
+
+  
+  #ax-uso-{{ uid }} .ax-ph{width:100%;height:100%;display:grid;place-items:center;
+    background-image:radial-gradient(rgba(147,217,32,.16) 1.6px,transparent 1.7px);
+    background-size:14px 14px}
+  
+  #ax-uso-{{ uid }} .ax-ph svg{width:56%;height:auto;opacity:.92}
+  #ax-uso-{{ uid }} .ax-ph .ax-avisofoto{position:absolute;left:0;right:0;bottom:0;
+    font-family:var(--impacto);font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--papel);opacity:.5;text-align:center;padding:8px 10px}
+
+  
+  #ax-uso-{{ uid }} .ax-num{position:absolute;top:0;left:0;background:var(--tinta);
+    color:var(--papel);font-family:var(--impacto);font-size:15px;
+    width:38px;height:38px;display:grid;place-items:center;z-index:2}
+
+  #ax-uso-{{ uid }} .ax-panel{background:var(--lima);color:var(--tinta);
+    padding:14px 16px 16px;flex:1;display:flex;flex-direction:column}
+  #ax-uso-{{ uid }} .ax-fila{display:flex;align-items:baseline;justify-content:space-between;
+    gap:10px;margin:0 0 4px}
+  #ax-uso-{{ uid }} .ax-paso h3{margin:0;font-family:var(--impacto);text-transform:uppercase;
+    font-size:17px;line-height:1.1;letter-spacing:-.01em}
+  #ax-uso-{{ uid }} .ax-tiempo{flex:none;font-family:var(--impacto);font-size:11px;
+    letter-spacing:.08em;white-space:nowrap;opacity:.72}
+  #ax-uso-{{ uid }} .ax-paso p{margin:0;font-size:16px;line-height:1.4}
+
+  
+  #ax-uso-{{ uid }} .ax-dots{display:flex;gap:0;justify-content:center;margin:4px 0 0}
+  #ax-uso-{{ uid }} .ax-dots button{width:44px;height:44px;padding:0;border:0;background:none;
+    cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+  #ax-uso-{{ uid }} .ax-dots button:before{content:"";width:7px;height:7px;background:var(--tinta);
+    opacity:.26;transition:opacity .18s ease,transform .18s ease}
+  #ax-uso-{{ uid }} .ax-dots button[aria-current="true"]:before{opacity:.9;transform:scale(1.45)}
+  #ax-uso-{{ uid }} .ax-dots button:focus-visible{outline:3px solid var(--lima-honda);outline-offset:-8px}
+
+  
+  #ax-uso-{{ uid }}.ax-armado .ax-crono{opacity:0;transform:skewX(-9deg) scale(1.22)}
+  #ax-uso-{{ uid }}.ax-armado .ax-crono.ax-va{opacity:1;transform:skewX(-9deg) scale(1);
+    transition:transform .3s cubic-bezier(.2,1.7,.4,1),opacity .1s linear}
+  #ax-uso-{{ uid }}.ax-armado .ax-tiempo{opacity:0;transform:scale(1.6)}
+  #ax-uso-{{ uid }}.ax-armado .ax-tiempo.ax-va{opacity:1;transform:scale(1);
+    transition:transform .26s cubic-bezier(.2,1.7,.4,1),opacity .1s linear}
+
+  #ax-uso-{{ uid }} .ax-nota{margin:18px 20px 0;border:3px solid var(--tinta);
+    padding:14px 16px;display:flex;align-items:center;gap:14px;background:var(--papel)}
+  #ax-uso-{{ uid }} .ax-nota svg{flex:none;width:30px;height:30px}
+  #ax-uso-{{ uid }} .ax-nota p{margin:0;font-size:16px;line-height:1.4;font-weight:600}
+
+  
+  @media(min-width:900px){
+    #ax-uso-{{ uid }}{padding:74px 0}
+    #ax-uso-{{ uid }} .ax-pad{padding:0 28px;max-width:1180px;margin:0 auto;text-align:center}
+    #ax-uso-{{ uid }} .ax-eye{font-size:10.5px;letter-spacing:.19em;padding:7px 14px;
+      margin:0 auto 24px}
+    #ax-uso-{{ uid }} h2{font-size:clamp(34px,4.3vw,50px);margin-bottom:14px}
+    #ax-uso-{{ uid }} .ax-lead{font-size:clamp(17px,1.6vw,19px);line-height:1.52;margin:0 auto}
+    #ax-uso-{{ uid }} .ax-crono{margin:22px auto 0}
+    #ax-uso-{{ uid }} .ax-pasos{
+      display:grid;grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr);
+      gap:22px;overflow:visible;max-width:1180px;margin:46px auto 0;padding:0 28px}
+    #ax-uso-{{ uid }} .ax-paso{flex:none;border-width:4px}
+    #ax-uso-{{ uid }} .ax-num{width:44px;height:44px;font-size:17px}
+    #ax-uso-{{ uid }} .ax-panel{padding:18px 20px 20px}
+    #ax-uso-{{ uid }} .ax-paso h3{font-size:20px}
+    #ax-uso-{{ uid }} .ax-tiempo{font-size:12px}
+    #ax-uso-{{ uid }} .ax-paso p{font-size:16.5px;line-height:1.5}
+    #ax-uso-{{ uid }} .ax-dots{display:none}
+    #ax-uso-{{ uid }} .ax-nota{max-width:640px;margin:38px auto 0;padding:18px 24px;gap:18px}
+    #ax-uso-{{ uid }} .ax-nota svg{width:36px;height:36px}
+    #ax-uso-{{ uid }} .ax-nota p{font-size:17px;line-height:1.42}
+  }
+
+  
+</style>
+
+<div id="ax-uso-{{ uid }}">
+  <div class="ax-pad">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="ax-eye"><span>{{ section.settings.eyebrow }}</span></div>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2><span>{{ section.settings.heading }}</span></h2>
+    {%- endif -%}
+
+    {%- if section.settings.lead != blank -%}
+      <p class="ax-lead">{{ section.settings.lead }}</p>
+    {%- endif -%}
+
+    
+    {%- if section.settings.crono_total != blank -%}
+      <div class="ax-crono" role="img" aria-label="{{ section.settings.crono_total }} segundos en total">
+        {%- if section.settings.crono_label != blank -%}
+          <span class="ax-crono-tag">{{ section.settings.crono_label }}</span>
+        {%- endif -%}
+        <b data-total="{{ section.settings.crono_total }}"><span class="ax-dig">{{ section.settings.crono_total }},0</span> s</b>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="ax-pasos" tabindex="0" role="group" aria-label="Pasos de uso, deslizá para ver más">
+      {%- for block in section.blocks -%}
+        {%- assign n = block.settings.num | default: forloop.index -%}
+        <div class="ax-paso" {{ block.shopify_attributes }}>
+          <div class="ax-foto">
+            <span class="ax-num">{{ n }}</span>
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 800 }}"
+                   alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                   width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}"
+                   loading="lazy">
+            {%- else -%}
+              <div class="ax-ph">
+                {%- case block.settings.icon -%}
+                  {%- when 'agitar' -%}
+                    <svg viewBox="-4 0 18 12" fill="none" stroke="#93D920" stroke-width=".7" stroke-linecap="round" aria-hidden="true">
+                      <rect x="3.3" y="3.2" width="3.4" height="5.6" rx=".5"/>
+                      <rect x="4.3" y="1.4" width="1.4" height="1.8"/>
+                      <path d="M1.3 4.2 q-1.2 1.8 0 3.6"/>
+                      <path d="M-.5 3.4 q-1.7 2.6 0 5.2"/>
+                      <path d="M8.7 4.2 q1.2 1.8 0 3.6"/>
+                      <path d="M10.5 3.4 q1.7 2.6 0 5.2"/>
+                    </svg>
+                  {%- when 'secar' -%}
+                    <svg viewBox="-1 0 11 12" fill="none" stroke="#93D920" stroke-width=".7" stroke-linecap="round" aria-hidden="true">
+                      <path d="M.6 9.4 H7.8"/>
+                      <path d="M2 7.4 v-2.8 M4.2 7.4 v-4.2 M6.4 7.4 v-2.8"/>
+                    </svg>
+                  {%- else -%}
+                    <svg viewBox="-1 0 12 12" fill="none" stroke="#93D920" stroke-width=".7" stroke-linecap="round" aria-hidden="true">
+                      <rect x="0" y="3.6" width="3.4" height="5.6" rx=".5"/>
+                      <rect x="1" y="1.8" width="1.4" height="1.8"/>
+                      <path d="M4.4 3.8 L9 2.4 M4.6 5 L9.4 4.4 M4.4 6.2 L9 6.8"/>
+                    </svg>
+                {%- endcase -%}
+                <span class="ax-avisofoto">Falta la foto de este paso</span>
+              </div>
+            {%- endif -%}
+          </div>
+
+          <div class="ax-panel">
+            <div class="ax-fila">
+              {%- if block.settings.title != blank -%}<h3>{{ block.settings.title }}</h3>{%- endif -%}
+              {%- if block.settings.tiempo != blank -%}<span class="ax-tiempo">{{ block.settings.tiempo }}</span>{%- endif -%}
+            </div>
+            {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="ax-dots">
+      {%- for block in section.blocks -%}
+        <button type="button" aria-label="Ir al paso {{ forloop.index }} de {{ section.blocks.size }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.nota != blank -%}
+    <div class="ax-nota">
+      <svg viewBox="0 0 8 11" fill="none" stroke="#141210" stroke-width=".8" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 1.4 q3 3.6 3 5.4 a3 3 0 0 1 -6 0 q0 -1.8 3 -5.4Z"/>
+        <path d="M.4 9.6 L7.6 1"/>
+      </svg>
+      <p>{{ section.settings.nota }}</p>
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    var caja = document.getElementById('ax-uso-{{ uid }}');
+    if (!caja || caja.dataset.axListo) return;
+    caja.dataset.axListo = '1';
+
+    var hayIO = 'IntersectionObserver' in window;
+
+    /* — carrusel: puntos que siguen y saltan — */
+    var pista = caja.querySelector('.ax-pasos');
+    var pasos = [].slice.call(caja.querySelectorAll('.ax-paso'));
+    var dots  = [].slice.call(caja.querySelectorAll('.ax-dots button'));
+    if (pista && pasos.length && dots.length === pasos.length) {
+      dots.forEach(function (d, i) {
+        d.addEventListener('click', function () {
+          pasos[i].scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest', inline: 'center',
+          });
+        });
+      });
+      if (hayIO) {
+        var ojo = new IntersectionObserver(function (entradas) {
+          entradas.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            var i = pasos.indexOf(e.target);
+            dots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+          });
+        }, { root: pista, threshold: 0.6 });
+        pasos.forEach(function (x) { ojo.observe(x); });
+      }
+    }
+
+    /* — cronómetro + sellos de tiempo —
+       Recién acá se esconde algo: si el JS no llega hasta esta línea, la
+       sección quedó completa con el "15,0 s" impreso desde el servidor.      */
+    if (!hayIO) return;
+    var crono = caja.querySelector('.ax-crono');
+    var chips = [].slice.call(caja.querySelectorAll('.ax-tiempo'));
+    if (!crono && !chips.length) return;
+    caja.classList.add('ax-armado');
+
+    var corrio = false;
+    function contar () {
+      if (corrio || !crono) return; corrio = true;
+      var b = crono.querySelector('b');
+      var dig = crono.querySelector('.ax-dig');
+      var total = parseFloat((b.getAttribute('data-total') || '15').replace(',', '.')) || 15;
+      var t0 = performance.now(), dur = 1400;
+      requestAnimationFrame(function paso (t) {
+        var p = Math.min(1, (t - t0) / dur);
+        p = 1 - Math.pow(1 - p, 3); /* arranca rápido, clava el final */
+        dig.textContent = (total * p).toFixed(1).replace('.', ',');
+        if (p < 1) requestAnimationFrame(paso);
+      });
+    }
+
+    var ojo2 = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('ax-va');
+        if (e.target === crono) contar();
+        ojo2.unobserve(e.target);
+      });
+    }, { threshold: 0.6 });
+    if (crono) ojo2.observe(crono);
+    chips.forEach(function (c) { ojo2.observe(c); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Pasos con cronómetro",
+  "tag": "section",
+  "class": "athlex-uso-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Bajada (eyebrow)", "default": "03 — CÓMO SE USA" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título (cursiva → lima)", "default": "Tres movimientos, <em>quince segundos</em>" },
+    { "type": "textarea", "id": "lead", "label": "Bajada", "default": "Sobre la piel limpia y seca. Después de la ducha, después de entrenar, o cuando lo necesites en el día." },
+    { "type": "header", "content": "Cronómetro" },
+    { "type": "text", "id": "crono_total", "label": "Segundos totales (vacío lo oculta). TODO confirmar", "default": "15" },
+    { "type": "text", "id": "crono_label", "label": "Etiqueta", "default": "RELOJ EN MANO" },
+    { "type": "header", "content": "Nota inferior" },
+    { "type": "text", "id": "nota", "label": "Texto de la nota", "default": "No se enjuaga. Te lo ponés, se seca solo y te vestís." }
+  ],
+  "blocks": [
+    {
+      "type": "paso", "name": "Paso", "limit": 4,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Foto del paso", "info": "Vertical 4:5. Sin foto se muestra el ícono." },
+        { "type": "text", "id": "num", "label": "Número (vacío = automático)" },
+        {
+          "type": "select", "id": "icon", "label": "Ícono (sin foto)", "default": "spray",
+          "options": [
+            { "value": "agitar", "label": "Agitar" },
+            { "value": "spray", "label": "Spray a 15 cm" },
+            { "value": "secar", "label": "Piel seca" }
+          ]
+        },
+        { "type": "text", "id": "title", "label": "Título", "default": "Agitá" },
+        { "type": "textarea", "id": "text", "label": "Texto", "default": "Un par de sacudidas antes de usar." },
+        { "type": "text", "id": "tiempo", "label": "Duración (ej: 2 s). TODO confirmar", "info": "La suma debería dar los segundos del título." }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Pasos con cronómetro",
+      "blocks": [
+        { "type": "paso", "settings": { "num": "1", "icon": "agitar", "title": "Agitá", "text": "Un par de sacudidas y listo.", "tiempo": "2 s" } },
+        { "type": "paso", "settings": { "num": "2", "icon": "spray", "title": "Aplicá a 15 cm", "text": "Dos o tres golpes sobre la zona, sin frotar.", "tiempo": "5 s" } },
+        { "type": "paso", "settings": { "num": "3", "icon": "secar", "title": "Dejá secar", "text": "Unos segundos parado ahí y listo. Después te vestís normal.", "tiempo": "8 s" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

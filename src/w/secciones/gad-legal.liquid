@@ -1,0 +1,196 @@
+{%- comment -%}
+  Aviso y datos legales: el aviso a la vista y el resto (advertencias, modo de uso, ingredientes, titular) en un desplegable. Lee los datos regulatorios de los metacampos del producto (custom.inci, custom.titular, custom.anmat_legajo, custom.contenido_neto); vacíos, [PENDIENTE] a la vista.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- if section.settings.letra_titulos != blank and section.settings.letra_titulos.family != settings.type_header_font.family and section.settings.letra_titulos.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_titulos | font_face: font_display: 'swap' }}</style>{%- endif -%}
+{%- if section.settings.letra_texto != blank and section.settings.letra_texto.family != settings.type_header_font.family and section.settings.letra_texto.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_texto | font_face: font_display: 'swap' }}</style>{%- endif -%}
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign pend = '[PENDIENTE]'
+  assign inci = product.metafields.custom.inci | default: pend
+  assign titular = product.metafields.custom.titular | default: pend
+  assign legajo = product.metafields.custom.anmat_legajo | default: pend
+  assign neto = product.metafields.custom.contenido_neto | default: section.settings.neto
+-%}
+
+{%- if section.settings.letra_titulos != blank or section.settings.letra_texto != blank -%}<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">{%- endif -%}
+
+<style>
+  
+  #ax-legal-{{ uid }}{
+    --tinta:rgb(var(--r-fondo));--papel:rgb(var(--r-texto));--lima:rgb(var(--r-acento));
+    --impacto:var(--r-letra_titulos);
+    --texto:var(--r-letra_texto);
+    background:var(--tinta);color:var(--papel);font-family:var(--texto);
+    padding:16px 20px 18px;border-top:4px solid var(--lima);
+  }
+  #ax-legal-{{ uid }} .ax-wrap{max-width:1000px;margin:0 auto}
+
+  
+  #ax-legal-{{ uid }} .ax-aviso{display:flex;align-items:flex-start;gap:9px;
+    font-size:13.5px;line-height:1.35;margin:0 0 10px}
+  #ax-legal-{{ uid }} .ax-aviso svg{flex:none;width:17px;height:17px;color:var(--lima);margin-top:1px}
+
+  
+  #ax-legal-{{ uid }} details{border-top:1px solid rgba(var(--r-texto),.22)}
+  #ax-legal-{{ uid }} summary{list-style:none;cursor:pointer;min-height:38px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-family:var(--impacto);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--lima);opacity:.9}
+  #ax-legal-{{ uid }} summary::-webkit-details-marker{display:none}
+  #ax-legal-{{ uid }} summary:after{content:"+";font-size:15px;line-height:1}
+  #ax-legal-{{ uid }} details[open] summary:after{content:"–"}
+  #ax-legal-{{ uid }} .ax-cols{display:grid;gap:12px;padding:2px 0 12px}
+  #ax-legal-{{ uid }} .ax-cols h3{margin:0 0 3px;font-family:var(--impacto);
+    text-transform:uppercase;font-size:9.5px;letter-spacing:.16em;color:var(--lima);opacity:.85}
+  #ax-legal-{{ uid }} .ax-cols p{margin:0;font-size:14px;line-height:1.4;opacity:.8;max-width:62ch}
+  #ax-legal-{{ uid }} .ax-pend{opacity:.55;font-style:italic}
+
+  
+  #ax-legal-{{ uid }} .ax-pie{border-top:1px solid rgba(var(--r-texto),.22);padding:9px 0 0;
+    font-family:var(--impacto);font-size:8.5px;letter-spacing:.13em;
+    text-transform:uppercase;opacity:.55;line-height:1.5}
+
+  
+  @media(min-width:900px){
+    #ax-legal-{{ uid }}{padding:18px 28px 20px}
+    #ax-legal-{{ uid }} .ax-aviso{font-size:14px}
+    #ax-legal-{{ uid }} .ax-cols{grid-template-columns:1fr 1fr;gap:12px 40px}
+    #ax-legal-{{ uid }} .ax-pie{font-size:9px}
+  }
+</style>
+
+<div id="ax-legal-{{ uid }}" style="--r-fondo: {%- render 'gad-rol', c: section.settings.color_fondo, d: 'var(--color-background)' -%}; --r-texto: {%- render 'gad-rol', c: section.settings.color_texto, d: 'var(--color-foreground)' -%}; --r-acento: {%- render 'gad-rol', c: section.settings.color_acento, d: 'var(--color-button)' -%}; --r-letra_titulos: {% if section.settings.letra_titulos != blank %}'{{ section.settings.letra_titulos.family }}','Arial Black',Haettenschweiler,Impact,sans-serif{% else %}var(--font-heading-family){% endif %}; --r-letra_texto: {% if section.settings.letra_texto != blank %}'{{ section.settings.letra_texto.family }}','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif{% else %}var(--font-body-family){% endif %};">
+  <div class="ax-wrap">
+    {%- if section.settings.aviso != blank -%}
+      <p class="ax-aviso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>
+        </svg>
+        <span>{{ section.settings.aviso }}</span>
+      </p>
+    {%- endif -%}
+
+    <details>
+      <summary>{{ section.settings.titulo_detalle }}</summary>
+      <div class="ax-cols">
+        <div>
+          <h3>Advertencias</h3>
+          <p>{{ section.settings.advertencias }}</p>
+        </div>
+        <div>
+          <h3>Modo de uso</h3>
+          <p>{{ section.settings.modo_uso }}</p>
+        </div>
+        <div>
+          <h3>Ingredientes</h3>
+          <p{% if inci == pend %} class="ax-pend"{% endif %}>{{ inci }}</p>
+        </div>
+        <div>
+          <h3>Titular / Responsable</h3>
+          <p{% if titular == pend %} class="ax-pend"{% endif %}>{{ titular }}</p>
+          <h3 style="margin-top:8px">Inscripción ANMAT</h3>
+          <p{% if legajo == pend %} class="ax-pend"{% endif %}>{{ legajo }}</p>
+        </div>
+      </div>
+    </details>
+
+    <p class="ax-pie">
+      {{ section.settings.categoria }}
+      {%- if neto != blank %} · Cont. neto {{ neto }}{% endif -%}
+      {%- if section.settings.origen != blank %} · {{ section.settings.origen }}{% endif -%}
+    </p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Aviso y datos legales",
+  "tag": "section",
+  "class": "gad-legal-section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "aviso",
+      "label": "Aviso destacado (siempre visible)",
+      "default": "Leé las indicaciones del envase antes de usar."
+    },
+    {
+      "type": "text",
+      "id": "titulo_detalle",
+      "label": "Título del desplegable",
+      "default": "Advertencias, ingredientes y datos del producto"
+    },
+    {
+      "type": "textarea",
+      "id": "advertencias",
+      "label": "Advertencias",
+      "default": "Escribí acá las advertencias de la etiqueta de tu producto."
+    },
+    {
+      "type": "textarea",
+      "id": "modo_uso",
+      "label": "Modo de uso",
+      "default": "Escribí acá el modo de uso de tu producto."
+    },
+    {
+      "type": "text",
+      "id": "neto",
+      "label": "Contenido neto (si el producto no lo trae)",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Pie"
+    },
+    {
+      "type": "text",
+      "id": "categoria",
+      "label": "Categoría",
+      "default": "Categoría del producto"
+    },
+    {
+      "type": "text",
+      "id": "origen",
+      "label": "Origen",
+      "default": "Origen del producto"
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "color_texto",
+      "label": "Texto"
+    },
+    {
+      "type": "color",
+      "id": "color_acento",
+      "label": "Acento (borde y títulos)"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_titulos",
+      "label": "Letra de los títulos"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_texto",
+      "label": "Letra del texto"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Aviso y datos legales"
+    }
+  ]
+}
+{% endschema %}

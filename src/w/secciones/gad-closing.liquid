@@ -1,0 +1,372 @@
+{%- comment -%}
+  Cierre: la foto del producto que entra y flota, título con resaltador que se pinta, una escala opcional, el resumen de la compra y el botón.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+{%- capture ico_envio -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h11v10H3zM14 9h4l3 3.5V16h-7" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>{%- endcapture -%}
+{%- capture ico_cuotas -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4" stroke-linecap="round"/></svg>{%- endcapture -%}
+{%- capture ico_escudo -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endcapture -%}
+{%- capture diente -%}<path d="M12 2.6c-1.9 0-2.9.8-4.4.8S5.2 2.5 3.9 3.1C2.3 3.9 1.7 5.9 2.3 8.4c.6 2.3 1.4 3.7 1.8 6.2.4 2.7.9 7.4 2.8 7.4 1.6 0 1.8-3.3 2.3-5.3.3-1.3.8-1.9 1.9-1.9h1.8c1.1 0 1.6.6 1.9 1.9.5 2 .7 5.3 2.3 5.3 1.9 0 2.4-4.7 2.8-7.4.4-2.5 1.2-3.9 1.8-6.2.6-2.5 0-4.5-1.6-5.3-1.3-.6-2.6.3-3.7.3S13.9 2.6 12 2.6z"/>{%- endcapture -%}
+{%- assign tonos = '#E2C88C,#EAD6A6,#F0E2BE,#F6EED8,#FDFBF5' | split: ',' -%}
+
+<style>
+  #ct-cie-{{ section.id }} {
+    --ct-carbon: rgb(var(--r-boton)); --ct-menta: {{ s.mark_color | default: 'rgb(var(--color-background-contrast))' }}; --ct-amarillo: {{ s.stain_color | default: 'rgb(var(--color-background-suave))' }}; --ct-borde: rgb(var(--r-borde));
+    overflow: hidden; background: {{ s.background | default: 'rgb(var(--color-background))' }}; color: {{ s.text_color | default: 'rgb(var(--color-foreground))' }};
+    padding: {{ s.padding_top }}px 16px {{ s.padding_bottom }}px;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__wrap {
+    max-width: 560px; margin: 0 auto; display: grid; gap: 8px; align-items: center; text-align: center;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__media { display: block; position: relative; margin: 0 auto; width: min(78%, 320px); }
+  
+  #ct-cie-{{ section.id }} .ct-cie__media::before {
+    content: ""; position: absolute; inset: 12% 6% 10%; border-radius: 50%; z-index: 0;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--ct-menta) 55%, transparent), transparent);
+    filter: blur(8px);
+  }
+  #ct-cie-{{ section.id }} .ct-cie__media img { position: relative; z-index: 1; display: block; width: 100%; height: auto; }
+  #ct-cie-{{ section.id }} .ct-cie__cap {
+    margin: 6px 0 10px; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; opacity: .6;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__titulo { margin: 0 0 12px; line-height: 1.08; text-wrap: balance; }
+  
+  #ct-cie-{{ section.id }} .ct-cie__marca { position: relative; z-index: 0; white-space: nowrap; padding: 0 .06em; }
+  #ct-cie-{{ section.id }} .ct-cie__marca::before,
+  #ct-cie-{{ section.id }} .ct-cie__marca::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 60%; bottom: 6%; z-index: -1;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__marca::before { background: var(--ct-amarillo); transform-origin: right; transition: transform .7s cubic-bezier(.65, 0, .35, 1) .5s; }
+  #ct-cie-{{ section.id }} .ct-cie__marca::after { background: var(--ct-menta); transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.65, 0, .35, 1) 1.2s; }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__marca::before { transform: scaleX(0); }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__marca::after { transform: scaleX(1); }
+  #ct-cie-{{ section.id }} .ct-cie__texto { margin: 0 auto 20px; max-width: 34ch; font-size: 15px; line-height: 1.5; color: rgb(var(--r-parrafo)); text-wrap: balance; }
+
+  
+  #ct-cie-{{ section.id }} .ct-cie__escala {
+    margin: 0 0 18px; padding: 16px 16px 12px; border: 1px solid var(--ct-borde); border-radius: 18px; background: rgb(var(--r-tarjeta));
+  }
+  #ct-cie-{{ section.id }} .ct-cie__dientes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; justify-items: center; }
+  #ct-cie-{{ section.id }} .ct-cie__dientes svg {
+    width: 100%; max-width: 46px; height: auto; stroke: rgb(var(--r-escala)); stroke-width: .8;
+    opacity: 0; transform: translateY(8px) scale(.9);
+    transition: opacity .45s ease, transform .45s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: calc(var(--i) * 110ms + 150ms);
+  }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__dientes svg { opacity: 1; transform: none; }
+  #ct-cie-{{ section.id }} .ct-cie__flecha { display: block; position: relative; height: 12px; margin: 10px 8% 6px; } 
+  #ct-cie-{{ section.id }} .ct-cie__flecha::before {
+    content: ""; position: absolute; left: 0; right: 6px; top: 5px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--ct-amarillo), var(--ct-menta));
+    transform: scaleX(0); transform-origin: left; transition: transform .9s cubic-bezier(.65, 0, .35, 1) .3s;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__flecha::after {
+    content: ""; position: absolute; right: 0; top: 1px; border: 5px solid transparent; border-left: 8px solid var(--ct-menta); border-right: 0;
+    opacity: 0; transition: opacity .3s ease 1.1s;
+  }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__flecha::before { transform: scaleX(1); }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__flecha::after { opacity: 1; }
+  #ct-cie-{{ section.id }} .ct-cie__rotulos {
+    display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__rotulos span:first-child { opacity: .55; }
+
+  
+  #ct-cie-{{ section.id }} .ct-cie__resumen { list-style: none; margin: 0 0 18px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+  #ct-cie-{{ section.id }} .ct-cie__resumen:empty { display: none; }
+  #ct-cie-{{ section.id }} .ct-cie__resumen li {
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 6px;
+    font-size: 12px; font-weight: 700; line-height: 1.25;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__resumen li + li { border-left: 1px solid var(--ct-borde); }
+  #ct-cie-{{ section.id }} .ct-cie__resumen svg { width: 22px; height: 22px; }
+  #ct-cie-{{ section.id }} .ct-cie__btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; border-radius: 12px;
+    background: var(--ct-carbon); color: rgb(var(--r-boton_texto)); font-weight: 800; font-size: 15px; letter-spacing: .03em;
+    text-transform: uppercase; text-decoration: none;
+  }
+  #ct-cie-{{ section.id }} .ct-cie__btn svg { width: 18px; height: 18px; color: var(--ct-menta); transition: transform .25s ease; }
+  #ct-cie-{{ section.id }} .ct-cie__btn:hover svg { transform: translateX(3px); }
+
+  
+  #ct-cie-{{ section.id }} .ct-cie__media { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .8s cubic-bezier(.22, 1, .36, 1); }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__media { opacity: 1; transform: none; }
+  #ct-cie-{{ section.id }}.is-in .ct-cie__media img { animation: ct-cie-flota 6s ease-in-out 1s infinite; }
+  @keyframes ct-cie-flota { 50% { transform: translateY(-6px) rotate(-.6deg); } }
+
+  @media (min-width: 750px) {
+    #ct-cie-{{ section.id }} .ct-cie__wrap { max-width: 1000px; grid-template-columns: 1fr 1fr; gap: 56px; text-align: left; }
+    #ct-cie-{{ section.id }} .ct-cie__media { width: min(100%, 420px); }
+    #ct-cie-{{ section.id }} .ct-cie__texto { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    
+    #ct-cie-{{ section.id }} .ct-cie__media,
+    #ct-cie-{{ section.id }} .ct-cie__dientes svg { transform: none !important; }
+    #ct-cie-{{ section.id }}.is-in .ct-cie__media img { animation: none; }
+    #ct-cie-{{ section.id }} .ct-cie__marca::before { transform: none !important; transition: opacity .6s ease .5s; }
+    #ct-cie-{{ section.id }} .ct-cie__marca::after { transform: none !important; opacity: 0; transition: opacity .6s ease .5s; }
+    #ct-cie-{{ section.id }}.is-in .ct-cie__marca::before { opacity: 0; }
+    #ct-cie-{{ section.id }}.is-in .ct-cie__marca::after { opacity: 1; }
+    #ct-cie-{{ section.id }} .ct-cie__flecha::before { transform: none !important; opacity: 0; transition: opacity .6s ease .3s; }
+    #ct-cie-{{ section.id }}.is-in .ct-cie__flecha::before { opacity: 1; }
+  }
+</style>
+
+<section id="ct-cie-{{ section.id }}" class="ct-cie" style="--r-boton: {%- render 'gad-rol', c: section.settings.color_boton, d: 'var(--color-button)' -%}; --r-boton_texto: {%- render 'gad-rol', c: section.settings.color_boton_texto, d: 'var(--color-button-text)' -%}; --r-tarjeta: {%- render 'gad-rol', c: section.settings.color_tarjeta, d: 'var(--color-background)' -%}; --r-borde: {%- render 'gad-rol', c: section.settings.color_borde, d: 'var(--color-background-contrast)' -%}; --r-parrafo: {%- render 'gad-rol', c: section.settings.color_parrafo, d: 'var(--color-foreground)' -%}; --r-escala: {%- render 'gad-rol', c: section.settings.color_escala, d: 'var(--color-background-contrast)' -%};">
+  <div class="ct-cie__wrap">
+    <div class="ct-cie__media">
+      {%- if s.image != blank -%}
+        {{ s.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(min-width: 750px) 420px, 78vw', alt: s.image.alt }}
+      {%- else -%}
+        <img src="{%- render 'gad-relleno' -%}" width="804" height="821" loading="lazy" alt="">
+      {%- endif -%}
+    </div>
+
+    <div class="ct-cie__contenido">
+      {%- if s.caption != blank -%}<p class="ct-cie__cap">{{ s.caption }}</p>{%- endif -%}
+      <h2 class="ct-cie__titulo {{ s.heading_size }}">{{ s.heading }}{% if s.heading_mark != blank %} <span class="ct-cie__marca">{{ s.heading_mark }}</span>{% endif %}</h2>
+      {%- if s.text != blank -%}<p class="ct-cie__texto">{{ s.text }}</p>{%- endif -%}
+
+      {%- if s.show_scale -%}
+        <div class="ct-cie__escala" role="img" aria-label="Escala de tonos de la guía incluida: {{ s.scale_from }} → {{ s.scale_to }}">
+          <div class="ct-cie__dientes" aria-hidden="true">
+            {%- for t in tonos -%}<svg viewBox="0 0 24 24" style="--i: {{ forloop.index0 }}; fill: {{ t }}">{{ diente }}</svg>{%- endfor -%}
+          </div>
+          <div class="ct-cie__flecha" aria-hidden="true"></div>
+          <div class="ct-cie__rotulos" aria-hidden="true"><span>{{ s.scale_from }}</span><span>{{ s.scale_to }}</span></div>
+        </div>
+      {%- endif -%}
+
+      <ul class="ct-cie__resumen">
+        {%- if s.item_1 != blank -%}<li>{{ ico_envio }}<span>{{ s.item_1 }}</span></li>{%- endif -%}
+        {%- if s.item_2 != blank -%}<li>{{ ico_cuotas }}<span>{{ s.item_2 }}</span></li>{%- endif -%}
+        {%- if s.item_3 != blank -%}<li>{{ ico_escudo }}<span>{{ s.item_3 }}</span></li>{%- endif -%}
+      </ul>
+
+      {%- if s.button_label != blank -%}
+        <a class="ct-cie__btn" href="#ct-oferta" data-ct-oferta>{{ s.button_label }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-cie-{{ section.id }}');
+    if (!raiz) return;
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.Shopify?.designMode || !('IntersectionObserver' in window)) raiz.classList.add('is-in');
+    else new IntersectionObserver((es, io) => {
+      if (es[0].isIntersecting) { io.disconnect(); raiz.classList.add('is-in'); }
+    }, { threshold: 0.3 }).observe(raiz);
+
+    raiz.querySelector('[data-ct-oferta]')?.addEventListener('click', (e) => {
+      const oferta = document.querySelector('[id$="__main"]');
+      if (!oferta) return;
+      e.preventDefault();
+      oferta.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Cierre",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen",
+      "info": "Vacía: un dibujo de relleno."
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Texto de arriba",
+      "default": "Para vos"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titular",
+      "default": "Tu frase de cierre"
+    },
+    {
+      "type": "text",
+      "id": "heading_mark",
+      "label": "Parte resaltada del titular",
+      "default": "con un resaltado."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del titular",
+      "default": "h1",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Texto",
+      "default": "Contá acá, en una línea, por qué vale la pena."
+    },
+    {
+      "type": "header",
+      "content": "Escala de tonos"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scale",
+      "label": "Mostrar la escala",
+      "info": "Una escala de tonos (por ejemplo, de una guía de colores incluida).",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "scale_from",
+      "label": "Rótulo izquierdo",
+      "default": "Tu tono hoy"
+    },
+    {
+      "type": "text",
+      "id": "scale_to",
+      "label": "Rótulo derecho",
+      "default": "Tu objetivo"
+    },
+    {
+      "type": "header",
+      "content": "Resumen y botón"
+    },
+    {
+      "type": "text",
+      "id": "item_1",
+      "label": "Ítem 1 (envío)",
+      "default": "Envío gratis"
+    },
+    {
+      "type": "text",
+      "id": "item_2",
+      "label": "Ítem 2 (pago)",
+      "default": "3 cuotas sin interés"
+    },
+    {
+      "type": "text",
+      "id": "item_3",
+      "label": "Ítem 3 (garantía)",
+      "default": "7 días de garantía"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Botón (baja a la oferta)",
+      "default": "Quiero el mío"
+    },
+    {
+      "type": "header",
+      "content": "Colores y espacios"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Fondo",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Texto",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "mark_color",
+      "label": "Resaltador final",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "stain_color",
+      "label": "Resaltador inicial (mancha)",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Espacio arriba",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Espacio abajo",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_boton",
+      "label": "Fondo del botón"
+    },
+    {
+      "type": "color",
+      "id": "color_boton_texto",
+      "label": "Texto del botón"
+    },
+    {
+      "type": "color",
+      "id": "color_tarjeta",
+      "label": "Fondo del resumen"
+    },
+    {
+      "type": "color",
+      "id": "color_borde",
+      "label": "Bordes"
+    },
+    {
+      "type": "color",
+      "id": "color_parrafo",
+      "label": "Texto del párrafo"
+    },
+    {
+      "type": "color",
+      "id": "color_escala",
+      "label": "Contorno de la escala"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cierre"
+    }
+  ]
+}
+{% endschema %}

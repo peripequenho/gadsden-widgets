@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Gadsden</title>
+<style>
+  html, body { margin: 0; background: transparent; overflow: hidden; }
+  i { display: block; height: 1px; }
+</style>
+</head>
+<body>
+<i id="arriba"></i><i id="abajo"></i>
+<script>
+  // El centinela de la barra fija: va justo debajo del botón de comprar del theme (after_product_detail_add_to_cart).
+  // Un IntersectionObserver sin root, en un iframe, mide contra la pantalla de la página de arriba: avisa si el botón
+  // salió por arriba de la pantalla, que es cuando Gadsden muestra la barra. Dos franjas de 1 px dicen por dónde salió
+  // (la de arriba se va primero si sale por arriba); si se van juntas, el sentido del último scroll de la página.
+  const visible = { arriba: false, abajo: false };
+  let antes = null, y = 0, bajando = true, avisado = null;
+  addEventListener("message", (e) => {
+    if (e.data?.gadsden !== "pagina") return;
+    bajando = e.data.scrollY >= y;
+    y = e.data.scrollY;
+  });
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) visible[e.target.id] = e.isIntersecting;
+    // Hasta verse una vez no se sabe de qué lado está (un salto de scroll lo puede pasar sin verlo): no se avisa, y la
+    // barra sigue con su respaldo (pasada la primera pantalla).
+    if (antes === null && !visible.arriba && !visible.abajo) return;
+    let arriba;
+    if (visible.arriba || visible.abajo) arriba = false;
+    else if (antes === "abajo") arriba = true;
+    else if (antes === "arriba") arriba = false;
+    else arriba = bajando;
+    antes = visible.arriba && !visible.abajo ? "arriba" : visible.abajo && !visible.arriba ? "abajo" : visible.arriba ? "las dos" : antes;
+    if (arriba !== avisado) { avisado = arriba; parent.postMessage({ gadsden: "centinela", arriba }, "*"); }
+  });
+  for (const id of ["arriba", "abajo"]) io.observe(document.getElementById(id));
+</script>
+</body>
+</html>

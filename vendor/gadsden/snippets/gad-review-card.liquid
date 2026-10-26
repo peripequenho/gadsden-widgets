@@ -1,0 +1,65 @@
+
+{%- liquid
+  assign name = author | default: ''
+  assign stars = 5
+  if name contains '{estrellas:'
+    assign stars_raw = name | split: '{estrellas:' | last | split: '}' | first | strip
+    assign stars = stars_raw | plus: 0 | at_least: 0 | at_most: 5
+    assign stars_token = '{estrellas:' | append: stars_raw | append: '}'
+    assign name = name | replace: stars_token, '{estrellas}'
+  endif
+  assign has_stars_token = false
+  if name contains '{estrellas}'
+    assign has_stars_token = true
+  endif
+  assign has_check_token = false
+  if name contains '{verificado}'
+    assign has_check_token = true
+  endif
+  assign initial = name | replace: '{estrellas}', '' | replace: '{verificado}', '' | strip_html | strip | slice: 0 | upcase
+-%}
+{%- capture stars_html -%}
+  <span class="gad-stars" role="img" aria-label="{{ 'gadsden.reviews.stars' | t: count: stars }}" style="--star: {{ b.rv_star_color | default: '#F5B301' }}; --star-shift: {{ b.rv_star_offset | default: 0 }}%;">
+    {%- for j in (1..5) -%}
+      <span class="gad-stars__star{% if j <= stars %} is-on{% endif %}" aria-hidden="true">
+        {%- render 'gad-icon', name: 'star', filled: true -%}
+      </span>
+    {%- endfor -%}
+  </span>
+{%- endcapture -%}
+{%- capture check_html -%}
+  <span class="gad-review__check" style="--check-bg: {{ b.rv_check_bg | default: '#121212' }}; --check-fg: {{ b.rv_check_color | default: '#FFFFFF' }};" title="{{ 'gadsden.reviews.verified' | t }}">
+    {%- render 'gad-icon', name: 'check', class: 'gad-review__check-icon' -%}
+    <span class="visually-hidden">{{ 'gadsden.reviews.verified' | t }}</span>
+  </span>
+{%- endcapture -%}
+<div
+  class="gad-review gad-review--{{ b.rv_avatar_align | default: 'top' }}{% if b.rv_lines > 0 %} gad-review--clamp{% endif %} color-{{ b.rv_color_scheme | default: 'scheme-1' }}{% if class %} {{ class }}{% endif %}"
+  style="--rv-radius: {{ b.rv_radius | default: 12 }}px; --rv-avatar-radius: {{ b.rv_avatar_radius | default: 40 }}px;{% if b.rv_lines > 0 %} --rv-lines: {{ b.rv_lines }};{% endif %}{% if b.rv_custom_bg %} --rv-bg: {{ b.rv_bg }};{% endif %}{% if b.rv_border > 0 %} --rv-border: {{ b.rv_border }}px solid {{ b.rv_border_color }};{% endif %}"
+>
+  {%- if image != blank -%}
+    {{ image | image_url: width: 120 | image_tag: class: 'gad-review__avatar', loading: 'lazy', alt: '' }}
+  {%- elsif initial != blank -%}
+    <span class="gad-review__avatar gad-review__avatar--initial" aria-hidden="true">{{ initial }}</span>
+  {%- endif -%}
+  <div class="gad-review__body">
+    {%- if name != blank -%}
+      <div class="gad-review__author">
+        {%- if has_stars_token or has_check_token -%}
+          {%- liquid
+            assign author_html = name | replace: '{estrellas}', stars_html | replace: '{verificado}', check_html
+            echo author_html
+          -%}
+        {%- else -%}
+          <span class="gad-review__name">{{ name }}</span>{{ check_html }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    {%- unless has_stars_token -%}
+      {{ stars_html }}
+    {%- endunless -%}
+    {%- if text != blank -%}
+      <div class="gad-review__text rte">{{ text }}</div>
+    {%- endif -%}
+  </div>
+</div>

@@ -1,0 +1,44 @@
+{%- comment -%}
+  El precio de un producto (Gadsden lo pide con render 'price' en la barra fija y en gad-shoppable). Escrito de cero con
+  las clases que miden el CSS del precio y gad-product.css: el precio solo o, en oferta, el de antes tachado y el de
+  ahora, y las etiquetas de oferta (la de Gadsden, con el % de ahorro) y de agotado.
+  - product: el producto
+  - use_variant: el precio de la variante elegida (si no, el del producto)
+  - show_badges: muestra las etiquetas
+  - price_class: clases extra
+{%- endcomment -%}
+{%- liquid
+  if use_variant
+    assign elegido = product.selected_or_first_available_variant
+  else
+    assign elegido = product
+  endif
+  assign precio = elegido.price | default: 0
+  assign antes = elegido.compare_at_price
+  assign plata = precio | money
+  if use_variant != true and product.price_varies
+    assign plata = 'products.product.price.from_price_html' | t: price: plata
+  endif
+-%}
+<div class="{{ price_class }} price{% if antes > precio %} price--on-sale{% endif %}{% if elegido.available == false %} price--sold-out{% endif %}{% if show_badges %} price--show-badge{% endif %}">
+  <div class="price__container">
+    {%- comment -%} Sin oferta. {%- endcomment -%}
+    <div class="price__regular">
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
+      <span class="price-item price-item--regular">{{ plata }}</span>
+    </div>
+    {%- comment -%} En oferta: el de antes tachado y el de ahora. {%- endcomment -%}
+    <div class="price__sale">
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
+      <span><s class="price-item price-item--regular">{{ antes | money }}</s></span>
+      <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.sale_price' | t }}</span>
+      <span class="price-item price-item--sale price-item--last">{{ plata }}</span>
+    </div>
+  </div>
+  {%- if show_badges -%}
+    <span class="badge price__badge-sale gad-sale-badge color-{{ settings.sale_badge_color_scheme }}">
+      {%- render 'gad-sale-label', price: precio, compare_at_price: antes -%}
+    </span>
+    <span class="badge price__badge-sold-out color-{{ settings.sold_out_badge_color_scheme }}">{{ 'products.product.sold_out' | t }}</span>
+  {%- endif -%}
+</div>

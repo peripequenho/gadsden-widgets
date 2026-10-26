@@ -1,0 +1,393 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+-%}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+
+<style>
+  
+  #ax-dol-{{ uid }}{overflow-x:clip;
+    --tinta:#141210;--papel:#E6DFCE;--papel-2:#D6CDB6;--lima:#93D920;--lima-honda:#6BA512;
+    --impacto:'Archivo Black','Arial Black',Haettenschweiler,Impact,sans-serif;
+    --texto:'Barlow Semi Condensed','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif;
+    background:var(--tinta);color:var(--papel);font-family:var(--texto);
+    padding:44px 0 46px;border-bottom:4px solid var(--lima);
+    background-image:radial-gradient(rgba(147,217,32,.07) 1.5px,transparent 1.6px);
+    background-size:16px 16px;
+  }
+  #ax-dol-{{ uid }} h1,#ax-dol-{{ uid }} h2,#ax-dol-{{ uid }} h3{color:inherit}
+  #ax-dol-{{ uid }} .ax-pad{padding:0 20px;max-width:1180px;margin:0 auto}
+
+  #ax-dol-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--lima);display:block;width:max-content;
+    max-width:100%;margin:0 0 14px}
+  #ax-dol-{{ uid }} h2{margin:0 0 12px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(27px,7.8vw,38px);line-height:1;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block}
+  #ax-dol-{{ uid }} h2 em{font-style:normal;color:var(--lima)}
+  #ax-dol-{{ uid }} .ax-lead{font-size:16.5px;line-height:1.5;max-width:54ch;margin:0;opacity:.88}
+
+  
+  #ax-dol-{{ uid }} .ax-punales{display:grid;gap:8px;margin:24px auto 0;padding:0 20px;
+    max-width:1180px}
+  #ax-dol-{{ uid }} .ax-pu{position:relative;overflow:hidden;
+    border:3px solid rgba(230,223,206,.18);background:#0d0c0a;cursor:pointer;
+    -webkit-tap-highlight-color:transparent}
+  #ax-dol-{{ uid }} .ax-pu img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;filter:saturate(.85)}
+  #ax-dol-{{ uid }} .ax-pu .ph{position:absolute;inset:0;
+    background-image:radial-gradient(rgba(147,217,32,.2) 1.6px,transparent 1.7px);
+    background-size:13px 13px}
+  #ax-dol-{{ uid }} .ax-pu:after{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(90deg,rgba(13,12,10,.88) 0%,rgba(13,12,10,.55) 55%,rgba(13,12,10,.15) 100%)}
+  
+  #ax-dol-{{ uid }} .ax-pu .rot{position:relative;z-index:2;min-height:128px;
+    display:flex;flex-direction:column;justify-content:center;padding:14px 44px 14px 16px}
+  #ax-dol-{{ uid }} .ax-pu b{display:inline-block;font-family:var(--impacto);
+    text-transform:uppercase;font-size:clamp(17px,4.9vw,22px);line-height:1.02;
+    letter-spacing:-.01em;transform:skewX(-9deg);
+    text-shadow:0 2px 14px rgba(13,12,10,.8);max-width:17ch}
+  #ax-dol-{{ uid }} .ax-flecha{position:absolute;right:12px;top:50%;z-index:2;
+    width:26px;height:26px;transform:translateY(-50%);
+    display:grid;place-items:center;color:var(--lima);font-size:18px;
+    transition:transform .2s ease}
+  #ax-dol-{{ uid }} .ax-pu[aria-expanded="true"] .ax-flecha{transform:translateY(-50%) rotate(180deg)}
+  
+  #ax-dol-{{ uid }} .ax-mas{position:relative;z-index:2;max-height:0;overflow:hidden;
+    transition:max-height .28s ease;padding:0 16px}
+  #ax-dol-{{ uid }} .ax-pu[aria-expanded="true"] .ax-mas{max-height:220px;padding-bottom:16px}
+  #ax-dol-{{ uid }} .ax-mas p{margin:0 0 12px;font-size:16px;line-height:1.42;opacity:.92;max-width:52ch}
+  #ax-dol-{{ uid }} .ax-abrir{display:inline-block;background:var(--lima);color:var(--tinta);
+    border:0;cursor:pointer;font-family:var(--impacto);text-transform:uppercase;
+    font-size:12px;letter-spacing:.07em;padding:11px 16px;min-height:44px;
+    transform:skewX(-9deg)}
+  #ax-dol-{{ uid }} .ax-abrir span{display:inline-block;transform:skewX(9deg)}
+
+  
+  #ax-dial-{{ uid }}{border:3px solid var(--lima);background:var(--tinta);color:var(--papel);
+    font-family:var(--texto);padding:0;width:min(94vw,640px);max-height:86dvh}
+  #ax-dial-{{ uid }}::backdrop{background:rgba(13,12,10,.82)}
+  #ax-dial-{{ uid }} .ax-dial-anim{position:relative;aspect-ratio:16/9;background:#0d0c0a;overflow:hidden}
+  #ax-dial-{{ uid }} .ax-dial-anim video,#ax-dial-{{ uid }} .ax-dial-anim img{
+    width:100%;height:100%;object-fit:cover;display:block}
+  #ax-dial-{{ uid }} .ax-dial-anim .ph{position:absolute;inset:10px;border:2px dashed rgba(230,223,206,.28);
+    display:grid;place-items:center;font-family:var(--impacto);font-size:10px;
+    letter-spacing:.15em;text-transform:uppercase;opacity:.6;text-align:center;line-height:1.8}
+  #ax-dial-{{ uid }} .ax-cerrar{position:absolute;top:8px;right:8px;z-index:3;width:44px;height:44px;
+    background:var(--tinta);color:var(--papel);border:2px solid var(--papel);cursor:pointer;
+    font-size:20px;line-height:1;display:grid;place-items:center}
+  #ax-dial-{{ uid }} .ax-dial-cuerpo{padding:18px 20px 22px;overflow-y:auto}
+  #ax-dial-{{ uid }} .ax-dial-cuerpo h3{margin:0 0 10px;font-family:var(--impacto);
+    text-transform:uppercase;font-size:clamp(20px,5.6vw,26px);line-height:1.05;
+    letter-spacing:-.01em;transform:skewX(-9deg)}
+  #ax-dial-{{ uid }} .ax-dial-cuerpo p{margin:0 0 12px;font-size:16.5px;line-height:1.5;opacity:.92}
+  #ax-dial-{{ uid }} .ax-dial-cuerpo p:last-child{margin:0}
+
+  
+  #ax-dol-{{ uid }} .ax-ciencia{margin:48px auto 0;padding:0 20px;max-width:1180px}
+  #ax-dol-{{ uid }} .ax-ciencia .ax-eye2{font-family:var(--impacto);font-size:9px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--lima);display:block;margin:0 0 12px}
+  #ax-dol-{{ uid }} .ax-ciencia h3{margin:0 0 10px;font-family:var(--impacto);
+    text-transform:uppercase;font-size:clamp(23px,6.6vw,32px);line-height:1.02;
+    letter-spacing:-.02em;transform:skewX(-9deg);display:inline-block}
+  #ax-dol-{{ uid }} .ax-ciencia h3 em{font-style:normal;color:var(--lima)}
+  #ax-dol-{{ uid }} .ax-ciencia .ax-lead2{font-size:16.5px;line-height:1.5;max-width:54ch;
+    margin:0 0 18px;opacity:.88}
+  
+  
+  #ax-dol-{{ uid }} .ax-anim{position:relative;aspect-ratio:16/9;
+    width:100vw;max-width:100vw;margin:0 calc(50% - 50vw) 18px;
+    border-top:3px solid rgba(147,217,32,.35);border-bottom:3px solid rgba(147,217,32,.35);
+    background:#0d0c0a;overflow:hidden}
+  #ax-dol-{{ uid }} .ax-anim video,#ax-dol-{{ uid }} .ax-anim img{
+    width:100%;height:100%;object-fit:cover;display:block}
+  #ax-dol-{{ uid }} .ax-anim .ph{position:absolute;inset:10px;display:grid;place-items:center;
+    text-align:center;border:2px dashed rgba(230,223,206,.28);
+    font-family:var(--impacto);font-size:10.5px;letter-spacing:.15em;
+    text-transform:uppercase;opacity:.6;line-height:1.8}
+  
+  #ax-dol-{{ uid }} .ax-datos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #ax-dol-{{ uid }} .ax-dato{position:relative;border:3px solid rgba(230,223,206,.18);
+    padding:16px 12px 14px;display:flex;flex-direction:column;align-items:center;
+    text-align:center;gap:8px}
+  #ax-dol-{{ uid }} .ax-dato .num{position:absolute;top:0;left:0;background:var(--tinta);
+    border-right:3px solid rgba(230,223,206,.18);border-bottom:3px solid rgba(230,223,206,.18);
+    color:var(--lima);font-family:var(--impacto);font-size:12px;padding:5px 9px;line-height:1}
+  #ax-dol-{{ uid }} .ax-dato svg{width:72px;height:72px}
+  #ax-dol-{{ uid }} .ax-dato b{display:block;font-family:var(--impacto);
+    text-transform:uppercase;font-size:15.5px;line-height:1.08;letter-spacing:-.005em;
+    color:var(--papel);margin:0}
+  #ax-dol-{{ uid }} .ax-dato p{margin:0;font-size:14.5px;line-height:1.32;opacity:.75;max-width:22ch}
+  
+  #ax-dol-{{ uid }} .ax-dato.es-salida{grid-column:1/-1;flex-direction:row;text-align:left;
+    background:var(--lima);border-color:var(--lima);padding:13px 14px;gap:13px;align-items:center}
+  #ax-dol-{{ uid }} .ax-dato.es-salida svg{width:42px;height:42px;flex:none}
+  #ax-dol-{{ uid }} .ax-dato.es-salida svg *{stroke:#141210}
+  #ax-dol-{{ uid }} .ax-dato.es-salida b{color:var(--tinta);font-size:16.5px}
+  #ax-dol-{{ uid }} .ax-dato.es-salida p{color:var(--tinta);opacity:.8;font-size:15px;max-width:none}
+  #ax-dol-{{ uid }} .ax-dato.es-salida .num{display:none}
+
+  
+  @media(min-width:900px){
+    #ax-dol-{{ uid }}{padding:80px 0}
+    #ax-dol-{{ uid }} .ax-pad{padding:0 28px}
+    #ax-dol-{{ uid }} .ax-eye{font-size:10.5px;letter-spacing:.19em;margin-bottom:18px}
+    #ax-dol-{{ uid }} h2{font-size:clamp(38px,4.6vw,56px)}
+    #ax-dol-{{ uid }} .ax-lead{font-size:18px;line-height:1.55}
+    #ax-dol-{{ uid }} .ax-punales{grid-template-columns:1fr 1fr;gap:14px;margin-top:34px;padding:0 28px}
+    #ax-dol-{{ uid }} .ax-pu .rot{min-height:150px;padding:18px 52px 18px 20px}
+    #ax-dol-{{ uid }} .ax-pu b{font-size:clamp(20px,1.9vw,25px)}
+    #ax-dol-{{ uid }} .ax-mas{padding:0 20px}
+    #ax-dol-{{ uid }} .ax-ciencia{margin-top:64px;padding:0 28px}
+    #ax-dol-{{ uid }} .ax-ciencia h3{font-size:clamp(30px,3vw,40px)}
+    #ax-dol-{{ uid }} .ax-tablero2{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+    #ax-dol-{{ uid }} .ax-anim{margin:0;aspect-ratio:auto;height:100%;min-height:420px;
+      width:auto;max-width:none;border:3px solid rgba(147,217,32,.35)}
+    #ax-dol-{{ uid }} .ax-datos{gap:12px}
+    #ax-dol-{{ uid }} .ax-dato svg{width:84px;height:84px}
+    #ax-dol-{{ uid }} .ax-dato b{font-size:17px}
+    #ax-dol-{{ uid }} .ax-dato p{font-size:15px}
+  }
+</style>
+
+<div id="ax-dol-{{ uid }}">
+  <div class="ax-pad">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="ax-eye">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2>{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.lead != blank -%}
+      <p class="ax-lead">{{ section.settings.lead }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- assign punales = section.blocks | where: 'type', 'punal' -%}
+  {%- if punales.size > 0 -%}
+    <div class="ax-punales">
+      {%- for block in punales -%}
+        <div class="ax-pu" role="button" tabindex="0" aria-expanded="false" {{ block.shopify_attributes }}>
+          {%- if block.settings.imagen != blank -%}
+            <img src="{{ block.settings.imagen | image_url: width: 1000 }}"
+                 alt="" width="{{ block.settings.imagen.width }}" height="{{ block.settings.imagen.height }}"
+                 loading="lazy">
+          {%- else -%}
+            <span class="ph" aria-hidden="true"></span>
+          {%- endif -%}
+          <div class="rot">
+            {%- if block.settings.frase != blank -%}<b>{{ block.settings.frase }}</b>{%- endif -%}
+          </div>
+          <span class="ax-flecha" aria-hidden="true">▾</span>
+          <div class="ax-mas">
+            {%- if block.settings.intro != blank -%}<p>{{ block.settings.intro }}</p>{%- endif -%}
+            <button type="button" class="ax-abrir"><span>{{ section.settings.boton_popup }}</span></button>
+            <div hidden class="ax-popup-datos">
+              <span class="t">{{ block.settings.frase | escape }}</span>
+              <div class="c">{{ block.settings.cuerpo }}</div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  
+  <div class="ax-ciencia">
+    {%- if section.settings.ciencia_eyebrow != blank -%}
+      <span class="ax-eye2">{{ section.settings.ciencia_eyebrow }}</span>
+    {%- endif -%}
+    {%- if section.settings.ciencia_titulo != blank -%}
+      <h3>{{ section.settings.ciencia_titulo }}</h3>
+    {%- endif -%}
+    {%- if section.settings.ciencia_lead != blank -%}
+      <p class="ax-lead2">{{ section.settings.ciencia_lead }}</p>
+    {%- endif -%}
+
+    <div class="ax-tablero2">
+      <div class="ax-anim">
+        {%- if section.settings.ciencia_video != blank -%}
+          {{ section.settings.ciencia_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true }}
+        {%- elsif section.settings.ciencia_imagen != blank -%}
+          <img src="{{ section.settings.ciencia_imagen | image_url: width: 1200 }}" alt="{{ section.settings.ciencia_imagen.alt | escape }}" loading="lazy">
+        {%- else -%}
+          <div class="ph">Espacio reservado para la animación<br>subila en los ajustes de esta sección</div>
+        {%- endif -%}
+      </div>
+
+      {%- assign datos = section.blocks | where: 'type', 'dato' -%}
+      {%- if datos.size > 0 -%}
+        <div class="ax-datos">
+          {%- for block in datos -%}
+            {%- assign salida = false -%}
+            {%- if block.settings.icono == 'seco' or block.settings.icono == 'frio' -%}{%- assign salida = true -%}{%- endif -%}
+            <div class="ax-dato{% if salida %} es-salida{% endif %}" {{ block.shopify_attributes }}>
+              {%- unless salida -%}<span class="num">{{ forloop.index }}</span>{%- endunless -%}
+              {%- case block.settings.icono -%}
+                {%- when 'hongo' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M10 11v6a2 2 0 0 0 4 0v-6"/>
+                  </svg>
+                {%- when 'gota' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <path d="M12 3q5 6.5 5 10a5 5 0 0 1-10 0q0-3.5 5-10Z"/>
+                  </svg>
+                {%- when 'vuelve' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M18 3v4h-4"/>
+                  </svg>
+                {%- when 'extiende' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3"/><path d="M12 5V2M12 22v-3M5 12H2M22 12h-3M6 6 4 4M20 20l-2-2M18 6l2-2M4 20l2-2"/>
+                  </svg>
+                {%- when 'seco' -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <path d="M12 4q4 5.2 4 8a4 4 0 0 1-8 0q0-2.8 4-8Z"/><path d="M4 20 20 4"/>
+                  </svg>
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#93D920" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                    <path d="M12 3v18M5 6l14 12M19 6 5 18M8 4l4 3 4-3M8 20l4-3 4 3M3 10l4 2-4 2M21 10l-4 2 4 2"/>
+                  </svg>
+              {%- endcase -%}
+              <div>
+                {%- if block.settings.titulo != blank -%}<b>{{ block.settings.titulo }}</b>{%- endif -%}
+                {%- if block.settings.texto != blank -%}<p>{{ block.settings.texto }}</p>{%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <dialog id="ax-dial-{{ uid }}">
+    <div class="ax-dial-anim">
+      <button type="button" class="ax-cerrar" aria-label="Cerrar">✕</button>
+      {%- if section.settings.popup_video != blank -%}
+        {{ section.settings.popup_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true }}
+      {%- elsif section.settings.popup_imagen != blank -%}
+        <img src="{{ section.settings.popup_imagen | image_url: width: 1200 }}" alt="" loading="lazy">
+      {%- else -%}
+        <div class="ph">Animación del popup<br>pendiente de cargar</div>
+      {%- endif -%}
+    </div>
+    <div class="ax-dial-cuerpo">
+      <h3></h3>
+      <div class="ax-dial-texto"></div>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  (function () {
+    var caja = document.getElementById('ax-dol-{{ uid }}');
+    if (!caja || caja.dataset.axListo) return;
+    caja.dataset.axListo = '1';
+
+    var dial = document.getElementById('ax-dial-{{ uid }}');
+    var pus = [].slice.call(caja.querySelectorAll('.ax-pu'));
+
+    function alternar (pu) {
+      var abierto = pu.getAttribute('aria-expanded') === 'true';
+      pus.forEach(function (p) { p.setAttribute('aria-expanded', 'false'); });
+      if (!abierto) pu.setAttribute('aria-expanded', 'true');
+    }
+
+    pus.forEach(function (pu) {
+      pu.addEventListener('click', function (e) {
+        if (e.target.closest('.ax-abrir')) return; /* el botón tiene su propio manejo */
+        alternar(pu);
+      });
+      pu.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(pu); }
+      });
+      var btn = pu.querySelector('.ax-abrir');
+      if (btn && dial && dial.showModal) {
+        btn.addEventListener('click', function () {
+          var datos = pu.querySelector('.ax-popup-datos');
+          dial.querySelector('h3').textContent = datos.querySelector('.t').textContent;
+          dial.querySelector('.ax-dial-texto').innerHTML = datos.querySelector('.c').innerHTML;
+          dial.showModal();
+        });
+      }
+    });
+
+    if (dial) {
+      dial.querySelector('.ax-cerrar').addEventListener('click', function () { dial.close(); });
+      /* clic en el fondo oscuro también cierra */
+      dial.addEventListener('click', function (e) { if (e.target === dial) dial.close(); });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Tarjetas desplegables",
+  "tag": "section",
+  "class": "athlex-dolor-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Bajada (eyebrow)", "default": "— LO QUE TE ESTÁ HACIENDO" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título (cursiva → lima)", "default": "Lo peor no es la <em>picazón</em>" },
+    { "type": "textarea", "id": "lead", "label": "Bajada", "default": "Es cómo te va cambiando la vida. Tocá cada situación para ver la explicación completa." },
+    { "type": "text", "id": "boton_popup", "label": "Texto del botón del popup", "default": "Ver la explicación completa" },
+    { "type": "header", "content": "Popup (igual para los cuatro)" },
+    { "type": "video", "id": "popup_video", "label": "Animación del header del popup" },
+    { "type": "image_picker", "id": "popup_imagen", "label": "Imagen (si no hay video)" },
+    { "type": "header", "content": "La ciencia" },
+    { "type": "text", "id": "ciencia_eyebrow", "label": "Bajada", "default": "— QUÉ ES LO QUE LO CAUSA" },
+    { "type": "inline_richtext", "id": "ciencia_titulo", "label": "Título", "default": "Es un hongo. Y si no cambiás el clima, <em>vuelve</em>." },
+    { "type": "textarea", "id": "ciencia_lead", "label": "Bajada", "default": "No es mala suerte ni falta de higiene: la tiña inguinal es un hongo que vive en la piel. Mientras tenga calor y humedad, va a volver. Y cada vez que vuelve, se extiende un poco más." },
+    { "type": "video", "id": "ciencia_video", "label": "Animación de la ciencia" },
+    { "type": "image_picker", "id": "ciencia_imagen", "label": "Imagen (si no hay video)" }
+  ],
+  "blocks": [
+    {
+      "type": "punal", "name": "Situación", "limit": 4,
+      "settings": [
+        { "type": "image_picker", "id": "imagen", "label": "Escena de fondo" },
+        { "type": "text", "id": "frase", "label": "Frase grande (EXPLÍCITA, sin misterio)", "default": "[TODO]" },
+        { "type": "textarea", "id": "intro", "label": "Intro breve al desplegar" },
+        { "type": "richtext", "id": "cuerpo", "label": "Explicación a fondo (popup)", "default": "<p>[TODO — explicación completa de esta situación: qué pasa, por qué pasa y qué se puede hacer.]</p>" }
+      ]
+    },
+    {
+      "type": "dato", "name": "Dato científico", "limit": 6,
+      "settings": [
+        {
+          "type": "select", "id": "icono", "label": "Ícono", "default": "hongo",
+          "options": [
+            { "value": "hongo", "label": "Hongo" },
+            { "value": "gota", "label": "Humedad" },
+            { "value": "vuelve", "label": "Vuelve (flecha circular)" },
+            { "value": "extiende", "label": "Se extiende" },
+            { "value": "seco", "label": "Seco (gota tachada)" },
+            { "value": "frio", "label": "Frío (copo)" }
+          ]
+        },
+        { "type": "text", "id": "titulo", "label": "Título", "default": "[TODO]" },
+        { "type": "textarea", "id": "texto", "label": "Explicación (para tontos)", "default": "[TODO]" }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Tarjetas desplegables",
+      "blocks": [
+        { "type": "punal", "settings": { "frase": "EVITÁS TENER RELACIONES", "intro": "Por vergüenza de que tu pareja vea la piel irritada o pregunte qué es. Decís que estás cansado, y no es eso." } },
+        { "type": "punal", "settings": { "frase": "TE RASCÁS A ESCONDIDAS", "intro": "En el trabajo, en la calle, en el auto: metés la mano al bolsillo para rascarte sin que se note." } },
+        { "type": "punal", "settings": { "frase": "TE ESCONDÉS PARA CAMBIARTE", "intro": "En el vestuario te das vuelta o esperás que se vayan todos, para que nadie vea la mancha." } },
+        { "type": "punal", "settings": { "frase": "LA PICAZÓN TE DESPIERTA DE NOCHE", "intro": "El calor de la cama la dispara. Te despertás de madrugada rascándote, y a la mañana la piel arde." } },
+        { "type": "dato", "settings": { "icono": "hongo", "titulo": "Es un hongo", "texto": "La tiña inguinal es un hongo que vive en la piel de la ingle. No es suciedad ni falta de baño: es un hongo." } },
+        { "type": "dato", "settings": { "icono": "gota", "titulo": "Crece con la humedad", "texto": "La transpiración, el calor y el roce lo alimentan. Por eso empeora en verano y después de entrenar." } },
+        { "type": "dato", "settings": { "icono": "vuelve", "titulo": "Por eso vuelve", "texto": "La crema calma unos días. Pero si la zona sigue húmeda y caliente, el hongo crece de nuevo. Siempre." } },
+        { "type": "dato", "settings": { "icono": "extiende", "titulo": "Y se extiende", "texto": "Si no hacés nada, pasa de la ingle a los muslos y a los glúteos. Es primo del pie de atleta: viaja por la toalla y la ropa." } },
+        { "type": "dato", "settings": { "icono": "seco", "titulo": "En piel seca no prospera", "texto": "El hongo necesita humedad para crecer. Mantener la zona seca es la mitad de la pelea." } },
+        { "type": "dato", "settings": { "icono": "frio", "titulo": "El frío calma la picazón", "texto": "La sensación de picazón afloja con el frescor. Por eso el mentol se usa para esto hace décadas." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

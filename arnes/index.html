@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arnés de Gadsden Widgets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Las letras de los estilos: Poppins (oscuro), Archivo Black y Barlow Semi Condensed (objeciones del oscuro), Inter (clásico). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;600;700&family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700;800&family=Zalando+Sans:wght@400;600;700;800;900&family=Zalando+Sans+Expanded:wght@700;800;900&display=swap">
+<style>
+  /* Las variables que define Ipanema 1.4.2/1.5.0 en la demo (medido el 21-oct), con sus letras. */
+  :root {
+    --accent-color: #49539E; --main-foreground: #000000; --main-background: #FFFFFF; --border-radius: 8px; --font-base: 14px;
+    --body-font: "Zalando Sans", sans-serif; --heading-font: "Zalando Sans Expanded", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.4 var(--body-font); color: var(--main-foreground); background: var(--main-background); }
+  .controles { position: sticky; top: 0; z-index: 10000; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 16px; background: #111; color: #eee; font: 12px system-ui; }
+  .controles select, .controles input { font: inherit; }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  .ficha { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  @media (min-width: 768px) { .ficha { grid-template-columns: 1.2fr 1fr; } }
+  .foto { aspect-ratio: 1; background: #eee; display: flex; align-items: center; justify-content: center; color: #888; border-radius: 8px; }
+  .nativo { padding: 8px 0; }
+  .nativo h1 { margin: 0; font: 700 24px var(--heading-font); }
+  .nativo .precio { font-size: 22px; font-weight: 700; }
+  .nativo button { width: 100%; padding: 14px; border: 0; border-radius: 8px; background: var(--accent-color); color: #fff; font: inherit; font-weight: 600; }
+  [data-lugar] { position: relative; min-height: 4px; }
+  /* El margen 0 de Text va como regla y no en línea: así lo pisa el CSS de styled(), como en la tienda. */
+  [data-lugar] :where(p, h1, h2, h3, h4, h5, h6) { margin: 0; }
+  body.marcas [data-lugar] { outline: 1px dashed #2FE39A; outline-offset: 2px; }
+  body.marcas [data-lugar]::before { content: attr(data-lugar); position: absolute; top: -10px; right: 0; z-index: 5; font: 10px monospace; color: #0a7; background: #fff; padding: 0 4px; }
+  [data-lugar="edge_bottom_center"] { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 80vw; max-height: 45vh; z-index: 9997; }
+  [data-lugar="edge_bottom_center"].vacio { display: none; }
+  /* El lugar del modal: a pantalla entera, como lo supone el iframe del popup ([VERIFICAR] en la tienda). */
+  [data-lugar="modal_content"] { position: fixed; inset: 0; z-index: 10001; }
+  [data-lugar="modal_content"].vacio { display: none; }
+  [data-lugar="modal_content"] iframe { width: 100% !important; height: 100% !important; }
+  .pie { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  pre { max-height: 120px; overflow: auto; background: #f6f6f6; padding: 8px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="controles">
+  <strong>Arnés (no es la tienda)</strong>
+  <label>Talle <select id="talle"><option value="0">S</option><option value="1">M</option><option value="2">L (sin stock)</option></select></label>
+  <label>Scroll <input id="scroll" type="range" min="0" max="100" step="10" value="0"> <span id="scrollValor">0 %</span></label>
+  <label>Estilo <select id="estilo"><option value="tienda">El de la tienda (por defecto)</option><option value="clasico">Clásico</option><option value="oscuro">Oscuro</option></select></label>
+  <label><input id="marcas" type="checkbox"> Marcar lugares</label>
+</div>
+<main>
+  <div class="ficha">
+    <div>
+      <div data-lugar="before_product_detail_image" class="vacio"></div>
+      <div class="foto">Foto del producto</div>
+      <div data-lugar="after_product_detail_image" class="vacio"></div>
+    </div>
+    <div class="nativo">
+      <h1>Remera prueba</h1>
+      <div data-lugar="after_product_detail_name" class="vacio"></div>
+      <p class="precio">$4.000,00</p>
+      <div data-lugar="after_product_detail_price" class="vacio"></div>
+      <div data-lugar="before_product_detail_add_to_cart" class="vacio"></div>
+      <label>Cantidad <input id="cantidad" type="number" min="1" value="1" style="width:60px"></label>
+      <button type="button" id="comprar">Agregar al carrito (botón del theme)</button>
+      <div data-lugar="after_product_detail_add_to_cart" class="vacio"></div>
+    </div>
+  </div>
+</main>
+<!-- Entre secciones de Ipanema: a todo el ancho. -->
+<div data-lugar="after_dynamic_section_main_product"></div>
+<div data-lugar="before_footer" class="vacio"></div>
+<div class="pie">
+  <h3>Registro (lo que el script le manda a la tienda)</h3>
+  <pre id="registro"></pre>
+</div>
+<div data-lugar="edge_bottom_center" class="vacio"></div>
+<div data-lugar="modal_content" class="vacio"></div>
+<script type="module" src="arnes.js"></script>
+</body>
+</html>

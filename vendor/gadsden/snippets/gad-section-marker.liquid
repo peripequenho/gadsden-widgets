@@ -1,0 +1,12 @@
+
+{%- liquid
+  assign vis = s.visibility | default: 'all'
+  assign anchor = s.anchor | handleize
+-%}
+{%- liquid
+  assign hs = s.title_scale | default: '100'
+  assign ts = s.text_scale | default: '100'
+-%}
+{%- if vis != 'all' or anchor != blank or hs != '100' or ts != '100' -%}
+  <span class="gad-sec-marker"{% if vis != 'all' %} data-gad-visibility="{{ vis }}"{% endif %}{% if anchor != blank %} id="{{ anchor }}" data-gad-anchor{% endif %}{% if hs != '100' %} data-gad-hs="{{ hs }}"{% endif %}{% if ts != '100' %} data-gad-ts="{{ ts }}"{% endif %}></span>
+{%- endif -%}

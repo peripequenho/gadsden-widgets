@@ -1,0 +1,609 @@
+
+{%- liquid
+  assign s = section.settings
+  assign p = s.product
+  if p == blank and request.page_type == 'product'
+    assign p = product
+  endif
+  assign v = p.selected_or_first_available_variant
+  assign img = s.image | default: p.featured_media.preview_image
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<div
+  class="gad-offer gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width">
+    <div class="gad-offer__box gad-offer__box--{{ s.layout }} color-{{ s.box_scheme }}">
+      <div class="gad-offer__media">
+        {%- if img != blank -%}
+          {{ img | image_url: width: 1200 | image_tag: loading: 'lazy', alt: p.title, sizes: '(min-width: 990px) 45vw, 100vw', widths: '500, 800, 1200' }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'gad-offer__ph' }}
+        {%- endif -%}
+        {%- if s.badge != blank -%}<span class="gad-offer__badge">{{ s.badge | escape }}</span>{%- endif -%}
+      </div>
+      <div class="gad-offer__info">
+        {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text -%}
+        {%- if section.blocks.size > 0 -%}
+          <ul class="gad-offer__points list-unstyled" role="list">
+            {%- for block in section.blocks -%}
+              <li class="gad-offer__point" {{ block.shopify_attributes }}>
+                {%- render 'gad-icon', name: block.settings.icon, filled: true, class: 'gad-offer__tick' -%}
+                <span>{{ block.settings.text }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+        <div class="gad-offer__price">
+          {%- if s.price_text != blank -%}
+            <span class="gad-offer__amount h2">{{ s.price_text | escape }}</span>
+          {%- elsif v != blank -%}
+            {%- if v.compare_at_price > v.price -%}<s class="gad-offer__compare">{{ v.compare_at_price | money }}</s>{%- endif -%}
+            <span class="gad-offer__amount h2">{{ v.price | money }}</span>
+          {%- endif -%}
+          {%- if s.installments != blank -%}<span class="gad-offer__inst">{{ s.installments }}</span>{%- endif -%}
+        </div>
+        <div class="gad-offer__cta">
+          {%- if p != blank -%}
+            {%- render 'gad-atc-button', label: s.button_label, product: p, skip_cart: s.skip_cart -%}
+          {%- elsif request.design_mode -%}
+            <p class="gad-offer__note">{{ 'gadsden.offer.pick' | t }}</p>
+          {%- endif -%}
+        </div>
+        {%- if s.guarantee_title != blank or s.guarantee_text != blank -%}
+          <div class="gad-offer__guarantee">
+            {%- render 'gad-icon', name: s.guarantee_icon, class: 'gad-offer__g-icon' -%}
+            <div>
+              {%- if s.guarantee_title != blank -%}<strong>{{ s.guarantee_title | escape }}</strong>{%- endif -%}
+              {%- if s.guarantee_text != blank -%}<div class="rte">{{ s.guarantee_text }}</div>{%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-offer__box {
+    display: grid;
+    gap: 2.4rem;
+    padding: 2rem;
+    border-radius: 1.6rem;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-offer__box {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 3.2rem;
+    }
+
+    .gad-offer__box--image_right .gad-offer__media {
+      order: 2;
+    }
+  }
+
+  .gad-offer__media {
+    position: relative;
+  }
+
+  .gad-offer__media img,
+  .gad-offer__ph {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1.2rem;
+  }
+
+  .gad-offer__ph {
+    aspect-ratio: 1;
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  .gad-offer__badge {
+    position: absolute;
+    top: 1.2rem;
+    left: 1.2rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 99rem;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .gad-offer__info {
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .gad-offer__info .gad-heading {
+    margin: 0;
+  }
+
+  .gad-offer__points {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  .gad-offer__point {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .gad-offer__tick {
+    flex: 0 0 auto;
+    font-size: 2.2rem;
+  }
+
+  .gad-offer__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+  }
+
+  .gad-offer__amount {
+    margin: 0;
+  }
+
+  .gad-offer__compare {
+    opacity: 0.6;
+  }
+
+  .gad-offer__inst {
+    flex-basis: 100%;
+    font-size: 1.4rem;
+  }
+
+  .gad-offer__cta .button {
+    width: 100%;
+  }
+
+  .gad-offer__note {
+    margin: 0;
+    padding: 1rem;
+    border: 0.1rem dashed rgba(var(--color-foreground), 0.3);
+    font-size: 1.3rem;
+  }
+
+  .gad-offer__guarantee {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.6rem;
+    border-top: 0.1rem solid rgba(var(--color-foreground), 0.12);
+    font-size: 1.4rem;
+  }
+
+  .gad-offer__g-icon {
+    flex: 0 0 auto;
+    font-size: 2.8rem;
+  }
+
+  .gad-offer__guarantee p {
+    margin: 0.2rem 0 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Oferta del producto",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Llevalo <strong>hoy</strong>",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Producto",
+      "info": "En una ficha, vacío usa el de la página."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen",
+      "info": "Vacía: la foto principal del producto."
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Etiqueta sobre la imagen",
+      "info": "Ej. Envío gratis."
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Imagen",
+      "options": [
+        {
+          "value": "image_left",
+          "label": "A la izquierda"
+        },
+        {
+          "value": "image_right",
+          "label": "A la derecha"
+        }
+      ],
+      "default": "image_left"
+    },
+    {
+      "type": "text",
+      "id": "price_text",
+      "label": "Texto en lugar del precio",
+      "info": "Vacío: el precio del producto. Útil mientras el precio no está definido."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "installments",
+      "label": "Cuotas",
+      "default": "Hasta <strong>3 cuotas</strong> sin interés"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "default": "Agregar al carrito"
+    },
+    {
+      "type": "checkbox",
+      "id": "skip_cart",
+      "label": "Ir directo al pago",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Garantía"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_icon",
+      "label": "Ícono",
+      "default": "verified_user",
+      "info": "Nombre en inglés de Material Symbols."
+    },
+    {
+      "type": "text",
+      "id": "guarantee_title",
+      "label": "Título",
+      "default": "Garantía de satisfacción"
+    },
+    {
+      "type": "richtext",
+      "id": "guarantee_text",
+      "label": "Texto",
+      "default": "<p>Si no te convence, te devolvemos el dinero.</p>"
+    },
+    {
+      "type": "color_scheme",
+      "id": "box_scheme",
+      "label": "Combinación de la caja",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "point",
+      "name": "Punto",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "Un beneficio concreto"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Ícono",
+          "default": "check_circle",
+          "info": "Nombre en inglés de Material Symbols."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Oferta del producto",
+      "settings": {
+        "anchor": "oferta"
+      },
+      "blocks": [
+        {
+          "type": "point"
+        },
+        {
+          "type": "point",
+          "settings": {
+            "text": "Envío a todo el país"
+          }
+        },
+        {
+          "type": "point",
+          "settings": {
+            "text": "Cambios sin vueltas"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

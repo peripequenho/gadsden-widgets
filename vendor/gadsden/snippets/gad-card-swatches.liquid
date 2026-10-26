@@ -1,0 +1,65 @@
+
+{%- liquid
+  assign option_key = option | downcase | strip
+  assign opt = nil
+  for o in product.options_with_values
+    assign o_key = o.name | downcase | strip
+    if o_key == option_key
+      assign opt = o
+      break
+    endif
+  endfor
+  assign limit = max | default: 5
+  assign color_list = settings.swatch_colors | newline_to_br | replace: '<br />', ';' | split: ';'
+-%}
+{%- if opt and opt.values.size > 1 -%}
+  {{ 'component-swatch.css' | asset_url | stylesheet_tag }}
+  <div
+    class="gad-card-sw"
+    style="--sw-d: {{ size_d | default: 20 }}px; --sw-m: {{ size_m | default: 16 }}px;"
+    role="list"
+    aria-label="{{ opt.name | escape }}"
+  >
+    {%- for value in opt.values limit: limit -%}
+      {%- liquid
+        assign custom = blank
+        assign value_key = value | downcase | strip
+        if value.swatch == blank
+          for entry in color_list
+            assign pair = entry | split: ':'
+            assign entry_key = pair[0] | downcase | strip
+            if entry_key == value_key and pair.size > 1
+              assign custom = pair[1] | strip
+              break
+            endif
+          endfor
+        endif
+        assign media = value.variant.featured_media
+        if value.swatch == blank and custom == blank and media
+          assign media_url = media.preview_image | image_url: width: 60
+          assign custom = 'url(' | append: media_url | append: ')'
+        endif
+        assign url = value.variant.url | default: product.url
+      -%}
+      <a
+        href="{{ url }}"
+        class="gad-card-sw__item{% if value.swatch == blank and custom == blank %} gad-card-sw__item--text{% endif %}"
+        role="listitem"
+        title="{{ value | escape }}"
+        {% if media %}
+          data-gad-sw-img="{{ media.preview_image | image_url: width: 533 }}"
+        {% endif %}
+      >
+        {%- if value.swatch != blank or custom != blank -%}
+          {%- render 'swatch', swatch: value.swatch, custom_value: custom -%}
+          <span class="visually-hidden">{{ value | escape }}</span>
+        {%- else -%}
+          {{ value | escape }}
+        {%- endif -%}
+      </a>
+    {%- endfor -%}
+    {%- if opt.values.size > limit -%}
+      <a href="{{ product.url }}" class="gad-card-sw__more" role="listitem">+{{ opt.values.size | minus: limit }}</a>
+    {%- endif -%}
+  </div>
+{%- endif -%}

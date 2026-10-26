@@ -1,0 +1,803 @@
+{%- liquid
+  assign s = section.settings
+  assign has_intro = false
+  if s.heading != blank or s.text != blank or s.image != blank or s.video != blank
+    assign has_intro = true
+  endif
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+
+<div
+  class="gad-results gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width gad-results__layout{% if has_intro %} gad-results__layout--two gad-results__layout--results-{{ s.position }}{% endif %}">
+    {%- if has_intro -%}
+      <div class="gad-results__intro{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %}data-cascade style="--animation-order: 1;"{% endif %}>
+        {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text -%}
+        {%- if s.video != blank -%}
+          <div class="gad-results__media">
+            {%- render 'gad-video', video: s.video, poster: s.image, autoplay: s.autoplay, loop: true, tap: true, width: 1500 -%}
+          </div>
+        {%- elsif s.image != blank -%}
+          <div class="gad-results__media">
+            {%- assign img_alt = s.image.alt | default: '' -%}
+            {{ s.image | image_url: width: 1500 | image_tag: loading: 'lazy', alt: img_alt, sizes: '(min-width: 990px) 50vw, 100vw', widths: '375, 550, 750, 1100, 1500' }}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="gad-results__panel{% if s.panel_width == 'fit' %} gad-results__panel--fit{% endif %}{% if s.results_title_box %} gad-results__panel--title-box{% endif %} gad-results--a-{{ s.results_align }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %}data-cascade style="--animation-order: 2;"{% endif %}>
+      {%- if s.results_title != blank or s.results_text != blank -%}
+        {%- render 'gad-heading', title: s.results_title, size: s.results_title_size, accent: s.results_title_accent, text: s.results_text, tag: 'h3', class: 'gad-results__head' -%}
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="gad-results__list" role="list">
+          {%- for block in section.blocks -%}
+            {%- assign pct = block.settings.percent | at_least: 0 | at_most: 100 -%}
+            <li class="gad-results__row" {{ block.shopify_attributes }}>
+              {%- if block.settings.figure != blank -%}
+                <gad-count class="gad-results__figure">{{ block.settings.figure | escape }}</gad-count>
+              {%- else -%}
+                <gad-ring class="gad-ring" data-value="{{ pct }}" style="--p: {{ pct }};">
+                  <span class="gad-ring__value" aria-hidden="true"><span class="gad-ring__num">{{ pct }}</span>%</span>
+                  <span class="visually-hidden">{{ pct }}%</span>
+                </gad-ring>
+              {%- endif -%}
+              <div class="gad-results__text rte">{{ block.settings.text }}</div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if s.footnote != blank -%}
+        <div class="gad-results__note rte">{{ s.footnote }}</div>
+      {%- endif -%}
+
+      {%- if s.button_label != blank or s.atc_label != blank -%}
+        <div class="gad-buttons gad-results__buttons">
+          {%- if s.button_label != blank -%}
+            <a
+              {% if s.button_link == blank %}
+                role="link" aria-disabled="true"
+              {% else %}
+                href="{{ s.button_link }}"
+              {% endif %}
+              class="button{% if s.button_outline %} button--secondary{% else %} button--primary{% endif %}"
+            >
+              {{- s.button_label | escape -}}
+            </a>
+          {%- endif -%}
+          {%- render 'gad-atc-button', label: s.atc_label, product: s.atc_product, skip_cart: s.atc_skip_cart -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-results__layout {
+    display: grid;
+    gap: 3.2rem;
+  }
+
+  .gad-results__layout:not(.gad-results__layout--two) .gad-results__panel {
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  .gad-results__intro .gad-heading {
+    margin-bottom: 2.4rem;
+  }
+
+  .gad-results__media {
+    overflow: hidden;
+    border-radius: var(--media-radius);
+  }
+
+  .gad-results__media img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gad-results__head {
+    margin-bottom: 2.4rem;
+  }
+
+  .gad-results--a-center {
+    text-align: center;
+  }
+
+  .gad-results--a-center .gad-heading {
+    text-align: center;
+  }
+
+  .gad-results--a-left .gad-heading {
+    text-align: left;
+  }
+
+  .gad-results__list {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+  }
+
+  .gad-results__row {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+  }
+
+  .gad-results__text p {
+    margin: 0;
+  }
+
+  .gad-results__note {
+    margin-top: 2.4rem;
+    font-size: 1.3rem;
+    opacity: 0.8;
+  }
+
+  .gad-results__buttons {
+    margin-top: 2.4rem;
+  }
+
+  .gad-results--a-center .gad-results__buttons {
+    justify-content: center;
+  }
+
+  .gad-results__figure {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    min-width: 9.6rem;
+    color: rgb(var(--color-accent, var(--color-button)));
+    font-size: 3.6rem;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  gad-ring {
+    position: relative;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 8.4rem;
+    height: 8.4rem;
+    border-radius: 50%;
+    background: conic-gradient(rgb(var(--color-accent)) calc(var(--p, 0) * 1%), rgba(var(--color-foreground), 0.1) 0);
+  }
+
+  gad-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0.7rem;
+    border-radius: 50%;
+    background: rgb(var(--color-background));
+  }
+
+  .gad-ring__value {
+    position: relative;
+    color: rgb(var(--color-accent));
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  @media screen and (min-width: 750px) {
+    gad-ring {
+      width: 10rem;
+      height: 10rem;
+    }
+
+    .gad-ring__value {
+      font-size: 2.6rem;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .gad-results__layout--two {
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .gad-results__layout--results-first .gad-results__panel {
+      order: -1;
+    }
+  }
+
+  .gad-results__panel--fit {
+    justify-self: center;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .gad-results__panel--title-box .gad-results__head .gad-heading__title {
+    display: inline-block;
+    padding: 1.2rem 2rem;
+    border-radius: var(--text-boxes-radius);
+    background: rgb(var(--color-background));
+    box-shadow: var(--text-boxes-shadow-horizontal-offset) var(--text-boxes-shadow-vertical-offset) var(--text-boxes-shadow-blur-radius) rgba(var(--color-shadow), var(--text-boxes-shadow-opacity));
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadRing extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      this.target = parseFloat(this.dataset.value) || 0;
+      this.num = this.querySelector('.gad-ring__num');
+      if (window.Gadsden && (Gadsden.reduceMotion() || Gadsden.designMode)) return;
+      this.style.setProperty('--p', 0);
+      if (this.num) this.num.textContent = '0';
+      this.io = new IntersectionObserver((entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        this.io.disconnect();
+        this.animate();
+      }, { rootMargin: '0px 0px -10% 0px' });
+      this.io.observe(this);
+    }
+
+    disconnectedCallback() {
+      if (this.io) this.io.disconnect();
+      this._ready = false;
+    }
+
+    animate() {
+      const duration = 1200;
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = this.target * eased;
+        this.style.setProperty('--p', value);
+        if (this.num) this.num.textContent = Math.round(value);
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+  }
+
+  if (!customElements.get('gad-ring')) customElements.define('gad-ring', GadRing);
+
+  /* Dato libre (S10): si tiene un número, cuenta desde cero conservando lo que lo rodea. */
+  class GadCount extends HTMLElement {
+    connectedCallback() {
+      if (this._ready || (window.Gadsden && (Gadsden.reduceMotion() || Gadsden.designMode))) return;
+      this._ready = true;
+      const text = this.textContent.trim();
+      const m = text.match(/\d[\d.,]*/);
+      if (!m) return;
+      const raw = m[0];
+      const sep = /[.,]\d{3}(\D|$)/.test(raw) ? raw.match(/[.,]/)[0] : '';
+      const target = parseInt(raw.replace(/[.,]/g, ''), 10);
+      if (!target) return;
+      const fmt = (n) => (sep ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, sep) : String(n));
+      const paint = (n) => (this.textContent = text.replace(raw, fmt(n)));
+      paint(0);
+      const io = new IntersectionObserver((entries) => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+        const start = performance.now();
+        const step = (now) => {
+          const t = Math.min(1, (now - start) / 1200);
+          paint(Math.round(target * (1 - Math.pow(1 - t, 3))));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+      io.observe(this);
+    }
+  }
+
+  if (!customElements.get('gad-count')) customElements.define('gad-count', GadCount);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Resultados en porcentaje",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Columna de presentación"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Los resultados hablan solos",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen",
+      "info": "Si cargás un video, la imagen queda como miniatura."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Reproducción automática sin sonido",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Resultados"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Posición en desktop",
+      "options": [
+        {
+          "value": "first",
+          "label": "Resultados primero"
+        },
+        {
+          "value": "second",
+          "label": "Resultados segundo"
+        }
+      ],
+      "default": "second"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "results_title",
+      "label": "Título de los resultados"
+    },
+    {
+      "type": "select",
+      "id": "results_title_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h3",
+          "label": "Muy chico"
+        },
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "color",
+      "id": "results_title_accent",
+      "label": "Color de las palabras resaltadas"
+    },
+    {
+      "type": "checkbox",
+      "id": "results_title_box",
+      "label": "Título en una caja",
+      "default": false,
+      "info": "Con el fondo, la sombra y el redondeo de las cajas de texto."
+    },
+    {
+      "type": "select",
+      "id": "panel_width",
+      "label": "Ancho del panel de resultados",
+      "options": [
+        {
+          "value": "full",
+          "label": "Toda la columna"
+        },
+        {
+          "value": "fit",
+          "label": "El de su contenido, centrado"
+        }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "richtext",
+      "id": "results_text",
+      "label": "Texto de los resultados"
+    },
+    {
+      "type": "select",
+      "id": "results_align",
+      "label": "Alineación del título y el texto",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "richtext",
+      "id": "footnote",
+      "label": "Nota al pie",
+      "default": "<p>Encuesta realizada a clientes.</p>",
+      "info": "Podés poner un enlace a la fuente."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "info": "Sin texto, el botón no aparece."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_outline",
+      "label": "Botón con contorno",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "atc_label",
+      "label": "Texto del botón de agregar al carrito",
+      "info": "Sin texto, el botón no aparece. En una ficha agrega ese producto con la variante y la cantidad elegidas."
+    },
+    {
+      "type": "product",
+      "id": "atc_product",
+      "label": "Producto",
+      "info": "Opcional. Si elegís uno, el botón agrega ése. Fuera de una ficha hace falta elegirlo."
+    },
+    {
+      "type": "checkbox",
+      "id": "atc_skip_cart",
+      "label": "Ir directo al pago",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "result",
+      "name": "Resultado",
+      "settings": [
+        {
+          "type": "range",
+          "id": "percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Porcentaje",
+          "default": 90
+        },
+        {
+          "type": "text",
+          "id": "figure",
+          "label": "O un dato libre",
+          "info": "Ej. +2.000, 4G o 24/7. Si lo completás, se muestra en lugar del porcentaje; si tiene un número, cuenta al aparecer."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>de los clientes lo recomienda.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Resultados en porcentaje",
+      "blocks": [
+        {
+          "type": "result",
+          "settings": {
+            "percent": 95
+          }
+        },
+        {
+          "type": "result",
+          "settings": {
+            "percent": 88
+          }
+        },
+        {
+          "type": "result",
+          "settings": {
+            "percent": 92
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

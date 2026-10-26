@@ -1,0 +1,10 @@
+
+{%- liquid
+  assign n = 0
+  for item in cart.items
+    if item.properties._gad_extra == blank
+      assign n = n | plus: item.quantity
+    endif
+  endfor
+  echo n
+-%}

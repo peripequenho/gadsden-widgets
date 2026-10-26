@@ -1,0 +1,277 @@
+{%- comment -%}
+  Tabla versus: la comparación de dos columnas (nosotros contra otros), con tildes y cruces por fila.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- if section.settings.letra != blank and section.settings.letra.family != settings.type_header_font.family and section.settings.letra.family != settings.type_body_font.family -%}<style>{{ section.settings.letra | font_face: font_display: 'swap' }}</style>{%- endif -%}
+{%- assign uid = section.id | replace: '_', '-' -%}
+<style>
+  #gad-vs-{{ uid }}{background:rgb(var(--r-fondo));padding:80px 20px;font-family:var(--r-letra)}
+  #gad-vs-{{ uid }} .gc-wrap{max-width:1180px;margin:0 auto;text-align:center}
+  #gad-vs-{{ uid }} .gc-eye{font-weight:700;font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:rgb(var(--r-acento))}
+  #gad-vs-{{ uid }} h2{font-size:42px;font-weight:800;letter-spacing:-.02em;color:rgb(var(--r-titulos));margin:12px 0 0}
+  #gad-vs-{{ uid }} .gc-t{margin:44px auto 0;border:1px solid rgb(var(--r-borde));border-radius:22px;overflow:hidden;max-width:860px;box-shadow:0 20px 44px rgba(var(--r-titulos),.06);text-align:left;background:rgb(var(--r-tabla))}
+  #gad-vs-{{ uid }} .gc-row{display:grid;grid-template-columns:1.7fr 1fr 1fr;align-items:center}
+  #gad-vs-{{ uid }} .gc-head{background:rgb(var(--r-cabecera));color:rgb(var(--r-cabecera_texto))}
+  #gad-vs-{{ uid }} .gc-head div{padding:19px 24px;font-weight:600}
+  #gad-vs-{{ uid }} .gc-head .u{background:rgb(var(--r-acento));text-align:center;font-weight:800}
+  #gad-vs-{{ uid }} .gc-head .o{text-align:center;color:rgb(var(--r-cabecera_otros));font-weight:500}
+  #gad-vs-{{ uid }} .gc-body .gc-row{border-top:1px solid rgb(var(--r-borde))}
+  #gad-vs-{{ uid }} .gc-body .gc-row:nth-child(even){background:rgb(var(--r-fila))}
+  #gad-vs-{{ uid }} .gc-f{padding:16px 24px;font-weight:500;font-size:16px;color:rgb(var(--r-titulos))}
+  #gad-vs-{{ uid }} .gc-c{padding:16px 24px;display:flex;justify-content:center}
+  #gad-vs-{{ uid }} .gc-c.u{background:rgb(var(--r-columna))}
+  #gad-vs-{{ uid }} .ok{width:26px;height:26px;border-radius:50%;background:rgb(var(--r-acento));color:rgb(var(--r-acento_texto));display:grid;place-items:center}
+  #gad-vs-{{ uid }} .ok.grey{background:rgb(var(--r-parcial))}
+  #gad-vs-{{ uid }} .no{width:26px;height:26px;border-radius:50%;background:rgb(var(--r-no));color:rgb(var(--r-no_icono));display:grid;place-items:center}
+  @media(max-width:760px){
+    #gad-vs-{{ uid }}{padding:56px 14px}#gad-vs-{{ uid }} h2{font-size:28px}
+    #gad-vs-{{ uid }} .gc-row{grid-template-columns:1.5fr .9fr .9fr}
+    #gad-vs-{{ uid }} .gc-f{font-size:14px;padding:14px 12px}#gad-vs-{{ uid }} .gc-head div{padding:14px;font-size:14px}
+  }
+</style>
+{%- capture svg_ok -%}<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>{%- endcapture -%}
+{%- capture svg_no -%}<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6 6 18"/></svg>{%- endcapture -%}
+<div id="gad-vs-{{ uid }}" style="--r-fondo: {%- render 'gad-rol', c: section.settings.color_fondo, d: 'var(--color-background)' -%}; --r-tabla: {%- render 'gad-rol', c: section.settings.color_tabla, d: 'var(--color-background)' -%}; --r-titulos: {%- render 'gad-rol', c: section.settings.color_titulos, d: 'var(--color-foreground)' -%}; --r-cabecera: {%- render 'gad-rol', c: section.settings.color_cabecera, d: 'var(--color-button)' -%}; --r-cabecera_texto: {%- render 'gad-rol', c: section.settings.color_cabecera_texto, d: 'var(--color-button-text)' -%}; --r-cabecera_otros: {%- render 'gad-rol', c: section.settings.color_cabecera_otros, d: 'var(--color-button-text)' -%}; --r-acento: {%- render 'gad-rol', c: section.settings.color_acento, d: 'var(--color-button)' -%}; --r-acento_texto: {%- render 'gad-rol', c: section.settings.color_acento_texto, d: 'var(--color-button-text)' -%}; --r-columna: {%- render 'gad-rol', c: section.settings.color_columna, d: 'var(--color-background-suave)' -%}; --r-fila: {%- render 'gad-rol', c: section.settings.color_fila, d: 'var(--color-background-suave)' -%}; --r-borde: {%- render 'gad-rol', c: section.settings.color_borde, d: 'var(--color-background-contrast)' -%}; --r-parcial: {%- render 'gad-rol', c: section.settings.color_parcial, d: 'var(--color-background-contrast)' -%}; --r-no: {%- render 'gad-rol', c: section.settings.color_no, d: 'var(--color-background-suave)' -%}; --r-no_icono: {%- render 'gad-rol', c: section.settings.color_no_icono, d: 'var(--color-background-contrast)' -%}; --r-letra: {% if section.settings.letra != blank %}'{{ section.settings.letra.family }}',system-ui,sans-serif{% else %}var(--font-heading-family){% endif %};">
+  <div class="gc-wrap">
+    {%- if section.settings.eyebrow != blank -%}<span class="gc-eye">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+    <div class="gc-t">
+      <div class="gc-row gc-head"><div>{{ section.settings.col_feature | default: 'Característica' }}</div><div class="u">{{ section.settings.col_us | default: 'Nosotros' }}</div><div class="o">{{ section.settings.col_other | default: 'Otros' }}</div></div>
+      <div class="gc-body">
+        {%- for block in section.blocks -%}
+          <div class="gc-row" {{ block.shopify_attributes }}>
+            <div class="gc-f">{{ block.settings.feature }}</div>
+            <div class="gc-c u">{%- if block.settings.us == 'no' -%}<span class="no">{{ svg_no }}</span>{%- else -%}<span class="ok">{{ svg_ok }}</span>{%- endif -%}</div>
+            <div class="gc-c">{%- if block.settings.other == 'ok' -%}<span class="ok">{{ svg_ok }}</span>{%- elsif block.settings.other == 'partial' -%}<span class="ok grey">{{ svg_ok }}</span>{%- else -%}<span class="no">{{ svg_no }}</span>{%- endif -%}</div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Tabla versus",
+  "tag": "section",
+  "class": "gad-vs-table-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "03 — Por qué elegirnos"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Mejor que lo de siempre"
+    },
+    {
+      "type": "text",
+      "id": "col_feature",
+      "label": "Columna 1 (encabezado)",
+      "default": "Característica"
+    },
+    {
+      "type": "text",
+      "id": "col_us",
+      "label": "Columna propia",
+      "default": "Nosotros"
+    },
+    {
+      "type": "text",
+      "id": "col_other",
+      "label": "Columna otros",
+      "default": "Otros"
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo",
+      "label": "Fondo de la sección"
+    },
+    {
+      "type": "color",
+      "id": "color_tabla",
+      "label": "Fondo de la tabla"
+    },
+    {
+      "type": "color",
+      "id": "color_titulos",
+      "label": "Títulos y textos"
+    },
+    {
+      "type": "color",
+      "id": "color_cabecera",
+      "label": "Fondo de la cabecera"
+    },
+    {
+      "type": "color",
+      "id": "color_cabecera_texto",
+      "label": "Texto de la cabecera"
+    },
+    {
+      "type": "color",
+      "id": "color_cabecera_otros",
+      "label": "Texto de la columna \"otros\" en la cabecera"
+    },
+    {
+      "type": "color",
+      "id": "color_acento",
+      "label": "Acento (volanta, columna propia y tildes)"
+    },
+    {
+      "type": "color",
+      "id": "color_acento_texto",
+      "label": "Tilde"
+    },
+    {
+      "type": "color",
+      "id": "color_columna",
+      "label": "Fondo de la columna propia"
+    },
+    {
+      "type": "color",
+      "id": "color_fila",
+      "label": "Fondo de las filas pares"
+    },
+    {
+      "type": "color",
+      "id": "color_borde",
+      "label": "Bordes"
+    },
+    {
+      "type": "color",
+      "id": "color_parcial",
+      "label": "Tilde a medias"
+    },
+    {
+      "type": "color",
+      "id": "color_no",
+      "label": "Fondo de la cruz"
+    },
+    {
+      "type": "color",
+      "id": "color_no_icono",
+      "label": "Cruz"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra",
+      "label": "Letra"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Fila",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature",
+          "label": "Característica",
+          "default": "Una ventaja"
+        },
+        {
+          "type": "select",
+          "id": "us",
+          "label": "Columna propia",
+          "default": "ok",
+          "options": [
+            {
+              "value": "ok",
+              "label": "Sí"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "other",
+          "label": "Columna otros",
+          "default": "no",
+          "options": [
+            {
+              "value": "ok",
+              "label": "Sí"
+            },
+            {
+              "value": "partial",
+              "label": "A veces (gris)"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Tabla versus",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Primera ventaja",
+            "us": "ok",
+            "other": "no"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Segunda ventaja",
+            "us": "ok",
+            "other": "no"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Tercera ventaja",
+            "us": "ok",
+            "other": "no"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Cuarta ventaja",
+            "us": "ok",
+            "other": "no"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Quinta ventaja",
+            "us": "ok",
+            "other": "partial"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "feature": "Sexta ventaja",
+            "us": "ok",
+            "other": "no"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

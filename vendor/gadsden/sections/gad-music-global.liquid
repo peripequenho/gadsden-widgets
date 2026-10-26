@@ -1,0 +1,91 @@
+
+{%- assign s = section.settings -%}
+{%- if s.enabled and s.audio_url != blank -%}
+  <div
+    class="gad-music-float color-{{ s.color_scheme }}"
+    style="--mx: {{ s.offset_x }}px; --my: {{ s.offset_y }}px;"
+    data-side="{{ s.position }}"
+  >
+    {%- render 'gad-music', src: s.audio_url, volume: s.volume, floating: true, pulse: s.pulse, key: section.id -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Música de fondo",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Mostrar el botón de música",
+      "default": false,
+      "info": "Nunca suena sola: la prende el visitante."
+    },
+    {
+      "type": "text",
+      "id": "audio_url",
+      "label": "Dirección del audio (mp3)",
+      "info": "Subilo en Contenido > Archivos y pegá la dirección."
+    },
+    {
+      "type": "range",
+      "id": "volume",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Volumen",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "pulse",
+      "label": "El botón late mientras suena",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación del botón",
+      "default": "scheme-1",
+      "info": "El botón usa el color de botón de la combinación."
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Posición",
+      "options": [
+        {
+          "value": "bottom-left",
+          "label": "Abajo a la izquierda"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Abajo a la derecha"
+        }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "range",
+      "id": "offset_x",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Margen al costado",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "offset_y",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Margen abajo",
+      "default": 20
+    }
+  ]
+}
+{% endschema %}

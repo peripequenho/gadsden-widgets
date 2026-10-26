@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gadsden</title>
+<style>
+  /* El alto que se avisa es el de #raiz: con flow-root, los márgenes de arriba y abajo del widget quedan adentro (si no,
+     se escapan y el iframe corta el final). */
+  #raiz { display: flow-root; }
+  @font-face { font-family: 'Material Symbols Outlined'; font-style: normal; font-weight: 400; font-display: block; src: url(a/material-symbols-outlined.woff2) format('woff2'); }
+</style>
+</head>
+<body class="gradient">
+<main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1"><div id="raiz"></div></main>
+<script type="module" src="widget.js"></script>
+</body>
+</html>

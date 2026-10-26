@@ -1,0 +1,155 @@
+
+{%- liquid
+  assign roles = 'background:background,foreground:foreground,button:button,button_text:button-text,accent:accent,outline:secondary-button-text' | split: ','
+  assign dd_bg = 'background'
+  assign dd_border = 'foreground'
+  assign dd_text = 'foreground'
+  assign dd_veil = 'foreground'
+  assign q_bg = 'background'
+  assign q_border = 'foreground'
+  assign q_text = 'foreground'
+  assign q_veil = 'foreground'
+  assign pill = 'foreground'
+  for r in roles
+    assign pair = r | split: ':'
+    if settings.dd_bg == pair[0]
+      assign dd_bg = pair[1]
+    endif
+    if settings.dd_border == pair[0]
+      assign dd_border = pair[1]
+    endif
+    if settings.dd_text == pair[0]
+      assign dd_text = pair[1]
+    endif
+    if settings.dd_veil == pair[0]
+      assign dd_veil = pair[1]
+    endif
+    if settings.q_bg == pair[0]
+      assign q_bg = pair[1]
+    endif
+    if settings.q_border == pair[0]
+      assign q_border = pair[1]
+    endif
+    if settings.q_text == pair[0]
+      assign q_text = pair[1]
+    endif
+    if settings.q_veil == pair[0]
+      assign q_veil = pair[1]
+    endif
+    if settings.pill_accent == pair[0]
+      assign pill = pair[1]
+    endif
+  endfor
+  assign dd_veil_op = settings.dd_veil_opacity | default: 0 | divided_by: 100.0
+  assign dd_veil_hover = settings.dd_hover_veil | default: 0 | divided_by: 100.0
+  assign dd_border_op = settings.dd_border_opacity | default: 55 | divided_by: 100.0
+  assign dd_border_hover = settings.dd_hover_border | default: 100 | divided_by: 100.0
+  assign q_veil_op = settings.q_veil_opacity | default: 0 | divided_by: 100.0
+  assign q_veil_hover = settings.q_hover_veil | default: 0 | divided_by: 100.0
+  assign q_border_op = settings.q_border_opacity | default: 55 | divided_by: 100.0
+  assign q_border_hover = settings.q_hover_border | default: 100 | divided_by: 100.0
+  assign pill_veil = settings.pill_veil | default: 0 | divided_by: 100.0
+  assign sw_border = settings.swatch_border_opacity | default: 0 | divided_by: 100.0
+  assign sw_selected = settings.swatch_selected_border_opacity | default: 100 | divided_by: 100.0
+-%}
+{%- style -%}
+  .product-form__input--dropdown .select,
+  .gad-sticky__select {
+    --inputs-border-width: {{ settings.dd_border_width | default: 1 }}px;
+    --inputs-radius: {{ settings.dd_radius | default: 0 }}px;
+    {%- if settings.dd_shadow %}
+      box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.08);
+      border-radius: {{ settings.dd_radius | default: 0 }}px;
+    {%- endif %}
+  }
+
+  .product-form__input--dropdown .select:after,
+  .gad-sticky__select:after {
+    box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-{{ dd_border }}), {{ dd_border_op }});
+  }
+
+  .product-form__input--dropdown .select:hover:after,
+  .gad-sticky__select:hover:after {
+    box-shadow: 0 0 0 calc(var(--inputs-border-width) + 0.1rem) rgba(var(--color-{{ dd_border }}), {{ dd_border_hover }});
+  }
+
+  .product-form__input--dropdown .select__select,
+  .gad-sticky__select .select__select {
+    background-color: rgb(var(--color-{{ dd_bg }}));
+    background-image: linear-gradient(rgba(var(--color-{{ dd_veil }}), {{ dd_veil_op }}), rgba(var(--color-{{ dd_veil }}), {{ dd_veil_op }}));
+    color: rgb(var(--color-{{ dd_text }}));
+    border-radius: var(--inputs-radius);
+  }
+
+  .product-form__input--dropdown .select:hover .select__select,
+  .gad-sticky__select:hover .select__select {
+    background-image: linear-gradient(rgba(var(--color-{{ dd_veil }}), {{ dd_veil_hover }}), rgba(var(--color-{{ dd_veil }}), {{ dd_veil_hover }}));
+  }
+
+  .product-form__input--dropdown .select .svg-wrapper,
+  .gad-sticky__select .svg-wrapper {
+    color: rgb(var(--color-{{ dd_text }}));
+  }
+
+  .gad-qty .quantity {
+    --inputs-border-width: {{ settings.q_border_width | default: 1 }}px;
+    --inputs-radius: {{ settings.q_radius | default: 0 }}px;
+    background-color: rgb(var(--color-{{ q_bg }}));
+    background-image: linear-gradient(rgba(var(--color-{{ q_veil }}), {{ q_veil_op }}), rgba(var(--color-{{ q_veil }}), {{ q_veil_op }}));
+    color: rgb(var(--color-{{ q_text }}));
+    border-radius: var(--inputs-radius);
+    {%- if settings.q_shadow %}
+      box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.08);
+    {%- endif %}
+  }
+
+  .gad-qty .quantity:after {
+    box-shadow: 0 0 0 var(--inputs-border-width) rgba(var(--color-{{ q_border }}), {{ q_border_op }});
+  }
+
+  .gad-qty .quantity:hover {
+    background-image: linear-gradient(rgba(var(--color-{{ q_veil }}), {{ q_veil_hover }}), rgba(var(--color-{{ q_veil }}), {{ q_veil_hover }}));
+  }
+
+  .gad-qty .quantity:hover:after {
+    box-shadow: 0 0 0 calc(var(--inputs-border-width) + 0.1rem) rgba(var(--color-{{ q_border }}), {{ q_border_hover }});
+  }
+
+  .gad-qty .quantity__input,
+  .gad-qty .quantity__button {
+    color: rgb(var(--color-{{ q_text }}));
+  }
+
+  .product-form__input--pill input[type='radio'] + label {
+    padding: {{ settings.pill_pad_y | default: 10 }}px {{ settings.pill_pad_x | default: 20 }}px;
+    font-size: {{ settings.pill_text_size | default: 14 }}px;
+    {%- if settings.pill_bold %}
+      font-weight: 700;
+    {%- endif %}
+    background-color: rgb(var(--color-background));
+    background-image: linear-gradient(rgba(var(--color-{{ pill }}), {{ pill_veil }}), rgba(var(--color-{{ pill }}), {{ pill_veil }}));
+  }
+
+  .product-form__input--pill input[type='radio']:checked + label {
+    background-color: rgb(var(--color-{{ pill }}));
+    background-image: none;
+    border-color: rgb(var(--color-{{ pill }}));
+    {%- if pill == 'button' %}
+      color: rgb(var(--color-button-text));
+    {%- else %}
+      color: rgb(var(--color-background));
+    {%- endif %}
+  }
+
+  .swatch-input__input + .swatch-input__label:not(.swatch-input__label--square) {
+    --swatch-input--border-radius: {{ settings.swatch_radius | default: 50 }}%;
+  }
+
+  .swatch-input__input + .swatch-input__label {
+    box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), {{ sw_border }});
+  }
+
+  .swatch-input__input:checked + .swatch-input__label {
+    outline: 0.2rem solid rgba(var(--color-foreground), {{ sw_selected }});
+  }
+{%- endstyle -%}

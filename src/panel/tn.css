@@ -1,0 +1,238 @@
+/*
+ * El editor con la cara del editor de diseño de Tiendanube (admin/brand-editor, medido el 24-oct: Tailwind + Geist, no
+ * Nimbus): los mismos colores, medidas, letras e íconos (los de Nimbus, que son los que usa). Clases tn-*.
+ */
+.tn {
+  --bg: #fff; --fg: #0a0a0a; --muted: #f6f6f6; --muted-fg: #5d5d5d; --border: #e7e7e7;
+  --primary: #0059d5; --primary-hover: #00429f; --primary-surface: #eef5ff; --sel: #e1eefe;
+  --disabled-surface: #e7e7e7; --disabled-text: #6d6d6d; --neutral-interactive: #b0b0b0; --neutral-surface: #f6f6f6;
+  --destructive: #c80003; --destructive-surface: #fedede;
+  font-family: Geist, "Geist Fallback", system-ui, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased;
+  height: 100vh; display: flex; flex-direction: column; background: var(--muted); font-size: 14px; line-height: 20px;
+}
+:where(.tn) *, :where(.tn) *::before, :where(.tn) *::after { box-sizing: border-box; }
+:where(.tn) button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:where(.tn) button:disabled { cursor: not-allowed; }
+:where(.tn) input, :where(.tn) textarea, :where(.tn) select { font: inherit; color: var(--fg); }
+
+/* Botón de ícono (el de la ×, la ruedita, el ⋮...). */
+.tn-ib { display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; color: var(--muted-fg); transition: background-color .15s; flex-shrink: 0; }
+.tn-ib:hover { background: var(--muted); }
+
+/* Arriba. */
+.tn-header { height: 56px; border-bottom: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; flex-shrink: 0; }
+.tn-header-izq { position: relative; width: 304px; flex-shrink: 0; height: 100%; display: flex; align-items: center; gap: 4px; padding: 0 16px 0 12px; }
+.tn-header-izq::after { content: ""; position: absolute; right: 0; top: 14px; bottom: 14px; width: 1px; background: var(--border); }
+.tn-header-titulo { flex: 1; min-width: 0; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tn-header-centro { display: flex; align-items: center; justify-content: space-between; flex: 1; min-width: 0; padding: 0 16px 0 12px; }
+.tn-header-der { width: 320px; flex-shrink: 0; height: 100%; border-left: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 8px; }
+.tn-pagina { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border) !important; background: var(--bg) !important; font-size: 14px; transition: border-color .15s; }
+.tn-pagina:hover { border-color: rgba(10, 10, 10, .3) !important; }
+.tn-pagina b { font-weight: 500; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tn-previsualizar { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; border-radius: 6px; font-size: 14px; color: var(--primary) !important; max-width: 260px; transition: background-color .15s; }
+.tn-previsualizar:hover { background: var(--primary-surface) !important; }
+.tn-previsualizar span { flex-shrink: 0; color: rgba(0, 89, 213, .7); }
+.tn-previsualizar b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tn-dispositivos { display: flex; align-items: center; background: var(--muted); border-radius: 8px; height: 32px; box-shadow: inset 0 0 1px 0 rgba(0, 0, 0, .3); }
+.tn-dispositivos button { height: 100%; padding: 0 12px; border-radius: 8px; border: 1px solid transparent !important; color: var(--muted-fg) !important; display: flex; align-items: center; }
+.tn-dispositivos button.tn-on { background: var(--primary-surface) !important; border-color: var(--primary) !important; color: var(--primary) !important; }
+.tn-historia { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; height: 32px; }
+.tn-historia button { height: 100%; padding: 0 10px; display: flex; align-items: center; color: var(--muted-fg) !important; }
+.tn-historia button:disabled { color: var(--disabled-text) !important; opacity: .55; }
+.tn-historia i { width: 1px; height: 100%; background: var(--border); }
+.tn-boton-borde { height: 32px; padding: 0 10px; border: 1px solid var(--border) !important; border-radius: 8px; display: flex; align-items: center; color: var(--muted-fg) !important; }
+.tn-boton-borde:hover, .tn-boton-plano:hover { background: var(--muted) !important; }
+.tn-boton-plano { height: 32px; padding: 0 6px; border-radius: 8px; display: flex; align-items: center; color: var(--muted-fg) !important; }
+.tn-pildora { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--primary-surface); font-size: 12px; line-height: 16px; color: var(--primary); white-space: nowrap; }
+.tn-pildora::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: rgba(0, 89, 213, .35); }
+.tn-pildora.tn-sin { background: #fff4e5; color: #8a4b00; }
+.tn-pildora.tn-sin::before { background: rgba(138, 75, 0, .4); }
+.tn-publicar { padding: 6px 12px; border-radius: 8px; font-size: 13px; line-height: 20px; font-weight: 500; white-space: nowrap; background: var(--primary) !important; color: #fff !important; transition: background-color .15s; }
+.tn-publicar:hover { background: var(--primary-hover) !important; }
+.tn-publicar:disabled { background: var(--disabled-surface) !important; color: var(--disabled-text) !important; }
+
+/* Menús (la página, el ⋮, los tipos de bloque). */
+.tn-menu { position: absolute; z-index: 50; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1); overflow: hidden; }
+.tn-menu-item { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; font-size: 14px; text-align: left; transition: background-color .15s; }
+.tn-menu-item:hover { background: var(--muted) !important; }
+.tn-menu-item > span { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tn-menu-item svg { color: var(--disabled-text); flex-shrink: 0; }
+.tn-menu-item.tn-actual { background: rgba(238, 245, 255, .5) !important; }
+.tn-menu-item.tn-actual span span { color: var(--primary-hover); }
+.tn-menu-item.tn-peligro, .tn-menu-item.tn-peligro svg { color: var(--destructive); }
+.tn-menu hr { margin: 4px 8px; border: 0; border-top: 1px solid var(--border); }
+.tn-menu-buscar { padding: 8px; border-bottom: 1px solid var(--border); }
+.tn-menu-titulo { display: flex; align-items: center; gap: 6px; padding: 10px 12px 6px; font-size: 14px; font-weight: 500; }
+.tn-menu-rotulo { padding: 8px 12px 2px; font-size: 12px; color: var(--disabled-text); }
+
+/* El cuerpo: árbol | página | ajustes. */
+.tn-cuerpo { flex: 1; display: flex; overflow: hidden; position: relative; }
+.tn-izq { width: 304px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--bg); overflow: auto; transition: width .4s ease-in-out, opacity .4s; }
+.tn-der { width: 320px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--bg); overflow: hidden; display: flex; flex-direction: column; transition: width .4s ease-in-out, opacity .4s; }
+.tn-oculto { width: 0 !important; opacity: 0; border: 0; }
+.tn-centro { flex: 1; min-width: 0; height: 100%; overflow: hidden; position: relative; background: #fff; display: flex; flex-direction: column; }
+.tn-preview { flex: 1; position: relative; overflow: hidden; padding: 12px; display: flex; flex-direction: column; }
+.tn-marco { background: #fff; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, .1), 0 4px 6px -4px rgba(0, 0, 0, .1); overflow: hidden; margin: 0 auto; width: 100%; height: 100%; border-radius: 8px; transition: max-width .5s ease-in-out, border-radius .5s ease-in-out; }
+.tn-marco.tn-celular { max-width: 440px; border-radius: 16px; }
+.tn-expandir { position: absolute; bottom: 16px; right: 16px; z-index: 10; display: flex; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1); background: #fff; border: 1px solid var(--border); }
+.tn-expandir button { padding: 10px; border-radius: 12px; color: var(--muted-fg) !important; display: flex; }
+.tn-expandir button:hover { background: var(--muted) !important; }
+
+/* El árbol. */
+.tn-grupo { border-bottom: 1px solid var(--border); }
+.tn-grupo-cab { display: flex; align-items: center; gap: 8px; padding: 12px 16px 12px 12px; background: var(--bg); }
+.tn-grupo-cab > button:first-child { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tn-grupo-cab b { flex: 1; text-align: left; font-size: 12px; line-height: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tn-grupo-cuerpo { padding: 0 12px 8px; }
+.tn-chev { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--muted-fg); }
+.tn-chev:hover { background: var(--border) !important; }
+.tn-chev svg { transition: transform .15s; }
+.tn-chev.tn-cerrado svg { transform: rotate(-90deg); }
+.tn-fila { position: relative; display: flex; align-items: center; gap: 2px; height: 36px; margin-left: var(--sangria, 0px); padding: 0 8px; border-radius: 6px; cursor: pointer; transition: background-color .15s; font-size: 12px; line-height: 16px; }
+.tn-fila:hover { background: var(--muted); }
+.tn-fila.tn-sel { background: var(--sel); }
+.tn-fila-icono { width: 16px; height: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--muted-fg); }
+.tn-hijo .tn-fila-icono, .tn-hijo .tn-chev { color: var(--disabled-text); }
+.tn-fila-icono .tn-tipo { display: flex; }
+.tn-fila-icono .tn-asa { display: none; cursor: grab; color: var(--disabled-text); }
+.tn-fila.tn-arrastrable.tn-sel .tn-fila-icono .tn-tipo, .tn-fila.tn-arrastrable:hover .tn-fila-icono .tn-tipo { display: none; }
+.tn-fila.tn-arrastrable.tn-sel .tn-fila-icono .tn-asa, .tn-fila.tn-arrastrable:hover .tn-fila-icono .tn-asa { display: flex; }
+.tn-fila-texto { flex: 1; min-width: 0; padding-left: 4px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tn-fila.tn-sel .tn-fila-texto { color: var(--primary); }
+.tn-fila-texto small { font-size: 12px; font-weight: 400; margin-left: 4px; color: var(--disabled-text); }
+.tn-fila.tn-apagada .tn-fila-texto, .tn-fila.tn-apagada .tn-fila-icono { color: var(--neutral-interactive); }
+.tn-acciones { display: none; align-items: center; gap: 2px; }
+.tn-fila:hover .tn-acciones, .tn-fila.tn-sel .tn-acciones { display: flex; }
+/* Lo oculto muestra siempre su ojo tachado (como en Tiendanube); las otras acciones, sólo al pasar el mouse. */
+.tn-fila.tn-apagada .tn-acciones { display: flex; }
+.tn-fila.tn-apagada:not(:hover):not(.tn-sel) .tn-acciones button:not(.tn-ojo) { display: none; }
+.tn-fila.tn-apagada .tn-ojo { color: var(--neutral-interactive); }
+.tn-acciones button { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--fg); }
+.tn-acciones button:hover { background: var(--border) !important; }
+.tn-acciones button.tn-borrar:hover { background: var(--destructive-surface) !important; color: var(--destructive) !important; }
+.tn-hijos { position: relative; --sangria: 24px; }
+.tn-hijos::before { content: ""; position: absolute; top: 0; bottom: 4px; left: 18px; width: 1px; background: var(--border); }
+.tn-hijos.tn-de-sel { background: rgba(238, 245, 255, .4); border-radius: 4px; }
+.tn-hijos .tn-hijos { --sangria: 48px; }
+.tn-hijos .tn-hijos::before { left: 42px; }
+.tn-agregar { display: flex; align-items: center; gap: 2px; width: calc(100% - var(--sangria, 0px)); height: 36px; margin-left: var(--sangria, 0px); padding: 0 8px; border-radius: 6px; font-size: 12px; color: var(--primary) !important; transition: background-color .15s; }
+.tn-agregar:hover { background: var(--primary-surface) !important; color: var(--primary-hover) !important; }
+.tn-agregar > span:first-child { width: 20px; flex-shrink: 0; }
+.tn-agregar > span:last-child { padding-left: 4px; }
+/* La línea para insertar entre dos filas (pasar el mouse: línea azul y un + a la derecha). */
+.tn-insertar { position: relative; height: 0; }
+.tn-insertar button { position: absolute; left: var(--sangria, 0px); right: 0; top: -6px; height: 12px; z-index: 10; }
+.tn-insertar button::before { content: ""; position: absolute; left: 0; right: 16px; top: 50%; transform: translateY(-50%); height: 2px; border-radius: 999px; background: var(--primary); opacity: 0; transition: opacity .15s; }
+.tn-insertar button span { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; }
+.tn-insertar button:hover::before, .tn-insertar button:hover span { opacity: 1; }
+.tn-sobre { box-shadow: inset 0 -2px 0 var(--primary); }
+
+/* Ajustes globales (la ruedita): la lista en lugar del árbol. */
+.tn-ajustes-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border) !important; transition: background-color .15s; }
+.tn-ajustes-item:hover, .tn-ajustes-item.tn-sel { background: var(--muted) !important; }
+.tn-ajustes-item span { flex: 1; font-size: 14px; }
+.tn-ajustes-item svg:last-child { color: var(--disabled-text); }
+.tn-ajustes-rotulo { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 500; color: var(--muted-fg); }
+
+/* El panel de la derecha. */
+.tn-vacio { display: flex; align-items: center; justify-content: center; height: 100%; padding: 16px; text-align: center; font-size: 14px; color: var(--muted-fg); }
+.tn-panel-cab { border-bottom: 1px solid var(--border); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; position: relative; flex-shrink: 0; }
+.tn-panel-cab > b, .tn-panel-cab > input { flex: 1; min-width: 0; font-size: 14px; line-height: 20px; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 2px solid transparent; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; }
+.tn-panel-cab > input { border-color: var(--primary); outline: none; }
+.tn-ajustes { flex: 1; overflow: auto; padding: 16px; }
+.tn-titulo-ajustes { padding: 16px 16px 8px; margin: 8px -16px 0; border-top: 1px solid var(--border); font-size: 14px; font-weight: 600; }
+.tn-titulo-ajustes:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+.tn-campo { padding: 8px 0; }
+.tn-etiqueta { display: block; font-size: 12px; line-height: 16px; color: var(--muted-fg); margin-bottom: 8px; }
+.tn-ayuda { font-size: 12px; line-height: 16px; color: var(--disabled-text); margin-top: 6px; }
+.tn-parrafo { font-size: 12px; line-height: 16px; color: var(--muted-fg); padding: 8px 0; }
+.tn-input { width: 100%; height: 32px; padding: 0 12px; border: 1px solid var(--neutral-interactive); border-radius: 8px; font-size: 14px; background: var(--bg); }
+.tn-input:focus, .tn-area:focus, .tn-select:focus { outline: none; box-shadow: 0 0 0 2px var(--primary); border-color: transparent; }
+.tn-area { width: 100%; min-height: 80px; padding: 6px 12px; border: 1px solid var(--neutral-interactive); border-radius: 8px; font-size: 14px; background: var(--bg); resize: vertical; }
+.tn-con-icono { position: relative; display: flex; align-items: center; }
+.tn-con-icono > svg { position: absolute; left: 8px; color: var(--muted-fg); pointer-events: none; }
+.tn-con-icono .tn-input { padding-left: 32px; }
+.tn-select { width: 100%; height: 36px; padding: 0 32px 0 12px; border: 1px solid var(--neutral-interactive); border-radius: 8px; font-size: 12px; background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='%235d5d5d'%3E%3Cpath d='M8 10.18 2.39 4.52l-.89.87 5.59 5.71a1.18 1.18 0 0 0 .86.39 1.13 1.13 0 0 0 .85-.39l5.7-5.7-.88-.89z'/%3E%3C/svg%3E") no-repeat right 10px center; appearance: none; cursor: pointer; }
+.tn-segmentos { display: inline-flex; flex-wrap: wrap; background: var(--muted); border-radius: 8px; }
+.tn-segmentos button { min-height: 32px; padding: 6px 12px; font-size: 12px; line-height: 16px; border-radius: 8px; border: 1px solid transparent !important; }
+.tn-segmentos button.tn-on { background: var(--primary-surface) !important; border-color: var(--primary) !important; color: var(--primary) !important; font-weight: 500; }
+.tn-interruptor { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; background: var(--muted); }
+.tn-interruptor label { flex: 1; min-width: 0; font-size: 12px; line-height: 16px; color: var(--muted-fg); cursor: pointer; }
+.tn-interruptor button { position: relative; width: 28px; height: 16px; flex-shrink: 0; border-radius: 999px; border: 2px solid transparent !important; background: var(--border) !important; transition: background-color .2s; }
+.tn-interruptor button span { position: absolute; top: 0; left: 0; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .1), 0 1px 2px -1px rgba(0, 0, 0, .1); transition: transform .2s; }
+.tn-interruptor button.tn-on { background: var(--primary) !important; }
+.tn-interruptor button.tn-on span { transform: translateX(12px); }
+.tn-rango { display: flex; align-items: center; gap: 8px; }
+.tn-rango-numero { display: flex; align-items: center; height: 32px; border: 1px solid var(--neutral-interactive); border-radius: 8px; overflow: hidden; background: var(--bg); flex-shrink: 0; }
+.tn-rango-numero input { width: 48px; padding: 0 8px; border: 0; font-size: 14px; background: transparent; outline: none; appearance: textfield; -moz-appearance: textfield; }
+.tn-rango-numero input::-webkit-outer-spin-button, .tn-rango-numero input::-webkit-inner-spin-button { appearance: none; margin: 0; }
+.tn-rango-numero small { padding-right: 8px; font-size: 12px; color: var(--disabled-text); }
+.tn-rango-barra { flex: 1; position: relative; display: flex; align-items: center; height: 32px; padding: 0 4px; }
+.tn-rango-barra > i { position: absolute; left: 4px; right: 4px; height: 4px; border-radius: 999px; background: var(--disabled-surface); }
+.tn-rango-barra > i > i { display: block; height: 100%; border-radius: 999px; background: var(--primary); }
+.tn-rango-barra input { position: absolute; left: 4px; width: calc(100% - 8px); height: 16px; opacity: 0; cursor: pointer; margin: 0; }
+.tn-rango-barra > b { position: absolute; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--primary); background: var(--bg); pointer-events: none; transform: translateX(-50%); }
+.tn-color { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--neutral-interactive); background: var(--bg); }
+.tn-color:focus-within { box-shadow: 0 0 0 2px var(--primary); border-color: transparent; }
+.tn-color-muestra { position: relative; width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--neutral-interactive); flex-shrink: 0; overflow: hidden; }
+.tn-color-muestra input { position: absolute; inset: -8px; width: 32px; height: 32px; opacity: 0; cursor: pointer; }
+.tn-color input[type=text] { flex: 1; min-width: 0; border: 0; outline: none; font-size: 12px; color: var(--muted-fg); background: transparent; }
+.tn-imagen { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 12px; overflow: hidden; background: var(--neutral-surface); aspect-ratio: 16 / 9; width: 100%; border: 1px solid var(--neutral-interactive); cursor: pointer; color: var(--muted-fg); transition: background-color .15s; }
+.tn-imagen:hover { background: #ededed; }
+.tn-imagen img, .tn-imagen video { width: 100%; height: 100%; object-fit: cover; }
+.tn-imagen-botones { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+.tn-imagen-botones button { width: 32px; height: 32px; border-radius: 50% !important; background: var(--bg) !important; border: 1px solid var(--neutral-interactive) !important; box-shadow: 0 1px 2px rgba(0, 0, 0, .05); display: flex; align-items: center; justify-content: center; color: var(--muted-fg) !important; }
+.tn-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.tn-chips span { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--muted); font-size: 12px; }
+.tn-resultados { margin-top: 4px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tn-resultados button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 12px; text-align: left; }
+.tn-resultados button:hover { background: var(--muted) !important; }
+.tn-resultados img { width: 28px; height: 28px; object-fit: cover; border-radius: 4px; }
+.tn-aviso { margin: 8px 0; padding: 8px 12px; border-radius: 8px; background: #fff4e5; color: #6b3b00; font-size: 12px; line-height: 16px; }
+.tn-boton-sec { height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--neutral-interactive) !important; font-size: 12px; font-weight: 500; background: var(--bg) !important; }
+.tn-boton-sec:hover { background: var(--muted) !important; }
+
+/* El modal de "Agregar sección". */
+.tn-velo { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, .5); }
+.tn-modal { position: fixed; z-index: 61; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg); border-radius: 8px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 8px 10px -6px rgba(0, 0, 0, .1); width: 900px; max-width: 90vw; min-height: 50vh; max-height: 80vh; display: flex; flex-direction: column; }
+.tn-modal-chico { width: 440px; min-height: 0; }
+.tn-modal-cab { display: flex; align-items: center; justify-content: space-between; padding: 24px; }
+.tn-modal-cab h2 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; }
+.tn-modal-cuerpo { display: flex; flex: 1; min-height: 0; overflow: hidden; padding: 24px 0 0 24px; gap: 24px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.tn-modal-nav { width: 180px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px; overflow-y: auto; }
+.tn-modal-nav button { display: flex; align-items: center; width: 100%; text-align: left; min-height: 20px; font-size: 14px; transition: color .15s; }
+.tn-modal-nav button:hover, .tn-modal-nav button.tn-on { color: var(--primary) !important; }
+.tn-modal-lista { flex: 1; min-width: 0; overflow-y: auto; padding: 0 24px 24px 0; }
+.tn-modal-grupo { margin-bottom: 30px; }
+.tn-modal-grupo h3 { margin: 0 0 16px; font-size: 14px; font-weight: 500; }
+.tn-modal-grupo > div { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: start; }
+.tn-tarjeta { display: block; width: 100%; border-radius: 4px; background: #fff !important; overflow: hidden; padding: 8px !important; border: 1px solid var(--border) !important; transition: box-shadow .15s; }
+.tn-tarjeta:hover { box-shadow: 0 1px 4px 3px rgba(0, 0, 0, .05); }
+.tn-tarjeta.tn-on { border-color: var(--primary) !important; box-shadow: 0 0 0 1px var(--primary); }
+.tn-tarjeta div { position: relative; aspect-ratio: 16 / 10; background: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted-fg); padding: 8px; text-align: center; }
+.tn-tarjeta img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.tn-tarjeta p { margin: 6px 0 0; font-size: 12px; color: #8a4b00; text-align: left; }
+.tn-modal-pie { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 20px; }
+.tn-modal-texto { padding: 0 24px 24px; font-size: 14px; color: var(--muted-fg); }
+.tn-boton { padding: 6px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; background: var(--primary) !important; color: #fff !important; }
+.tn-boton:hover { background: var(--primary-hover) !important; }
+.tn-boton:disabled { background: #8db5ec !important; }
+.tn-boton.tn-peligro { background: var(--destructive) !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+
+/* "Usar un campo personalizado del producto", debajo del selector de imagen. */
+.tn-enlace { align-self: flex-start; padding: 2px 0; font-size: 12px; color: var(--primary) !important; }
+.tn-enlace:hover { text-decoration: underline; }
+
+/* "O elegí de la biblioteca": el modal "Seleccionar archivo" de los campos de imagen del admin de Tiendanube. */
+.tn-biblio { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+.tn-biblio-soltar { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px; border: 1px dashed var(--primary); border-radius: 8px; background: var(--primary-surface); color: var(--primary); cursor: pointer; text-align: center; }
+.tn-biblio-soltar b { font-weight: 500; font-size: 14px; }
+.tn-biblio-soltar span { font-size: 11px; }
+.tn-biblio-grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.tn-biblio-grilla button { display: flex; flex-direction: column; gap: 4px; padding: 4px; border-radius: 8px; border: 2px solid transparent !important; text-align: left; }
+.tn-biblio-grilla button.tn-on { border-color: var(--primary) !important; }
+.tn-biblio-grilla img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; background: var(--muted); }
+.tn-biblio-grilla span { font-size: 11px; color: var(--primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tn-biblio-vacia { margin: 24px 0; text-align: center; font-size: 13px; color: var(--muted-fg); }
+.tn-biblio-error { margin: 0; font-size: 12px; color: var(--destructive); }

@@ -1,0 +1,567 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign p = all_products[section.settings.handle]
+  assign destino = p.url | default: '/products/athlex'
+-%}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+
+{% style %}
+  #ax-test-{{ uid }}{
+    --tinta:#141210;--papel:#E6DFCE;--papel-2:#D6CDB6;--lima:#93D920;--lima-honda:#6BA512;
+    --rojo:#C0392B;
+    --impacto:'Archivo Black','Arial Black',Haettenschweiler,Impact,sans-serif;
+    --texto:'Barlow Semi Condensed','Barlow','Segoe UI',Arial,sans-serif;
+    --lectura:'Barlow','Barlow Semi Condensed','Segoe UI',Arial,sans-serif;
+    background:var(--papel);color:var(--tinta);font-family:var(--lectura);
+    padding:0 0 46px;min-height:78vh;
+    background-image:radial-gradient(var(--papel-2) 1.1px,transparent 1.2px);background-size:7px 7px;
+  }
+  #ax-test-{{ uid }} *{box-sizing:border-box}
+  #ax-test-{{ uid }} h1,#ax-test-{{ uid }} h2,#ax-test-{{ uid }} h3,#ax-test-{{ uid }} h4{color:inherit}
+  #ax-test-{{ uid }} .ax-col{max-width:620px;margin:0 auto;padding:0 20px}
+  #ax-test-{{ uid }} [hidden]{display:none !important}
+
+  
+  #ax-test-{{ uid }} .ax-prog{position:sticky;top:0;z-index:5;background:var(--papel);
+    padding:14px 20px 12px;border-bottom:3px solid var(--tinta)}
+  #ax-test-{{ uid }} .ax-prog-txt{font-family:var(--impacto);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;margin:0 0 8px;display:flex;justify-content:space-between}
+  #ax-test-{{ uid }} .ax-prog-riel{height:8px;background:var(--papel-2);border:2px solid var(--tinta)}
+  #ax-test-{{ uid }} .ax-prog-riel b{display:block;height:100%;background:var(--lima);
+    transform-origin:left;transform:scaleX(0);transition:transform .25s ease}
+
+  
+  #ax-test-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--tinta);color:var(--papel);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 16px}
+  #ax-test-{{ uid }} .ax-eye span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} h1{margin:0 0 14px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(27px,7.8vw,40px);line-height:1.03;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block;max-width:100%}
+  #ax-test-{{ uid }} h1 em{font-style:normal;background:var(--lima);padding:1px 8px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-test-{{ uid }} .ax-bajada{font-size:17.5px;line-height:1.55;margin:0 0 20px}
+  #ax-test-{{ uid }} .ax-nada{list-style:none;margin:0 0 24px;padding:0;
+    font-family:var(--texto);font-size:15px}
+  #ax-test-{{ uid }} .ax-nada li{display:flex;gap:9px;align-items:flex-start;margin:0 0 8px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-nada svg{width:18px;height:18px;flex:none;color:var(--lima-honda);margin-top:1px}
+
+  
+  #ax-test-{{ uid }} .ax-paso{padding-top:26px}
+  #ax-test-{{ uid }} .ax-num{font-family:var(--impacto);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--lima-honda);margin:0 0 8px}
+  #ax-test-{{ uid }} h2{margin:0 0 6px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(22px,6.4vw,30px);line-height:1.06;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block;max-width:100%}
+  #ax-test-{{ uid }} .ax-ayuda{font-family:var(--texto);font-size:15px;line-height:1.4;
+    margin:0 0 18px;opacity:.8}
+  #ax-test-{{ uid }} .ax-aliento{font-family:var(--impacto);font-size:12px;letter-spacing:.06em;
+    text-transform:uppercase;background:var(--papel-2);border-left:5px solid var(--lima);
+    padding:9px 12px;margin:0 0 16px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-ops{display:grid;gap:10px;margin:0 0 18px}
+  #ax-test-{{ uid }} .ax-op{display:block;width:100%;text-align:left;background:var(--papel);
+    border:3px solid var(--tinta);padding:15px 16px;font-family:var(--texto);font-size:17px;
+    line-height:1.28;color:var(--tinta);cursor:pointer;transition:background .12s ease}
+  #ax-test-{{ uid }} .ax-op:hover,#ax-test-{{ uid }} .ax-op:focus-visible{background:var(--lima);outline:none}
+  #ax-test-{{ uid }} .ax-op b{display:block;font-family:var(--impacto);font-size:16px;
+    text-transform:uppercase;line-height:1.1;margin:0 0 3px}
+  #ax-test-{{ uid }} .ax-atras{background:none;border:none;padding:6px 0;cursor:pointer;
+    font-family:var(--impacto);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--tinta);opacity:.6}
+
+  
+  #ax-test-{{ uid }} .ax-chapa{font-family:var(--impacto);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--lima);color:var(--tinta);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 14px}
+  #ax-test-{{ uid }} .ax-chapa span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} .ax-chapa.ax-alerta{background:var(--rojo);color:#fff}
+  #ax-test-{{ uid }} .ax-res h2{margin-bottom:14px}
+  #ax-test-{{ uid }} .ax-res p{font-size:17px;line-height:1.6;margin:0 0 16px}
+  #ax-test-{{ uid }} .ax-res h3{margin:26px 0 10px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:16px;letter-spacing:.02em;line-height:1.15;
+    border-bottom:3px solid var(--tinta);padding-bottom:7px}
+  #ax-test-{{ uid }} .ax-res ul{margin:0 0 16px;padding-left:20px;font-size:16.5px;line-height:1.5}
+  #ax-test-{{ uid }} .ax-res li{margin:0 0 9px}
+  #ax-test-{{ uid }} .ax-dest{margin:20px 0;padding:17px 18px;background:var(--tinta);color:var(--papel);
+    font-family:var(--impacto);text-transform:uppercase;font-size:clamp(16px,4.6vw,21px);line-height:1.2}
+  #ax-test-{{ uid }} .ax-dest em{font-style:normal;background:var(--lima);color:var(--tinta);padding:0 5px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-test-{{ uid }} .ax-espejo{margin:0 0 20px;padding:14px 16px;background:var(--papel-2);
+    border-left:6px solid var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.45}
+  #ax-test-{{ uid }} .ax-espejo b{display:block;font-family:var(--impacto);font-size:11px;
+    letter-spacing:.14em;text-transform:uppercase;margin:0 0 7px}
+  #ax-test-{{ uid }} .ax-espejo ul{margin:0;padding-left:18px;font-size:15px}
+  #ax-test-{{ uid }} .ax-espejo li{margin:0 0 4px}
+
+  
+  #ax-test-{{ uid }} .ax-voces{margin:22px 0;border:3px solid var(--tinta);background:var(--papel)}
+  #ax-test-{{ uid }} .ax-voces-tit{background:var(--tinta);color:var(--papel);font-family:var(--impacto);
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px;line-height:1.3}
+  #ax-test-{{ uid }} .ax-voces blockquote{margin:0;padding:14px 16px;border-bottom:2px dashed var(--papel-2);
+    font-size:16px;line-height:1.45;font-style:italic}
+  #ax-test-{{ uid }} .ax-voces blockquote:last-of-type{border-bottom:none}
+  #ax-test-{{ uid }} .ax-voces cite{display:block;margin-top:6px;font-family:var(--texto);font-size:12.5px;
+    font-style:normal;letter-spacing:.05em;text-transform:uppercase;opacity:.65}
+  #ax-test-{{ uid }} .ax-voces .ax-voces-pie{padding:10px 14px;background:var(--papel-2);
+    font-family:var(--texto);font-size:12.5px;line-height:1.4}
+
+  
+  #ax-test-{{ uid }} .ax-caja{margin:24px 0;background:var(--tinta);color:var(--papel);padding:20px}
+  #ax-test-{{ uid }} .ax-caja-top{display:flex;gap:16px;align-items:center}
+  #ax-test-{{ uid }} .ax-caja img{width:92px;height:92px;object-fit:contain;flex:none;background:var(--papel)}
+  #ax-test-{{ uid }} .ax-caja h4{margin:0 0 6px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:19px;line-height:1.06}
+  #ax-test-{{ uid }} .ax-caja .ax-sub{font-family:var(--texto);font-size:14px;line-height:1.35;opacity:.85}
+  #ax-test-{{ uid }} .ax-bene{list-style:none;margin:14px 0 0;padding:0;font-family:var(--texto);font-size:15px}
+  #ax-test-{{ uid }} .ax-bene li{display:flex;gap:9px;align-items:flex-start;margin:0 0 7px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-bene svg{width:17px;height:17px;flex:none;color:var(--lima);margin-top:1px}
+  #ax-test-{{ uid }} .ax-precio{display:flex;align-items:baseline;gap:10px;margin:14px 0 0;flex-wrap:wrap}
+  #ax-test-{{ uid }} .ax-precio b{font-family:var(--impacto);font-size:30px;letter-spacing:-.02em}
+  #ax-test-{{ uid }} .ax-precio s{font-family:var(--texto);font-size:16px;opacity:.6}
+  #ax-test-{{ uid }} .ax-cta{display:block;margin:14px 0 0;background:var(--lima);color:var(--tinta);
+    font-family:var(--impacto);text-transform:uppercase;font-size:17px;text-align:center;
+    padding:16px 14px;transform:skewX(-9deg);text-decoration:none;line-height:1.12;
+    border:none;width:100%;cursor:pointer}
+  #ax-test-{{ uid }} .ax-cta span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} .ax-caja-pie{margin:12px 0 0;font-family:var(--texto);font-size:13.5px;
+    line-height:1.4;display:flex;gap:8px;align-items:flex-start}
+  #ax-test-{{ uid }} .ax-caja-pie svg{width:17px;height:17px;flex:none;color:var(--lima);margin-top:1px}
+  
+  #ax-test-{{ uid }} .ax-op::before,#ax-test-{{ uid }} .ax-op::after,
+  #ax-test-{{ uid }} .ax-cta::before,#ax-test-{{ uid }} .ax-cta::after{content:none !important;display:none !important}
+  #ax-test-{{ uid }} .ax-op,#ax-test-{{ uid }} .ax-cta{border-radius:0 !important;box-shadow:none !important}
+
+  #ax-test-{{ uid }} .ax-legal{margin:26px 0 0;padding:13px 0 0;border-top:2px solid var(--tinta);
+    font-family:var(--texto);font-size:12.5px;line-height:1.5;opacity:.75}
+  #ax-test-{{ uid }} .ax-reset{margin:16px 0 0;background:none;border:none;padding:0;cursor:pointer;
+    font-family:var(--impacto);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--tinta);opacity:.6;text-decoration:underline}
+
+  @media (min-width:750px){
+    #ax-test-{{ uid }} .ax-caja img{width:120px;height:120px}
+  }
+{% endstyle %}
+
+<div id="ax-test-{{ uid }}" data-destino="{{ destino }}">
+
+  <div class="ax-prog" data-prog hidden>
+    <div class="ax-prog-txt"><span data-prog-txt>Pregunta 1 de 8</span><span>ATHLEX</span></div>
+    <div class="ax-prog-riel"><b data-prog-barra></b></div>
+  </div>
+
+  <div class="ax-col">
+
+    
+    <div class="ax-paso" data-pantalla="intro">
+      <span class="ax-eye"><span>Test · 8 preguntas · un minuto</span></span>
+      <h1>{{ section.settings.titulo }}</h1>
+      <p class="ax-bajada">{{ section.settings.bajada }}</p>
+      <ul class="ax-nada">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+          <span>No te pedimos el mail. No te pedimos el teléfono.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+          <span>No hay que mandar ninguna foto ni mostrarle nada a nadie.</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+          <span>Se contesta con el pulgar, en el baño, y nadie se entera.</span>
+        </li>
+      </ul>
+      <button type="button" class="ax-cta" data-empezar><span>{{ section.settings.boton_empezar }}</span></button>
+    </div>
+
+    
+
+    <div class="ax-paso" data-q="0" hidden>
+      <p class="ax-num">Pregunta 1</p>
+      <h2>¿En qué parte del cuerpo aparece la molestia?</h2>
+      <p class="ax-ayuda">Marcá el lugar donde más se siente.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="ingle"><b>En la ingle</b>El pliegue entre la pierna y la entrepierna, o al lado de las bolas.</button>
+        <button type="button" class="ax-op" data-v="pie"><b>En los pies</b>Entre los dedos, o en la planta.</button>
+        <button type="button" class="ax-op" data-v="ingle-pie"><b>En los dos lados</b>En la ingle y también en los pies.</button>
+        <button type="button" class="ax-op" data-v="otro"><b>En otro pliegue</b>Axilas, debajo de la panza, atrás de la rodilla.</button>
+      </div>
+    </div>
+
+    <div class="ax-paso" data-q="1" hidden>
+      <p class="ax-num">Pregunta 2</p>
+      <h2>¿Hace cuánto que viene pasando?</h2>
+      <p class="ax-ayuda">Contando desde la primera vez que lo notaste.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="dias"><b>Unos días</b>Arrancó esta semana o la anterior.</button>
+        <button type="button" class="ax-op" data-v="semanas"><b>Unas semanas</b>Ya lleva un tiempo largo.</button>
+        <button type="button" class="ax-op" data-v="meses"><b>Meses</b>Perdí la cuenta de cuándo empezó.</button>
+        <button type="button" class="ax-op" data-v="anios"><b>Más de un año</b>Va y viene desde hace mucho.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    <div class="ax-paso" data-q="2" hidden>
+      <p class="ax-num">Pregunta 3</p>
+      <h2>¿Qué es lo que más molesta?</h2>
+      <p class="ax-ayuda">Elegí lo que más se repite en el día.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="picazon"><b>Que pica</b>Y uno se rasca disimulado cuando no lo ve nadie.</button>
+        <button type="button" class="ax-op" data-v="ardor"><b>Que arde</b>Sobre todo al caminar, o después de la ducha.</button>
+        <button type="button" class="ax-op" data-v="humedad"><b>Que está siempre húmedo</b>Te secás, y a las dos horas está igual.</button>
+        <button type="button" class="ax-op" data-v="piel"><b>Cómo se ve la piel</b>Roja, áspera, o distinta al resto.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    <div class="ax-paso" data-q="3" hidden>
+      <p class="ax-num">Pregunta 4</p>
+      <h2>Después de unos días tranquilos, sin transpirar, ¿mejora?</h2>
+      <p class="ax-ayuda">Pensá en un fin de semana de sillón y aire acondicionado, sin entrenar.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="si"><b>Sí, se va casi del todo</b>Sin transpirar, casi ni se nota.</button>
+        <button type="button" class="ax-op" data-v="poco"><b>Mejora un poco, pero sigue ahí</b>Baja, pero nunca se va del todo.</button>
+        <button type="button" class="ax-op" data-v="nada"><b>No cambia nada</b>Con calor o sin calor, sigue igual.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    <div class="ax-paso" data-q="4" hidden>
+      <p class="ax-num">Pregunta 5 · vas por la mitad</p>
+      <p class="ax-aliento">Faltan cuatro, y son las que más ayudan a afinar el resultado.</p>
+      <h2>¿Cómo es un día normal tuyo?</h2>
+      <p class="ax-ayuda">Esto define cuánto tiempo pasa la zona húmeda.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="mucho"><b>Entreno o trabajo moviéndome</b>Casi todos los días termino transpirado.</button>
+        <button type="button" class="ax-op" data-v="algo"><b>Algo de movimiento</b>Entreno un par de veces por semana.</button>
+        <button type="button" class="ax-op" data-v="sentado"><b>Sentado casi todo el día</b>Oficina, volante, escritorio.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    <div class="ax-paso" data-q="5" hidden>
+      <p class="ax-num">Pregunta 6</p>
+      <h2>¿Ya se probó algo encima?</h2>
+      <p class="ax-ayuda">Una crema, un polvo, talco, lo que sea.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="nada"><b>Todavía nada</b>Es la primera vez que busco qué hacer.</button>
+        <button type="button" class="ax-op" data-v="volvio"><b>Sí, mejoró, y después volvió</b>Mientras me lo ponía iba bien. Lo dejé y volvió.</button>
+        <button type="button" class="ax-op" data-v="nosirvio"><b>Sí, y no pasó nada</b>Me lo puse y siguió igual.</button>
+        <button type="button" class="ax-op" data-v="ahora"><b>Estoy usando algo ahora mismo</b>Estoy en el medio de eso.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    <div class="ax-paso" data-q="6" hidden>
+      <p class="ax-num">Pregunta 7</p>
+      <h2>¿Es la primera vez que pasa?</h2>
+      <p class="ax-ayuda">Contando todas las veces que te acordás.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="primera"><b>Sí, es la primera vez</b>Nunca antes me había pasado.</button>
+        <button type="button" class="ax-op" data-v="unavez"><b>Ya pasó una vez</b>Pasó antes, se fue, y ahora volvió.</button>
+        <button type="button" class="ax-op" data-v="seguido"><b>Pasa seguido</b>Va y viene. Ya lo conozco de memoria.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    
+    <div class="ax-paso" data-q="7" hidden>
+      <p class="ax-num">Pregunta 8 · la última</p>
+      <h2>¿Alguna de estas situaciones aplica?</h2>
+      <p class="ax-ayuda">Esta pregunta existe para saber si te tenemos que decir que no nos compres.</p>
+      <div class="ax-ops">
+        <button type="button" class="ax-op" data-v="ninguna"><b>Ninguna de estas</b>La piel está entera, sin heridas.</button>
+        <button type="button" class="ax-op" data-v="herida"><b>Piel abierta o que sangra</b>De rascarse, o agrietada.</button>
+        <button type="button" class="ax-op" data-v="pus"><b>Ampollas, pus u olor fuerte</b>O la zona hinchada y caliente.</button>
+        <button type="button" class="ax-op" data-v="salud"><b>Diabetes o defensas bajas</b>También si hay corticoides de por medio.</button>
+      </div>
+      <button type="button" class="ax-atras" data-atras>← Volver</button>
+    </div>
+
+    
+
+    
+    <div class="ax-paso ax-res" data-res="medico" hidden>
+      <span class="ax-chapa ax-alerta"><span>Pará un segundo</span></span>
+      <h2>Esto no te lo tenemos que vender nosotros. Te lo tiene que ver un médico.</h2>
+      <div data-espejo></div>
+      <p>Por lo que marcaste, la piel está abierta o hay algo más que picazón. Cuando la piel está lastimada, o cuando hay diabetes o defensas bajas de por medio, cualquier cosa que se aplique encima puede complicar el asunto en vez de ayudar.</p>
+      <p>Así que te decimos lo que casi nadie que te quiere vender algo te va a decir: <strong>ATHLEX no es para vos hoy</strong>. Andá a que te vea alguien. Una consulta dura quince minutos y no le tenés que explicar nada a nadie más.</p>
+
+      <h3>Mientras tanto, tres cosas que ayudan y son gratis</h3>
+      <ul>
+        <li>Secar la zona con la toalla a toquecitos, sin frotar. Frotar sobre piel lastimada la abre más.</li>
+        <li>Ropa interior de algodón y holgada, y cambiarla apenas quedó húmeda de transpiración.</li>
+        <li>Toalla propia, y no compartirla con nadie de la casa.</li>
+      </ul>
+
+      <p>Cuando la piel esté cerrada y quieras que la zona se mantenga seca todos los días, volvé y hablamos. Acá vamos a estar.</p>
+      <button type="button" class="ax-reset" data-reset>Volver a empezar el test</button>
+      <p class="ax-legal">{{ section.settings.legal }}</p>
+    </div>
+
+    
+    <div class="ax-paso ax-res" data-res="vuelve" hidden>
+      <span class="ax-chapa"><span>Tu resultado · el que vuelve</span></span>
+      <h2>No es que no funcione lo que usaste. Es que lo dejaste antes de tiempo.</h2>
+      <div data-espejo></div>
+      <p>Lo que marcaste es el caso más común de todos: se pone algo, mejora, se deja de poner, y a las semanas está de vuelta. Y el que lo vive termina convencido de que nada le sirve.</p>
+      <p>La explicación es más aburrida que eso. La picazón se va antes de que la piel esté realmente lista. Uno deja de sentirlo, deja de ponerse lo que sea que se estaba poniendo, y la zona vuelve a estar como estaba: caliente, húmeda y con roce todo el día.</p>
+
+      <div class="ax-dest">{{ section.settings.absolucion }}</div>
+
+      <div class="ax-voces">
+        <p class="ax-voces-tit">No sos el único: esto lo escribió otra persona, en un foro</p>
+        <blockquote>&laquo;uno ve la mejoría y corta&hellip; da embole seguir poniendo cuando parece que está ok&raquo;<cite>Mensaje de un foro público, en español</cite></blockquote>
+        <p class="ax-voces-pie">{{ section.settings.voces_pie }}</p>
+      </div>
+
+      <h3>El único secreto de verdad de todo esto</h3>
+      <p>Cuando ya no se siente nada, <strong>seguí una semana más</strong>. Esa semana de más es la que evita volver a empezar de cero. Es la parte que casi nadie hace, y es exactamente la que separa al que lo resuelve del que lo arrastra un año.</p>
+
+      <h3>Qué podés hacer hoy, gratis</h3>
+      <ul>
+        <li>Secar bien la zona antes de vestirse. Bien seca, no "casi seca".</li>
+        <li>Sacarse la ropa húmeda apenas termina el entrenamiento, no al llegar a casa.</li>
+        <li>Ropa interior de algodón y holgada, y toalla propia.</li>
+      </ul>
+
+      <h3>Y qué hace ATHLEX</h3>
+      <p>Es un spray. Se aplica sin tocar la zona y sin frotar nada, se seca solo en segundos y la deja seca y fresca. Como es un spray y no una crema, se hace todos los días sin ritual y sin drama, que es justo lo que hace falta cuando el problema es de constancia.</p>
+      <div data-caja></div>
+      <button type="button" class="ax-reset" data-reset>Volver a empezar el test</button>
+      <p class="ax-legal">{{ section.settings.legal }}</p>
+    </div>
+
+    
+    <div class="ax-paso ax-res" data-res="instalado" hidden>
+      <span class="ax-chapa"><span>Tu resultado · se quedó a vivir</span></span>
+      <h2>Si no mejora cuando no hay transpiración, ya no es solamente roce.</h2>
+      <div data-espejo></div>
+      <p>Una paspadura de roce mejora sola cuando pasan unos días tranquilos. Lo que marcaste sigue ahí igual aunque el día sea tranquilo. Eso quiere decir que la zona dejó de ser un lugar de paso y se volvió un lugar cómodo para quedarse: calor, humedad y roce, todos los días, a la misma hora.</p>
+
+      <div class="ax-dest">{{ section.settings.absolucion }}</div>
+
+      <div class="ax-voces">
+        <p class="ax-voces-tit">No sos el único: esto lo escribió otra persona, en un foro</p>
+        <blockquote>&laquo;en internet ví que es un hongo llamado tiña inguinal y viendo las imágenes es exactamente lo mismo&raquo;<cite>Mensaje de un foro público, en español (ortografía original)</cite></blockquote>
+        <p class="ax-voces-pie">{{ section.settings.voces_pie }}</p>
+      </div>
+
+      <p>No hay ninguna batalla microscópica que ganar, ni ningún escudo que romper. Hay un ambiente que cortar: la zona tiene que quedar seca, y tiene que quedar seca todos los días, no el día que uno se acuerda.</p>
+
+      <h3>Qué podés hacer hoy, gratis</h3>
+      <ul>
+        <li>Secar bien la zona antes de vestirse, con la toalla a toquecitos.</li>
+        <li>Cambiar la ropa interior apenas quedó húmeda de transpiración.</li>
+        <li>Toalla propia, y ponerse las medias antes que el calzoncillo si también aparece en los pies.</li>
+      </ul>
+
+      <h3>Y qué hace ATHLEX</h3>
+      <p>Es un spray. Se aplica sin tocar la zona, se seca solo en segundos y la deja seca y fresca. Y esto es importante: <strong>cuando ya no se siente nada, seguí una semana más</strong>. Esa semana de más es la que evita volver a empezar.</p>
+      <div data-caja></div>
+      <button type="button" class="ax-reset" data-reset>Volver a empezar el test</button>
+      <p class="ax-legal">{{ section.settings.legal }}</p>
+    </div>
+
+    
+    <div class="ax-paso ax-res" data-res="humedad" hidden>
+      <span class="ax-chapa"><span>Tu resultado · recién empieza</span></span>
+      <h2>Lo agarraste temprano. Es la parte fácil.</h2>
+      <div data-espejo></div>
+      <p>Por lo que marcaste, la zona mejora cuando no hay transpiración. Eso es una buena noticia y es información concreta: lo que lo mantiene es la humedad y el roce del día, no otra cosa. La ducha, entrenar, ocho horas sentado, el calor. Todo eso deja la zona húmeda, y húmeda es donde el problema se instala.</p>
+
+      <div class="ax-dest">{{ section.settings.absolucion }}</div>
+
+      <div class="ax-voces">
+        <p class="ax-voces-tit">No sos el único: esto lo escribió otra persona, en un foro</p>
+        <blockquote>&laquo;pensé que me había pegado herpes, pero al final era por la transpiración&raquo;<cite>Mensaje de un foro público, en español</cite></blockquote>
+        <p class="ax-voces-pie">{{ section.settings.voces_pie }}</p>
+      </div>
+
+      <p>La diferencia entre que esto quede en una molestia de una semana o se transforme en algo que dura un año es bastante simple: que la zona vuelva a estar seca todos los días, sin excepción.</p>
+
+      <h3>Qué podés hacer hoy, gratis</h3>
+      <ul>
+        <li>Secar bien la zona antes de vestirse. Bien seca, no "casi seca".</li>
+        <li>Sacarse la ropa húmeda apenas termina el entrenamiento.</li>
+        <li>Ropa interior de algodón y holgada, y toalla propia.</li>
+      </ul>
+
+      <h3>Y qué hace ATHLEX</h3>
+      <p>Es un spray. Se aplica sin tocar la zona y sin frotar, se seca solo en segundos y la deja seca y fresca. Es lo mismo que se hace con un desodorante, en otro lugar del cuerpo.</p>
+      <div data-caja></div>
+      <button type="button" class="ax-reset" data-reset>Volver a empezar el test</button>
+      <p class="ax-legal">{{ section.settings.legal }}</p>
+    </div>
+
+    
+    <template data-molde-caja>
+      <div class="ax-caja">
+        <div class="ax-caja-top">
+          {%- if p.featured_image != blank -%}
+            <img src="{{ p.featured_image | image_url: width: 300 }}" alt="{{ p.featured_image.alt | escape }}" loading="lazy" width="300" height="300">
+          {%- endif -%}
+          <div>
+            <h4>{{ section.settings.caja_titulo }}</h4>
+            <div class="ax-sub">{{ section.settings.caja_sub }}</div>
+          </div>
+        </div>
+        <ul class="ax-bene">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_1 }}</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_2 }}</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_3 }}</span></li>
+        </ul>
+        {%- if p != blank -%}
+          <div class="ax-precio">
+            <b>{{ p.price | money }}</b>
+            {%- if p.compare_at_price > p.price -%}<s>{{ p.compare_at_price | money }}</s>{%- endif -%}
+          </div>
+        {%- endif -%}
+        <a class="ax-cta" href="{{ destino }}" data-cta><span>{{ section.settings.caja_boton }}</span></a>
+        {%- if section.settings.caja_pie != blank -%}
+          <p class="ax-caja-pie">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>{{ section.settings.caja_pie }}</span>
+          </p>
+        {%- endif -%}
+      </div>
+    </template>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var raiz = document.getElementById('ax-test-{{ uid }}');
+    if (!raiz || raiz.dataset.axListo) return;
+    raiz.dataset.axListo = '1';
+
+    var pasos    = raiz.querySelectorAll('[data-q]');
+    var intro    = raiz.querySelector('[data-pantalla="intro"]');
+    var prog     = raiz.querySelector('[data-prog]');
+    var progTxt  = raiz.querySelector('[data-prog-txt]');
+    var progBar  = raiz.querySelector('[data-prog-barra]');
+    var molde    = raiz.querySelector('[data-molde-caja]');
+    var destino  = raiz.dataset.destino;
+    var total    = pasos.length;
+    var r = [];   // respuestas, por índice de pregunta
+    var t = [];   // el texto de cada respuesta, para el espejo
+
+    function pixel (evento, datos) {
+      if (window.fbq) { try { window.fbq('trackCustom', evento, datos || {}); } catch (e) {} }
+    }
+
+    function ocultarTodo () {
+      intro.hidden = true;
+      raiz.querySelectorAll('[data-q],[data-res]').forEach(function (n) { n.hidden = true; });
+    }
+
+    function irA (i) {
+      ocultarTodo();
+      prog.hidden = false;
+      pasos[i].hidden = false;
+      progTxt.textContent = 'Pregunta ' + (i + 1) + ' de ' + total;
+      progBar.style.transform = 'scaleX(' + (i / total) + ')';
+      raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+
+    // La lógica del resultado, entera. El orden importa: el corte médico manda
+    // sobre todo lo demás, incluso sobre el perfil que más vende.
+    function perfil () {
+      if (r[7] && r[7] !== 'ninguna') return 'medico';
+      if (r[6] === 'seguido' || r[5] === 'volvio') return 'vuelve';
+      if (r[3] === 'nada' || r[3] === 'poco') return 'instalado';
+      return 'humedad';
+    }
+
+    function mostrarResultado () {
+      var cual = perfil();
+      var caja = raiz.querySelector('[data-res="' + cual + '"]');
+      ocultarTodo();
+      prog.hidden = true;
+
+      // espejo: le repetimos lo que dijo, con sus palabras
+      var espejo = caja.querySelector('[data-espejo]');
+      if (espejo) {
+        espejo.className = 'ax-espejo';
+        espejo.innerHTML = '<b>Lo que contaste</b><ul>' +
+          t.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>';
+      }
+
+      // la caja de producto (los resultados que venden la tienen; el médico no)
+      var hueco = caja.querySelector('[data-caja]');
+      if (hueco && molde && !hueco.firstElementChild) {
+        hueco.appendChild(molde.content.cloneNode(true));
+        var cta = hueco.querySelector('[data-cta]');
+        if (cta) cta.href = destino + (destino.indexOf('?') === -1 ? '?' : '&') + 'ref=test&perfil=' + cual;
+      }
+
+      caja.hidden = false;
+      raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      pixel('TestCompletado', { perfil: cual });
+    }
+
+    raiz.querySelector('[data-empezar]').addEventListener('click', function () {
+      pixel('TestArrancado');
+      irA(0);
+    });
+
+    pasos.forEach(function (paso, i) {
+      paso.querySelectorAll('.ax-op').forEach(function (op) {
+        op.addEventListener('click', function () {
+          r[i] = op.dataset.v;
+          t[i] = (op.querySelector('b') || op).textContent.trim();
+          if (i + 1 < total) irA(i + 1); else mostrarResultado();
+        });
+      });
+      var atras = paso.querySelector('[data-atras]');
+      if (atras) atras.addEventListener('click', function () { irA(i - 1); });
+    });
+
+    raiz.querySelectorAll('[data-reset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        r = []; t = [];
+        ocultarTodo();
+        prog.hidden = true;
+        intro.hidden = false;
+        raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Cuestionario",
+  "tag": "section",
+  "class": "athlex-test-section",
+  "settings": [
+    { "type": "inline_richtext", "id": "titulo", "label": "Titular", "default": "Roce, o algo mas? El test de las 8 preguntas" },
+    { "type": "textarea", "id": "bajada", "label": "Bajada", "default": "Si hay picazon o ardor en la ingle, contesta estas 8 preguntas: al final te decimos que encaja con lo que contaste, que se puede hacer hoy sin gastar un peso, y si conviene ver a un medico antes de comprar nada." },
+    { "type": "text", "id": "boton_empezar", "label": "Boton de arranque", "default": "Empezar el test" },
+    { "type": "header", "content": "La absolucion (va en los 3 que venden)" },
+    { "type": "inline_richtext", "id": "absolucion", "label": "Frase destacada",
+      "default": "Eso se llama <em>tina inguinal</em>. Es un hongo, es comunisimo, y no es una enfermedad de transmision sexual." },
+    { "type": "text", "id": "voces_pie", "label": "Aclaracion de las citas",
+      "default": "Cita textual de un foro publico. No es un cliente de ATHLEX." },
+    { "type": "header", "content": "Producto" },
+    { "type": "text", "id": "handle", "label": "Handle del producto", "default": "athlex" },
+    { "type": "text", "id": "caja_titulo", "label": "Titulo de la caja", "default": "ATHLEX PSS" },
+    { "type": "text", "id": "caja_sub", "label": "Bajada de la caja", "default": "Spray corporal para zonas de roce. 120 ml." },
+    { "type": "text", "id": "bene_1", "label": "Beneficio 1", "default": "Se aplica sin tocar la zona y sin frotar." },
+    { "type": "text", "id": "bene_2", "label": "Beneficio 2", "default": "Seca en segundos: te vestis enseguida." },
+    { "type": "text", "id": "bene_3", "label": "Beneficio 3", "default": "Parece un producto de deporte. Puede quedar a la vista." },
+    { "type": "text", "id": "caja_boton", "label": "Boton", "default": "Quiero probarlo un mes" },
+    { "type": "text", "id": "caja_pie", "label": "Linea de garantia", "default": "Garantia de 30 dias: si no te convence, te devolvemos lo que pagaste." },
+    { "type": "header", "content": "Pie" },
+    { "type": "textarea", "id": "legal", "label": "Aviso legal",
+      "default": "Este test es una orientacion, no un diagnostico medico, y no reemplaza una consulta. ATHLEX PSS es un producto cosmetico de higiene y cuidado personal, de uso externo." }
+  ],
+  "presets": [ { "name": "Cuestionario" } ]
+}
+{% endschema %}

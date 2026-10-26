@@ -1,0 +1,153 @@
+
+{%- liquid
+  assign b = block.settings
+  assign rows = b.rows | default: 1 | plus: 0
+  assign started = false
+  assign done = false
+  assign items = ''
+  for blk in section.blocks
+    if done
+      continue
+    endif
+    if blk.id == block.id
+      assign started = true
+      continue
+    endif
+    if started
+      if blk.type == 'feature'
+        assign items = items | append: blk.id | append: ','
+      else
+        assign done = true
+      endif
+    endif
+  endfor
+  assign item_ids = items | split: ','
+  assign count = item_ids.size
+  assign key = section.id | append: '-' | append: block.id
+-%}
+<div
+  class="gad-pblock gad-features gad-features--{{ b.card_style }}"
+  style="--mt: {{ b.margin_top }}px; --mb: {{ b.margin_bottom }}px; --card-bg: {{ b.card_bg }}; --card-text: {{ b.card_text }}; --pill-bg: {{ b.pill_bg }}; --pill-text: {{ b.pill_text }};"
+  {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+>
+  {%- if b.custom_css != blank -%}
+    <style>
+      {{ b.custom_css }}
+    </style>
+  {%- endif -%}
+  {%- if b.title != blank or b.subtitle != blank -%}
+    <div class="gad-features__head">
+      {%- if b.title != blank -%}<p class="gad-features__title gad-hl h3">{{ b.title }}</p>{%- endif -%}
+      {%- if b.subtitle != blank -%}<p class="gad-features__subtitle">{{ b.subtitle }}</p>{%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if count == 0 -%}
+    {%- if request.design_mode -%}
+      <p class="gad-features__empty">{{ 'gadsden.features.empty' | t }}</p>
+    {%- endif -%}
+  {%- else -%}
+    {%- capture slides -%}
+      {%- assign cols = count | plus: rows | minus: 1 | divided_by: rows -%}
+      {%- for c in (1..cols) -%}
+        <div class="gad-features__col">
+          {%- for r in (1..rows) -%}
+            {%- liquid
+              assign pos = c | minus: 1 | times: rows | plus: r | minus: 1
+              if pos >= count
+                break
+              endif
+              assign blk = section.blocks | where: 'id', item_ids[pos] | first
+              assign f = blk.settings
+            -%}
+            <button
+              type="button"
+              class="gad-features__card"
+              data-gad-feature-open="GadFeature-{{ blk.id }}"
+              {{ blk.shopify_attributes }}
+            >
+              {%- if f.card_image != blank -%}
+                <span class="gad-features__media">
+                  {{ f.card_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 990px) 15vw, 45vw', widths: '200, 300, 450, 600' }}
+                  {%- if b.card_style == 'title_over' -%}
+                    <span class="gad-features__overlay-text">{{ f.card_text | default: f.title }}</span>
+                  {%- endif -%}
+                </span>
+              {%- endif -%}
+              {%- unless b.card_style == 'title_over' and f.card_image != blank -%}
+                <span class="gad-features__label">
+                  {%- if f.icon != blank or f.icon_image != blank -%}
+                    {%- render 'gad-icon', name: f.icon, filled: f.icon_filled, image: f.icon_image, class: 'gad-features__icon' -%}
+                  {%- endif -%}
+                  <span>{{ f.card_text | default: f.title }}</span>
+                </span>
+              {%- endunless -%}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- liquid
+      assign dots = 'hidden'
+      if b.show_dots
+        assign dots = 'under'
+      endif
+      assign cols_m = b.columns_m | plus: 0
+    -%}
+    {%- render 'gad-carousel',
+      s: b,
+      key: key,
+      slides: slides,
+      d_per_view: b.columns_d,
+      m_per_view: cols_m,
+      force_d_on: true,
+      force_m_on: true,
+      dots_d: dots,
+      dots_m: dots,
+      arrows_d: 'hidden',
+      arrows_m: 'hidden',
+      drag_mode: 'on',
+      gap_d: 12,
+      gap_m: 10,
+      label: b.title
+    -%}
+
+    {%- for blk in section.blocks -%}
+      {%- assign blk_key = blk.id | append: '' -%}
+      {%- unless item_ids contains blk_key -%}{%- continue -%}{%- endunless -%}
+      {%- liquid
+        assign f = blk.settings
+        assign modal_image = f.modal_image | default: f.card_image
+        assign embed = ''
+        if f.video_url != blank
+          if f.video_url.type == 'youtube'
+            assign embed = 'https://www.youtube-nocookie.com/embed/' | append: f.video_url.id | append: '?autoplay=1&rel=0&playsinline=1'
+          elsif f.video_url.type == 'vimeo'
+            assign embed = 'https://player.vimeo.com/video/' | append: f.video_url.id | append: '?autoplay=1&dnt=1'
+          endif
+        endif
+      -%}
+      <dialog id="GadFeature-{{ blk.id }}" class="gad-feature-modal color-{{ b.modal_scheme }}" aria-labelledby="GadFeatureTitle-{{ blk.id }}">
+        <div class="gad-feature-modal__box">
+          <button type="button" class="gad-feature-modal__close" data-gad-feature-close aria-label="{{ 'accessibility.close' | t }}">
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </button>
+          {%- if embed != '' -%}
+            <div class="gad-feature-modal__video" data-src="{{ embed }}" data-title="{{ f.title | escape }}"></div>
+          {%- elsif modal_image != blank -%}
+            <div class="gad-feature-modal__image">
+              {{ modal_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 750px) 600px, 100vw', widths: '375, 600, 900, 1200' }}
+            </div>
+          {%- endif -%}
+          <div class="gad-feature-modal__body">
+            <p id="GadFeatureTitle-{{ blk.id }}" class="gad-feature-modal__title h3">{{ f.title | default: f.card_text }}</p>
+            {%- if f.description != blank -%}
+              <div class="rte">{{ f.description }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+      </dialog>
+    {%- endfor -%}
+  {%- endif -%}
+</div>

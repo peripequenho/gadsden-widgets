@@ -1,0 +1,564 @@
+
+{%- assign s = section.settings -%}
+{%- style -%}
+  {%- if s.title_font_on -%}
+    {{ s.title_font | font_face: font_display: 'swap' }}
+  {%- endif -%}
+  {%- if s.body_font_on -%}
+    {{ s.body_font | font_face: font_display: 'swap' }}
+    {{ s.body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+    :root {
+      --font-body-family: {{ s.body_font.family }}, {{ s.body_font.fallback_families }};
+      --font-body-style: {{ s.body_font.style }};
+      --font-body-weight: {{ s.body_font.weight }};
+      --font-body-weight-bold: {{ s.body_font.weight | plus: 300 | at_most: 1000 }};
+    }
+  {%- endif -%}
+  {%- if s.colors_on -%}
+    :root, body, .color-scheme-1 {
+      --color-background: {{ s.bg.red }},{{ s.bg.green }},{{ s.bg.blue }};
+      --gradient-background: {{ s.bg }};
+      --color-foreground: {{ s.text.red }},{{ s.text.green }},{{ s.text.blue }};
+      --color-button: {{ s.button.red }},{{ s.button.green }},{{ s.button.blue }};
+      --color-button-text: {{ s.button_text.red }},{{ s.button_text.green }},{{ s.button_text.blue }};
+      --color-secondary-button-text: {{ s.button.red }},{{ s.button.green }},{{ s.button.blue }};
+      --color-link: {{ s.button.red }},{{ s.button.green }},{{ s.button.blue }};
+    }
+    body {
+      background-color: {{ s.bg }};
+    }
+  {%- endif -%}
+  {%- if s.title_font_on -%}
+    :root {
+      --font-heading-family: {{ s.title_font.family }}, {{ s.title_font.fallback_families }};
+      --font-heading-style: {{ s.title_font.style }};
+      --font-heading-weight: {{ s.title_font.weight }};
+    }
+  {%- endif -%}
+  {%- if s.title_case != 'none' -%}
+    #MainContent :is(h1, h2, h3, .h0, .h1, .h2, .gad-heading__title, .gad-title-font) {
+      text-transform: {{ s.title_case }};
+    }
+  {%- endif -%}
+  {%- if s.title_skew != 0 or s.title_italic -%}
+    #MainContent :is(h1, h2, .h0, .h1, .gad-heading__title):not(.h3, .h4, .h5),
+    #MainContent .gad-title-font {
+      {%- if s.title_italic -%}font-style: italic;{%- endif -%}
+      {%- if s.title_skew != 0 -%}transform: skewX({{ s.title_skew }}deg); transform-origin: left center;{%- endif -%}
+    }
+  {%- endif -%}
+  {%- if s.atc_on -%}
+    .product-form__submit, .gad-atc__btn, [data-gad-bundle-add] {
+      {%- if s.atc_bg != blank -%}--color-button: {{ s.atc_bg.red }},{{ s.atc_bg.green }},{{ s.atc_bg.blue }};{%- endif -%}
+      {%- if s.atc_text != blank -%}--color-button-text: {{ s.atc_text.red }},{{ s.atc_text.green }},{{ s.atc_text.blue }};{%- endif -%}
+      border-radius: {{ s.atc_radius }}px;
+      {%- if s.atc_skew != 0 -%}transform: skewX({{ s.atc_skew }}deg);{%- endif -%}
+      {%- if s.atc_upper -%}text-transform: uppercase; letter-spacing: 0.08rem;{%- endif -%}
+    }
+    .product-form__submit::after, .gad-atc__btn::after, [data-gad-bundle-add]::after {
+      border-radius: {{ s.atc_radius }}px;
+    }
+  {%- endif -%}
+  {%- if s.badge_on -%}
+    .product .gad-price__badge, .product .price__badge-sale {
+      {%- if s.badge_bg != blank -%}--color-background: {{ s.badge_bg.red }},{{ s.badge_bg.green }},{{ s.badge_bg.blue }}; background-color: {{ s.badge_bg }}; border-color: {{ s.badge_bg }};{%- endif -%}
+      {%- if s.badge_text != blank -%}--color-foreground: {{ s.badge_text.red }},{{ s.badge_text.green }},{{ s.badge_text.blue }}; color: {{ s.badge_text }};{%- endif -%}
+      {%- if s.badge_skew != 0 -%}transform: skewX({{ s.badge_skew }}deg);{%- endif -%}
+      {%- if s.badge_upper -%}text-transform: uppercase; letter-spacing: 0.08rem;{%- endif -%}
+    }
+  {%- endif -%}
+  {%- if s.media_border > 0 -%}
+    .product__media-item .product-media-container {
+      border: {{ s.media_border }}px solid {{ s.media_border_color | default: 'currentColor' }};
+    }
+  {%- endif -%}
+  {%- if s.bar_on -%}
+    .announcement-bar-section .utility-bar, .announcement-bar-section .announcement-bar, .announcement-bar-section [class*='color-'] {
+      background: {{ s.bar_bg }};
+      --color-foreground: {{ s.bar_text.red }},{{ s.bar_text.green }},{{ s.bar_text.blue }};
+      --gradient-background: {{ s.bar_bg }};
+      color: {{ s.bar_text }};
+    }
+  {%- endif -%}
+  {%- if s.caption_style != 'theme' -%}
+    #MainContent .gad-heading__caption {
+      font-family: var(--font-heading-family);
+      font-style: var(--font-heading-style);
+      font-weight: var(--font-heading-weight);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+  {%- endif -%}
+  {%- if s.caption_style == 'tag' -%}
+    #MainContent .gad-heading__caption:not([style]):not(.gad-dark .gad-heading__caption) {
+      display: inline-block;
+      padding: 0.5rem 1.1rem;
+      background: rgb(var(--color-foreground));
+      color: rgb(var(--color-background));
+      {%- if s.title_skew != 0 -%}transform: skewX({{ s.title_skew }}deg);{%- endif -%}
+    }
+  {%- endif -%}
+  {%- if s.hl_style == 'marker' -%}
+    #MainContent .gad-hl :is(strong, b):not(.gad-dark .gad-hl :is(strong, b)) {
+      padding: 0 0.15em;
+      background: var(--gad-hl, rgb(var(--color-accent, var(--color-button))));
+      color: rgb(var(--color-foreground));
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
+  {%- endif -%}
+  {%- if s.text_full -%}
+    #MainContent :is([class*='color-scheme-'], .gad-cc, .gad-tint, .rte, .gad-heading__text) {
+      color: rgb(var(--color-foreground));
+    }
+  {%- endif -%}
+  {%- if s.border_on -%}
+    #MainContent {
+      --gad-skin-border: {{ s.border_width }}px solid rgba(var(--color-foreground), {{ s.border_opacity | divided_by: 100.0 }});
+    }
+    #MainContent .gad-dark {
+      --gad-skin-border: {{ s.border_width }}px solid rgba(var(--color-foreground), {{ s.border_opacity_dark | divided_by: 100.0 }});
+    }
+    #MainContent :is(.gad-rc__card, .gad-ts__step, .gad-rw__card, .gad-po__card, .gad-ch__stage, .gad-st2__media, .gad-icc__media, .gad-ic__item--box) {
+      border: var(--gad-skin-border);
+    }
+  {%- endif -%}
+  {%- if s.square -%}
+    #MainContent :is(.gad-rc__card, .gad-rc__toggle, .gad-ts__step, .gad-ts__photo, .gad-rw__card, .gad-rw__photo, .gad-po__card, .gad-ch__stage, .gad-ch__tab, .gad-st2__media, .gad-icc__media, .gad-ic__media, .gad-ic__item--box, .gad-cmp-layout__table, .gad-ts__num, .gad-ts__note, .gad-po__list, .gad-rw__more .button) {
+      border-radius: 0;
+    }
+    #MainContent :is(.gad-rc__card, .gad-ts__step, .gad-rw__card, .gad-po__card, .gad-ch__stage, .gad-st2__media) :is(img, video) {
+      border-radius: 0;
+    }
+  {%- endif -%}
+  {%- if s.texture > 0 -%}
+    #MainContent :is(.gad-pad, .collapsible-content__wrapper) {
+      background-image: radial-gradient(rgba(var(--color-foreground), {{ s.texture | divided_by: 100.0 }}) 1px, transparent 1.4px);
+      background-size: 0.8rem 0.8rem;
+    }
+  {%- endif -%}
+  {%- if s.title_zoom_m != blank and s.title_zoom_m < 100 -%}
+    @media screen and (max-width: 749px) {
+      #MainContent :is(.gad-heading__title, .collapsible-content__heading, .gad-icc__heading) {
+        zoom: {{ s.title_zoom_m | divided_by: 100.0 }};
+      }
+    }
+  {%- endif -%}
+  {%- if s.page_width > 0 -%}
+    :root {
+      --page-width: {{ s.page_width | divided_by: 10 }}rem;
+    }
+  {%- endif -%}
+  {%- if s.section_line > 0 -%}
+    #MainContent > .shopify-section > :is(.gad-pad, [class*='color-scheme-'], .gad-cc) {
+      border-bottom: {{ s.section_line }}px solid rgb(var(--color-foreground));
+    }
+    #MainContent > .shopify-section > .gad-dark {
+      border-bottom-color: rgb(var(--color-accent, var(--color-button)));
+    }
+  {%- endif -%}
+{%- endstyle -%}
+{%- if request.design_mode -%}
+  <p class="gad-ps-note page-width" {% render 'gad-section-attrs', s: s %}>{{ 'gadsden.page_style.note' | t }}</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .gad-ps-note {
+    margin: 1rem auto;
+    padding: 1rem 1.5rem;
+    border: 0.1rem dashed rgba(var(--color-foreground), 0.3);
+    font-size: 1.3rem;
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Estilo de esta página",
+  "tag": "section",
+  "class": "gad-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "No se ve: cambia el aspecto sólo de la página donde la agregás. Borrala para volver al estilo de la tienda."
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "checkbox",
+      "id": "colors_on",
+      "label": "Cambiar los colores principales",
+      "default": false,
+      "info": "Pisa la combinación 1, la que usan casi todas las secciones."
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Fondo",
+      "default": "#F2EEE6"
+    },
+    {
+      "type": "color",
+      "id": "text",
+      "label": "Texto",
+      "default": "#151515"
+    },
+    {
+      "type": "color",
+      "id": "button",
+      "label": "Botones",
+      "default": "#151515"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Texto de los botones",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Títulos"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_font_on",
+      "label": "Usar otra fuente para los títulos",
+      "default": false
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Fuente de los títulos",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "title_case",
+      "label": "Mayúsculas",
+      "options": [
+        {
+          "value": "none",
+          "label": "Como están escritos"
+        },
+        {
+          "value": "uppercase",
+          "label": "Todo en mayúsculas"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_italic",
+      "label": "Cursiva",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "title_skew",
+      "min": -12,
+      "max": 0,
+      "step": 1,
+      "unit": "°",
+      "label": "Inclinación",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Texto"
+    },
+    {
+      "type": "header",
+      "content": "Texto"
+    },
+    {
+      "type": "checkbox",
+      "id": "body_font_on",
+      "label": "Cambiar la fuente del texto",
+      "default": false
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Fuente del texto",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "Botón de compra"
+    },
+    {
+      "type": "checkbox",
+      "id": "atc_on",
+      "label": "Cambiar el botón de compra",
+      "default": false,
+      "info": "El de la ficha y los de agregar al carrito de las secciones."
+    },
+    {
+      "type": "color",
+      "id": "atc_bg",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "atc_text",
+      "label": "Texto"
+    },
+    {
+      "type": "range",
+      "id": "atc_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Redondeo",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "atc_skew",
+      "min": -12,
+      "max": 0,
+      "step": 1,
+      "unit": "°",
+      "label": "Inclinación",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "atc_upper",
+      "label": "Mayúsculas",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Etiqueta de oferta de la ficha"
+    },
+    {
+      "type": "header",
+      "content": "Etiqueta de oferta de la ficha"
+    },
+    {
+      "type": "checkbox",
+      "id": "badge_on",
+      "label": "Cambiar la etiqueta de oferta",
+      "default": false,
+      "info": "La que va junto al precio en la ficha y en el producto destacado."
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Texto"
+    },
+    {
+      "type": "range",
+      "id": "badge_skew",
+      "min": -12,
+      "max": 0,
+      "step": 1,
+      "unit": "°",
+      "label": "Inclinación",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "badge_upper",
+      "label": "Mayúsculas",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Fotos de la ficha"
+    },
+    {
+      "type": "range",
+      "id": "media_border",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "label": "Borde",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "media_border_color",
+      "label": "Color del borde",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "header",
+      "content": "Barra de anuncios"
+    },
+    {
+      "type": "checkbox",
+      "id": "bar_on",
+      "label": "Cambiar los colores de la barra",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bar_bg",
+      "label": "Fondo",
+      "default": "#151515"
+    },
+    {
+      "type": "color",
+      "id": "bar_text",
+      "label": "Texto",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Detalles de las secciones"
+    },
+    {
+      "type": "paragraph",
+      "content": "Valen para las secciones de Gadsden de esta página. \"Clara\" u \"oscura\" sale del fondo de cada sección."
+    },
+    {
+      "type": "select",
+      "id": "caption_style",
+      "label": "Volanta",
+      "default": "theme",
+      "options": [
+        {
+          "value": "theme",
+          "label": "Como en el tema"
+        },
+        {
+          "value": "heading",
+          "label": "Con la fuente de los títulos"
+        },
+        {
+          "value": "tag",
+          "label": "Etiqueta en las secciones claras"
+        }
+      ],
+      "info": "Etiqueta: fondo del color del texto, inclinada como los títulos. En las oscuras queda como texto."
+    },
+    {
+      "type": "select",
+      "id": "hl_style",
+      "label": "Palabras resaltadas de los títulos",
+      "default": "color",
+      "options": [
+        {
+          "value": "color",
+          "label": "En color"
+        },
+        {
+          "value": "marker",
+          "label": "Con marcador en las secciones claras"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "text_full",
+      "label": "Texto con el color pleno",
+      "default": false,
+      "info": "El tema pinta el texto un poco más suave que los títulos."
+    },
+    {
+      "type": "checkbox",
+      "id": "border_on",
+      "label": "Borde en tarjetas, fotos y cajas",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Grosor del borde",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacidad del borde en las secciones claras",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "border_opacity_dark",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacidad del borde en las oscuras",
+      "default": 25
+    },
+    {
+      "type": "checkbox",
+      "id": "square",
+      "label": "Esquinas rectas",
+      "default": false,
+      "info": "Tarjetas, fotos, videos y cajas sin redondeo."
+    },
+    {
+      "type": "range",
+      "id": "texture",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "Trama de puntos en el fondo",
+      "default": 0,
+      "info": "Reemplaza el degradé o la imagen de fondo de las secciones."
+    },
+    {
+      "type": "range",
+      "id": "section_line",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "label": "Línea entre secciones",
+      "default": 0,
+      "info": "Del color del texto en las secciones claras y del acento en las oscuras."
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "min": 0,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "label": "Ancho de la página",
+      "default": 0,
+      "info": "0: el de Configuración del tema."
+    },
+    {
+      "type": "range",
+      "id": "title_zoom_m",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Títulos de las secciones en mobile",
+      "default": 100,
+      "info": "Achica los títulos grandes en el celular."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Estilo de esta página"
+    }
+  ]
+}
+{% endschema %}

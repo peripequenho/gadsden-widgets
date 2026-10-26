@@ -1,0 +1,6 @@
+{%- comment -%}
+  Un rol de color de una sección configurable (white label, BUILD.md decisión 20): la terna "r, g, b" del ajuste de
+  color `c` para una variable CSS (se usa como rgb(var(--r-x)) o rgba(var(--r-x), .5)); vacío, `d` (la variable de la
+  combinación de colores de la tienda, que ya es una terna).
+{%- endcomment -%}
+{%- if c != blank -%}{{ c.red }}, {{ c.green }}, {{ c.blue }}{%- else -%}{{ d }}{%- endif -%}

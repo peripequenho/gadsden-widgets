@@ -1,0 +1,621 @@
+{%- liquid
+  assign s = section.settings
+  assign m_dots = 'hidden'
+  if s.m_show_dots
+    assign m_dots = 'under'
+  endif
+  assign m_cols = s.m_columns | plus: 0
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+
+<div
+  class="gad-logos gad-pad {% render 'gad-scheme', s: s, key: section.id %}{% if s.grayscale %} gad-logos--gray{% endif %} gad-logos--{{ s.layout }}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --logo-h-d: {{ s.logo_height }}px; --logo-h-m: {{ s.m_logo_height }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width gad-logos__inner{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+    {%- if s.heading != blank -%}
+      <div class="gad-logos__heading">
+        {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, align: 'center' -%}
+      </div>
+    {%- endif -%}
+
+    {%- capture slides -%}
+      {%- for block in section.blocks -%}
+        {%- assign b = block.settings -%}
+        <div class="gad-logos__item" {{ block.shopify_attributes }}>
+          {%- if b.link != blank -%}
+            <a
+              href="{{ b.link }}"
+              class="gad-logos__link"
+              {% if b.new_tab %}
+                target="_blank" rel="noopener noreferrer"
+              {% endif %}
+            >
+          {%- endif -%}
+          {%- if b.image != blank -%}
+            {%- assign logo_alt = b.image.alt | default: '' -%}
+            {{ b.image | image_url: width: 600 | image_tag: loading: 'lazy', class: 'gad-logos__img', alt: logo_alt, sizes: '300px', widths: '150, 300, 450, 600' }}
+          {%- else -%}
+            {{ 'logo' | placeholder_svg_tag: 'gad-logos__img gad-logos__placeholder' }}
+          {%- endif -%}
+          {%- if b.link != blank -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="gad-logos__list">
+        {%- render 'gad-carousel',
+          s: s,
+          key: section.id,
+          slides: slides,
+          label: s.heading,
+          force_d_on: false,
+          force_m_on: s.m_carousel,
+          d_per_view: 1,
+          m_per_view: m_cols,
+          dots_m: m_dots,
+          arrows_m: 'hidden',
+          drag_mode: 'on',
+          gap_d: 40,
+          gap_m: 16
+        -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-logos__heading .gad-heading {
+    margin-bottom: 2.4rem;
+  }
+
+  .gad-logos__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gad-logos__link {
+    display: inline-flex;
+  }
+
+  .gad-logos__img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: var(--logo-h-m);
+    object-fit: contain;
+  }
+
+  .gad-logos__placeholder {
+    width: calc(var(--logo-h-m) * 2.5);
+    background: rgba(var(--color-foreground), 0.04);
+  }
+
+  .gad-logos--gray .gad-logos__img {
+    filter: grayscale(1);
+    opacity: 0.6;
+    transition: filter var(--duration-medium) ease, opacity var(--duration-medium) ease;
+  }
+
+  @media (hover: hover) {
+    .gad-logos--gray .gad-logos__link:hover .gad-logos__img {
+      filter: none;
+      opacity: 1;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    :where(html[data-gad-bp='750']) .gad-logos__img {
+      height: var(--logo-h-d);
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos__placeholder {
+      width: calc(var(--logo-h-d) * 2.5);
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos .gad-carousel .gad-carousel__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2.4rem 4.8rem;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos .gad-carousel .gad-carousel__track > * {
+      flex: 0 0 auto;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos--horizontal .gad-logos__inner {
+      display: flex;
+      align-items: center;
+      gap: 4.8rem;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos--horizontal .gad-logos__heading {
+      flex: 0 0 auto;
+      max-width: 30%;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos--horizontal .gad-logos__heading .gad-heading {
+      margin-bottom: 0;
+      text-align: left;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos--horizontal .gad-logos__list {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    :where(html[data-gad-bp='750']) .gad-logos--horizontal .gad-carousel .gad-carousel__track {
+      justify-content: flex-start;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    :where(html:not([data-gad-bp='750'])) .gad-logos__img {
+      height: var(--logo-h-d);
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos__placeholder {
+      width: calc(var(--logo-h-d) * 2.5);
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos .gad-carousel .gad-carousel__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2.4rem 4.8rem;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos .gad-carousel .gad-carousel__track > * {
+      flex: 0 0 auto;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos--horizontal .gad-logos__inner {
+      display: flex;
+      align-items: center;
+      gap: 4.8rem;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos--horizontal .gad-logos__heading {
+      flex: 0 0 auto;
+      max-width: 30%;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos--horizontal .gad-logos__heading .gad-heading {
+      margin-bottom: 0;
+      text-align: left;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos--horizontal .gad-logos__list {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    :where(html:not([data-gad-bp='750'])) .gad-logos--horizontal .gad-carousel .gad-carousel__track {
+      justify-content: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Franja de logos",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Como se vio en",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale",
+      "label": "Logos en gris",
+      "default": true,
+      "info": "Se ven en escala de grises y algo transparentes; recuperan el color al pasar el mouse."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Desktop"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Disposición",
+      "options": [
+        {
+          "value": "vertical",
+          "label": "Título arriba de los logos"
+        },
+        {
+          "value": "horizontal",
+          "label": "Título en la misma fila"
+        }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 30,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Alto de los logos",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "m_columns",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Columnas",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "m_logo_height",
+      "min": 30,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Alto de los logos",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "m_carousel",
+      "label": "Mostrar como carrusel",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "car_autoplay",
+      "label": "Pase automático",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "car_speed",
+      "min": 1,
+      "max": 15,
+      "step": 0.5,
+      "unit": "s",
+      "label": "Velocidad del pase",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "m_show_dots",
+      "label": "Mostrar puntos",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "car_dots_color",
+      "label": "Color de los puntos",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo",
+          "info": "Todos se muestran al mismo alto, sin deformarse."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Abrir en una pestaña nueva",
+          "default": false,
+          "info": "Los enlaces a otros sitios ya se abren en una pestaña nueva."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Franja de logos",
+      "blocks": [
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

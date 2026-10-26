@@ -1,0 +1,337 @@
+{%- comment -%}
+  Videos en coverflow: tarjetas de video en abanico que se arrastran, con estrellas y texto sobre el video.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+
+<style>
+  #ct-cov-{{ section.id }} {
+    --ct-w: {{ s.card_width }}px;
+    background: {{ s.background | default: 'rgb(var(--color-background))' }}; color: {{ s.text_color | default: 'rgb(var(--color-foreground))' }};
+    padding: {{ s.padding_top }}px 0 {{ s.padding_bottom }}px; overflow: hidden;
+  }
+  #ct-cov-{{ section.id }} .ct-cov__titulo { margin: 0 16px 14px; text-align: center; line-height: 1.15; text-wrap: balance; }
+  #ct-cov-{{ section.id }} .ct-cov__escena {
+    
+    position: relative; height: calc(var(--ct-w) * 16 / 9 + 64px); touch-action: pan-y; cursor: grab;
+    user-select: none; -webkit-user-select: none; outline: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 4%, #000 22%, #000 78%, transparent 96%);
+            mask-image: linear-gradient(to right, transparent 4%, #000 22%, #000 78%, transparent 96%);
+  }
+  #ct-cov-{{ section.id }} .ct-cov__escena.is-arrastrando { cursor: grabbing; }
+  #ct-cov-{{ section.id }} .ct-cov__item {
+    position: absolute; top: 12px; left: 50%; width: var(--ct-w); margin-left: calc(var(--ct-w) / -2);
+    aspect-ratio: 9 / 16; will-change: transform;
+  }
+  #ct-cov-{{ section.id }} .ct-cov__card {
+    position: relative; width: 100%; height: 100%; border-radius: 14px; overflow: hidden; background: #0B0B0B;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18); will-change: transform;
+  }
+  #ct-cov-{{ section.id }} .ct-cov__card video,
+  #ct-cov-{{ section.id }} .ct-cov__card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  #ct-cov-{{ section.id }} .ct-cov__info {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 12px 12px; color: #fff;
+    background: linear-gradient(to top, rgba(11, 11, 11, .85), rgba(11, 11, 11, 0));
+    transition: opacity .3s;
+  }
+  #ct-cov-{{ section.id }} .ct-cov__item:not(.is-centro) .ct-cov__info { opacity: 0; }
+  #ct-cov-{{ section.id }} .ct-cov__estrellas { display: flex; gap: 2px; margin-bottom: 4px; color: rgb(var(--r-estrellas)); }
+  #ct-cov-{{ section.id }} .ct-cov__estrellas svg { width: 12px; height: 12px; }
+  #ct-cov-{{ section.id }} .ct-cov__frase { margin: 0 0 4px; font-size: 13px; line-height: 1.3; font-weight: 600; }
+  #ct-cov-{{ section.id }} .ct-cov__nombre { margin: 0; font-size: 11px; opacity: .75; }
+
+  
+  @media (min-width: 990px) {
+    #ct-cov-{{ section.id }} { --ct-w: 250px; padding-top: 48px; padding-bottom: 32px; }
+    #ct-cov-{{ section.id }} .ct-cov__titulo { margin-bottom: 20px; }
+    #ct-cov-{{ section.id }} .ct-cov__frase { font-size: 15px; }
+    #ct-cov-{{ section.id }} .ct-cov__nombre { font-size: 12px; }
+  }
+</style>
+
+{%- capture estrella -%}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>{%- endcapture -%}
+
+<section id="ct-cov-{{ section.id }}" class="ct-cov" style="--r-estrellas: {%- render 'gad-rol', c: section.settings.color_estrellas, d: '255, 255, 255' -%};">
+  {%- if s.heading != blank -%}<h2 class="ct-cov__titulo {{ s.heading_size }}">{{ s.heading }}</h2>{%- endif -%}
+  <div class="ct-cov__escena" data-escena tabindex="0" role="region" aria-roledescription="carrusel" aria-label="{{ s.heading | escape }}">
+    {%- for b in section.blocks -%}
+      {%- liquid
+        assign n = forloop.index
+        if b.settings.poster != blank
+          assign poster = b.settings.poster | image_url: width: 500
+        else
+          capture poster
+            render 'gad-relleno'
+          endcapture
+        endif
+      -%}
+      <div class="ct-cov__item" data-item {{ b.shopify_attributes }}>
+        <div class="ct-cov__card">
+          {%- if b.settings.video != blank -%}
+            {{ b.settings.video | video_tag: muted: true, loop: true, playsinline: true, preload: 'metadata', image_size: '500x' }}
+          {%- else -%}
+            <video poster="{{ poster }}" muted loop playsinline preload="metadata"></video>
+          {%- endif -%}
+          {%- if b.settings.quote != blank or b.settings.name != blank -%}
+            <div class="ct-cov__info">
+              {%- if b.settings.stars > 0 -%}
+                <div class="ct-cov__estrellas" role="img" aria-label="{{ b.settings.stars }} estrellas">{%- for i in (1..b.settings.stars) -%}{{ estrella }}{%- endfor -%}</div>
+              {%- endif -%}
+              {%- if b.settings.quote != blank -%}<p class="ct-cov__frase">“{{ b.settings.quote }}”</p>{%- endif -%}
+              {%- if b.settings.name != blank -%}<p class="ct-cov__nombre">{{ b.settings.name }}</p>{%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-cov-{{ section.id }}');
+    if (!raiz) return;
+    const escena = raiz.querySelector('[data-escena]');
+    const items = [...escena.querySelectorAll('[data-item]')];
+    const N = items.length;
+    if (!N) return;
+    const videos = items.map((it) => it.querySelector('video'));
+    let ancho = items[0].offsetWidth || 1, visible = false;
+    new ResizeObserver(() => { ancho = items[0].offsetWidth || 1; dibujar(); }).observe(escena);
+
+    // interpolación por tramos según |distancia al centro| (valores de la demo de Motion)
+    const tramos = (d, xs) => { const i = Math.min(Math.floor(d), xs.length - 2), k = Math.min(1, d - i); return xs[i] + (xs[i + 1] - xs[i]) * k; };
+    let pos = 0, objetivo = null, raf = 0, centro = -1;
+    // se reproducen (muteados, en loop) el del centro y los que están a hasta RANGO lugares; el resto queda en pausa
+    const RANGO = {{ s.play_range }};
+    const reproducir = () => videos.forEach((v, i) => {
+      if (!v) return;
+      const o = Math.abs(((i - centro) % N + N + N / 2) % N - N / 2);
+      if (visible && o <= RANGO) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+    });
+
+    const dibujar = () => {
+      items.forEach((it, i) => {
+        let o = i - pos;
+        o = ((o % N) + N + N / 2) % N - N / 2;              // infinito: la distancia más corta dando la vuelta
+        const d = Math.min(Math.abs(o), 3), lado = o < 0 ? 1 : -1;  // los de la izquierda giran y se corren a la derecha
+        const corr = tramos(d, [0, 25, 83.333, 100]) * lado;
+        const esc = tramos(d, [1, 0.7, 0.7, 0.7]);
+        const rot = tramos(d, [0, 20, 20, 20]) * lado;
+        it.style.transform = `translateX(${(o * ancho).toFixed(1)}px)`;
+        it.style.zIndex = Math.max(0, Math.round(1000 - Math.abs(o) * 350));
+        it.querySelector('.ct-cov__card').style.transform =
+          `perspective(500px) translateX(${corr.toFixed(2)}%) scale(${esc.toFixed(3)}) rotateY(${rot.toFixed(2)}deg)`;
+        it.style.visibility = Math.abs(o) > 3.5 ? 'hidden' : 'visible';
+      });
+      const c = ((Math.round(pos) % N) + N) % N;
+      if (c !== centro) {
+        centro = c;
+        items.forEach((it, i) => it.classList.toggle('is-centro', i === c));
+        reproducir();
+      }
+    };
+
+    // un loop que lleva pos hacia el objetivo (encaje suave)
+    const loop = () => {
+      if (raf) return;
+      let prev = performance.now();
+      const paso = (t) => {
+        const dt = Math.min(0.033, (t - prev) / 1000); prev = t;
+        if (objetivo !== null) {
+          pos += (objetivo - pos) * (1 - Math.pow(0.0006, dt));
+          if (Math.abs(objetivo - pos) < 0.001) { pos = objetivo; objetivo = null; }
+        }
+        dibujar();
+        if (objetivo === null) { raf = 0; return; }
+        raf = requestAnimationFrame(paso);
+      };
+      raf = requestAnimationFrame(paso);
+    };
+    const ir = (p) => { objetivo = p; loop(); };
+
+    // arrastre con impulso; un toque sin arrastre sobre una tarjeta del costado la trae al centro
+    let arr = null;
+    escena.addEventListener('pointerdown', (e) => {
+      try { escena.setPointerCapture(e.pointerId); } catch (_) {}
+      objetivo = null;
+      arr = { x0: e.clientX, x: e.clientX, t: performance.now(), v: 0, p0: pos, movio: false };
+      escena.classList.add('is-arrastrando');
+    });
+    escena.addEventListener('pointermove', (e) => {
+      if (!arr) return;
+      const ahora = performance.now(), dx = e.clientX - arr.x;
+      arr.v = (-dx / ancho) / Math.max(1, ahora - arr.t) * 1000;   // tarjetas por segundo
+      arr.x = e.clientX; arr.t = ahora;
+      if (Math.abs(e.clientX - arr.x0) > 6) arr.movio = true;
+      pos = arr.p0 - (e.clientX - arr.x0) / ancho;
+      dibujar();
+    });
+    const soltar = (e) => {
+      if (!arr) return;
+      const a = arr; arr = null; escena.classList.remove('is-arrastrando');
+      if (!a.movio) {
+        const it = e.target.closest('[data-item]');
+        if (it) { const i = items.indexOf(it); let o = i - pos; o = ((o % N) + N + N / 2) % N - N / 2; return ir(Math.round(pos + o)); }
+      }
+      const v = performance.now() - a.t < 80 ? a.v : 0;
+      ir(Math.round(pos + Math.max(-2, Math.min(2, v * 0.25))));   // impulso: a lo sumo 2 tarjetas por tirón
+    };
+    escena.addEventListener('pointerup', soltar);
+    escena.addEventListener('pointercancel', () => { arr = null; escena.classList.remove('is-arrastrando'); ir(Math.round(pos)); });
+    escena.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); ir(Math.round(objetivo ?? pos) - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); ir(Math.round(objetivo ?? pos) + 1); }
+    });
+
+    // los videos sólo corren con la sección a la vista
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      reproducir();
+    }, { threshold: 0.3 }).observe(escena);
+
+    dibujar();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Videos en coverflow",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 24,
+  "settings": [
+    {
+      "type": "range",
+      "id": "play_range",
+      "label": "Videos que se reproducen a cada lado del centro",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "default": 3,
+      "info": "0 = sólo el del centro · 1 = tres videos · 3 = todos los que se ven"
+    },
+    {
+      "type": "paragraph",
+      "content": "OJO: los videos por defecto son recortes de los ads propios y los textos son DUMMY. Reemplazar por videos y testimonios reales."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titular",
+      "default": "Mirá cómo les fue"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del titular",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Ancho de cada video",
+      "min": 140,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 200
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Color de la sección",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Margen arriba",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Margen abajo",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_estrellas",
+      "label": "Estrellas (sobre el video)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "info": "Vacío: sin video, con el dibujo de relleno."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Imagen de portada"
+        },
+        {
+          "type": "range",
+          "id": "stars",
+          "label": "Estrellas (0 = sin)",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "quote",
+          "label": "Frase"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Videos en coverflow"
+    }
+  ]
+}
+{% endschema %}

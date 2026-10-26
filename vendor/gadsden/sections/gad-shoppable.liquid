@@ -1,0 +1,672 @@
+
+{%- assign s = section.settings -%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<div
+  class="gad-shop gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width{% if s.full_width %} page-width--full{% endif %}">
+    {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: s.heading_align, align_m: s.heading_align_m -%}
+    <gad-shoppable class="gad-shop__media">
+      {%- if s.image != blank -%}
+        {{ s.image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: s.image.alt, sizes: '100vw', widths: '750, 1100, 1500, 2000' }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'gad-shop__ph' }}
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign p = b.product
+          assign side = 'right'
+          if b.x > 60
+            assign side = 'left'
+          endif
+          assign vert = 'down'
+          if b.y > 55
+            assign vert = 'up'
+          endif
+        -%}
+        <details
+          class="gad-shop__spot gad-shop__spot--{{ side }} gad-shop__spot--{{ vert }}"
+          name="GadShop-{{ section.id }}"
+          style="left: {{ b.x }}%; top: {{ b.y }}%;"
+          {{ block.shopify_attributes }}
+        >
+          <summary class="gad-shop__dot gad-shop__dot--{{ s.point_style }}">
+            <span class="visually-hidden">{{ p.title | default: b.title | escape }}</span>
+          </summary>
+          <div class="gad-shop__card color-{{ s.card_scheme }}">
+            {%- if p != blank -%}
+              <a href="{{ p.url }}" class="gad-shop__img">
+                {%- if p.featured_media -%}
+                  {{ p.featured_media | image_url: width: 240 | image_tag: loading: 'lazy', alt: '', width: 120, height: 120 }}
+                {%- endif -%}
+              </a>
+              <div class="gad-shop__info">
+                <a href="{{ p.url }}" class="gad-shop__title">{{ p.title | escape }}</a>
+                {%- render 'price', product: p, use_variant: true -%}
+                {%- render 'gad-atc-button', label: s.atc_label, product: p -%}
+                {%- if s.link_label != blank -%}<a href="{{ p.url }}" class="gad-shop__link link">{{ s.link_label | escape }}</a>{%- endif -%}
+              </div>
+            {%- else -%}
+              <div class="gad-shop__info">
+                <span class="gad-shop__title">{{ b.title | escape }}</span>
+                {%- if request.design_mode -%}<p class="gad-shop__hint">{{ 'gadsden.shoppable.pick' | t }}</p>{%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </details>
+      {%- endfor -%}
+    </gad-shoppable>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-shop__media {
+    position: relative;
+    display: block;
+  }
+
+  .gad-shop__media > img,
+  .gad-shop__ph {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1.2rem;
+  }
+
+  .page-width--full .gad-shop__media > img {
+    border-radius: 0;
+  }
+
+  .gad-shop__ph {
+    aspect-ratio: 16 / 9;
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  .gad-shop__spot {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .gad-shop__spot[open] {
+    z-index: 3;
+  }
+
+  .gad-shop__dot {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.25);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .gad-shop__dot::-webkit-details-marker {
+    display: none;
+  }
+
+  .gad-shop__dot::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #121212;
+    transition: transform 0.2s;
+  }
+
+  .gad-shop__dot--plus::before {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 0;
+    background: linear-gradient(#121212, #121212) center / 100% 0.2rem no-repeat,
+      linear-gradient(#121212, #121212) center / 0.2rem 100% no-repeat;
+  }
+
+  .gad-shop__spot[open] .gad-shop__dot--plus::before {
+    transform: rotate(45deg);
+  }
+
+  .gad-shop__spot[open] .gad-shop__dot--dot::before {
+    transform: scale(1.3);
+  }
+
+  .gad-shop__card {
+    position: absolute;
+    display: flex;
+    gap: 1.2rem;
+    width: min(32rem, 80vw);
+    padding: 1.2rem;
+    border-radius: 1rem;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.2);
+  }
+
+  .gad-shop__spot--right .gad-shop__card {
+    left: 2.4rem;
+  }
+
+  .gad-shop__spot--left .gad-shop__card {
+    right: 2.4rem;
+  }
+
+  .gad-shop__spot--down .gad-shop__card {
+    top: -1.5rem;
+  }
+
+  .gad-shop__spot--up .gad-shop__card {
+    bottom: 1.5rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .gad-shop__card {
+      position: fixed;
+      inset: auto 1.2rem 1.2rem !important;
+      width: auto;
+      z-index: 20;
+    }
+  }
+
+  .gad-shop__img img {
+    display: block;
+    width: 9rem;
+    height: 9rem;
+    border-radius: 0.6rem;
+    object-fit: cover;
+  }
+
+  .gad-shop__info {
+    display: grid;
+    flex: 1;
+    gap: 0.6rem;
+    align-content: start;
+    min-width: 0;
+  }
+
+  .gad-shop__title {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .gad-shop__info .price {
+    font-size: 1.4rem;
+  }
+
+  .gad-shop__info .button {
+    min-height: 4rem;
+    padding: 0 1.6rem;
+    font-size: 1.3rem;
+  }
+
+  .gad-shop__link {
+    font-size: 1.3rem;
+  }
+
+  .gad-shop__hint {
+    margin: 0;
+    font-size: 1.3rem;
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadShoppable extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      this.onDoc = (e) => {
+        this.querySelectorAll('details[open]').forEach((d) => {
+          if (!d.contains(e.target)) d.removeAttribute('open');
+        });
+      };
+      this.onKey = (e) => {
+        if (e.key === 'Escape') this.querySelectorAll('details[open]').forEach((d) => d.removeAttribute('open'));
+      };
+      document.addEventListener('click', this.onDoc);
+      document.addEventListener('keydown', this.onKey);
+      this.addEventListener('shopify:block:select', (e) => e.target.setAttribute('open', ''));
+      this.addEventListener('shopify:block:deselect', (e) => e.target.removeAttribute('open'));
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener('click', this.onDoc);
+      document.removeEventListener('keydown', this.onKey);
+      this._ready = false;
+    }
+  }
+
+  if (!customElements.get('gad-shoppable')) customElements.define('gad-shoppable', GadShoppable);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Imagen comprable",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Comprá el <strong>look</strong>",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alineación del encabezado",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "info": "Volanta, título y texto de arriba."
+    },
+    {
+      "type": "select",
+      "id": "heading_align_m",
+      "label": "Alineación del encabezado en mobile",
+      "default": "same",
+      "options": [
+        {
+          "value": "same",
+          "label": "Igual que en desktop"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Usar todo el ancho de la página",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "point_style",
+      "label": "Puntos",
+      "options": [
+        {
+          "value": "dot",
+          "label": "Punto"
+        },
+        {
+          "value": "plus",
+          "label": "Signo más"
+        }
+      ],
+      "default": "plus"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_scheme",
+      "label": "Combinación de las tarjetas",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "atc_label",
+      "label": "Texto del botón de agregar",
+      "default": "Agregar al carrito",
+      "info": "Vacío: sin botón."
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Texto del enlace a la ficha",
+      "default": "Ver producto"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "Producto",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Producto"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Nombre sin producto",
+          "default": "Producto",
+          "info": "Sólo se ve mientras no elijas un producto."
+        },
+        {
+          "type": "range",
+          "id": "x",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición horizontal",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "y",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "label": "Posición vertical",
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Imagen comprable",
+      "blocks": [
+        {
+          "type": "hotspot",
+          "settings": {
+            "x": 35,
+            "y": 40
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "x": 70,
+            "y": 65
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

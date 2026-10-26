@@ -1,0 +1,255 @@
+{%- comment -%}
+  Íconos con contenido: pasos numerados en círculos unidos por una línea, con ondas en el que se marca, y una nota con un radar.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- if section.settings.letra != blank and section.settings.letra.family != settings.type_header_font.family and section.settings.letra.family != settings.type_body_font.family -%}<style>{{ section.settings.letra | font_face: font_display: 'swap' }}</style>{%- endif -%}
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign bg = 'rgb(var(--r-fondo))'
+  if section.settings.bg == 'light'
+    assign bg = 'rgb(var(--r-fondo_claro))'
+  endif
+-%}
+
+<style>
+  #gad-steps-{{ uid }}{background:{{ bg }};padding:80px 20px;font-family:var(--r-letra)}
+  #gad-steps-{{ uid }} .gs-wrap{max-width:1180px;margin:0 auto;text-align:center}
+  #gad-steps-{{ uid }} .gs-eye{font-weight:700;font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:rgb(var(--r-acento))}
+  #gad-steps-{{ uid }} h2{font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:rgb(var(--r-titulos));margin:12px 0 0}
+  #gad-steps-{{ uid }} h2 em{font-style:normal;color:rgb(var(--r-acento))}
+  #gad-steps-{{ uid }} .gs-lead{color:rgb(var(--r-parrafo));font-size:18px;max-width:640px;margin:16px auto 0;line-height:1.5}
+  #gad-steps-{{ uid }} .gs-steps{display:grid;grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr);gap:30px;margin-top:52px;position:relative}
+  #gad-steps-{{ uid }} .gs-steps:before{content:"";position:absolute;top:32px;left:17%;right:17%;border-top:2px dashed rgb(var(--r-linea))}
+  #gad-steps-{{ uid }} .gs-step{position:relative;z-index:1;text-align:center}
+  #gad-steps-{{ uid }} .gs-n{width:66px;height:66px;border-radius:50%;background:rgb(var(--r-tarjeta));border:2px solid rgb(var(--r-acento));color:rgb(var(--r-acento));display:grid;place-items:center;margin:0 auto 20px;font-weight:800;font-size:24px;position:relative}
+  #gad-steps-{{ uid }} .gs-n.sig:before,#gad-steps-{{ uid }} .gs-n.sig:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgb(var(--r-acento));opacity:0;animation:gs-ripple-{{ uid }} 2.6s ease-out infinite}
+  #gad-steps-{{ uid }} .gs-n.sig:after{animation-delay:1.3s}
+  @keyframes gs-ripple-{{ uid }}{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+  #gad-steps-{{ uid }} .gs-step h3{font-size:21px;font-weight:800;color:rgb(var(--r-titulos));margin:0 0 8px}
+  #gad-steps-{{ uid }} .gs-step p{color:rgb(var(--r-parrafo));font-size:15.5px;margin:0;line-height:1.5}
+  #gad-steps-{{ uid }} .gs-note{max-width:720px;margin:44px auto 0;border:1px solid rgb(var(--r-borde));border-radius:16px;padding:20px 26px;font-weight:600;font-size:16.5px;color:rgb(var(--r-titulos));background:rgb(var(--r-tarjeta));display:flex;align-items:center;gap:22px;text-align:left}
+  #gad-steps-{{ uid }} .gs-note small{color:rgb(var(--r-parrafo));font-weight:400;font-size:inherit}
+  #gad-steps-{{ uid }} .gs-mrad{position:relative;width:74px;height:74px;flex:none;border-radius:50%;background:rgb(var(--r-radar));border:1px solid rgb(var(--r-radar_borde));overflow:hidden}
+  #gad-steps-{{ uid }} .gs-mrad:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(var(--r-acento),.35),transparent 85deg);animation:gs-rot-{{ uid }} 4s linear infinite}
+  #gad-steps-{{ uid }} .gs-mrad i{position:absolute;width:10px;height:10px;border-radius:50%;background:rgb(var(--r-acento));top:50%;left:50%;transform:translate(-50%,-50%)}
+  @keyframes gs-rot-{{ uid }}{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){#gad-steps-{{ uid }} *{animation:none!important}}
+  @media(max-width:900px){
+    #gad-steps-{{ uid }}{padding:56px 18px}
+    #gad-steps-{{ uid }} h2{font-size:30px}
+    #gad-steps-{{ uid }} .gs-steps{grid-template-columns:1fr}
+    #gad-steps-{{ uid }} .gs-steps:before{display:none}
+    #gad-steps-{{ uid }} .gs-note{flex-direction:column;text-align:center}
+  }
+</style>
+
+<div id="gad-steps-{{ uid }}" style="--r-fondo: {%- render 'gad-rol', c: section.settings.color_fondo, d: 'var(--color-background)' -%}; --r-fondo_claro: {%- render 'gad-rol', c: section.settings.color_fondo_claro, d: 'var(--color-background)' -%}; --r-titulos: {%- render 'gad-rol', c: section.settings.color_titulos, d: 'var(--color-foreground)' -%}; --r-acento: {%- render 'gad-rol', c: section.settings.color_acento, d: 'var(--color-button)' -%}; --r-parrafo: {%- render 'gad-rol', c: section.settings.color_parrafo, d: 'var(--color-foreground)' -%}; --r-tarjeta: {%- render 'gad-rol', c: section.settings.color_tarjeta, d: 'var(--color-background)' -%}; --r-linea: {%- render 'gad-rol', c: section.settings.color_linea, d: 'var(--color-background-contrast)' -%}; --r-borde: {%- render 'gad-rol', c: section.settings.color_borde, d: 'var(--color-background-contrast)' -%}; --r-radar: {%- render 'gad-rol', c: section.settings.color_radar, d: 'var(--color-background-contrast)' -%}; --r-radar_borde: {%- render 'gad-rol', c: section.settings.color_radar_borde, d: 'var(--color-background-contrast)' -%}; --r-letra: {% if section.settings.letra != blank %}'{{ section.settings.letra.family }}',system-ui,sans-serif{% else %}var(--font-heading-family){% endif %};">
+  <div class="gs-wrap">
+    {%- if section.settings.eyebrow != blank -%}<span class="gs-eye">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+    {%- if section.settings.lead != blank -%}<p class="gs-lead">{{ section.settings.lead }}</p>{%- endif -%}
+
+    <div class="gs-steps">
+      {%- for block in section.blocks -%}
+        <div class="gs-step" {{ block.shopify_attributes }}>
+          <div class="gs-n{% if block.settings.signal %} sig{% endif %}">{{ block.settings.num | default: forloop.index }}</div>
+          {%- if block.settings.title != blank -%}<h3>{{ block.settings.title }}</h3>{%- endif -%}
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_note and section.settings.note != blank -%}
+      <div class="gs-note">
+        <span class="gs-mrad"><i></i></span>
+        <div>{{ section.settings.note }}</div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Íconos con contenido",
+  "tag": "section",
+  "class": "gad-icon-content-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "bg",
+      "label": "Fondo",
+      "default": "alt",
+      "options": [
+        {
+          "value": "light",
+          "label": "Blanco"
+        },
+        {
+          "value": "alt",
+          "label": "Gris claro"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Bajada (eyebrow)",
+      "default": "02 — Cómo funciona"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Titulo (la cursiva va en el color de acento)",
+      "default": "Cómo funciona, <em>paso a paso</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Subtitulo",
+      "default": "Contá acá, en una o dos líneas, cómo funciona tu producto."
+    },
+    {
+      "type": "header",
+      "content": "Nota inferior"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "Mostrar nota",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Texto de la nota",
+      "default": "Una aclaración corta sobre cómo funciona."
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo_claro",
+      "label": "Fondo (variante clara)"
+    },
+    {
+      "type": "color",
+      "id": "color_titulos",
+      "label": "Títulos"
+    },
+    {
+      "type": "color",
+      "id": "color_acento",
+      "label": "Acento (volanta, resaltado, círculos y ondas)"
+    },
+    {
+      "type": "color",
+      "id": "color_parrafo",
+      "label": "Texto"
+    },
+    {
+      "type": "color",
+      "id": "color_tarjeta",
+      "label": "Fondo de los círculos y de la nota"
+    },
+    {
+      "type": "color",
+      "id": "color_linea",
+      "label": "Línea que une los pasos"
+    },
+    {
+      "type": "color",
+      "id": "color_borde",
+      "label": "Borde de la nota"
+    },
+    {
+      "type": "color",
+      "id": "color_radar",
+      "label": "Fondo del radar"
+    },
+    {
+      "type": "color",
+      "id": "color_radar_borde",
+      "label": "Borde del radar"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra",
+      "label": "Letra"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Paso",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "num",
+          "label": "Numero (vacio = automatico)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Un paso"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texto",
+          "default": "Qué hay que hacer en este paso."
+        },
+        {
+          "type": "checkbox",
+          "id": "signal",
+          "label": "Animacion de señal en el numero",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Íconos con contenido",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "num": "1",
+            "title": "Primer paso",
+            "text": "Qué hay que hacer primero.",
+            "signal": true
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "num": "2",
+            "title": "Segundo paso",
+            "text": "Qué hay que hacer después."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "num": "3",
+            "title": "Tercer paso",
+            "text": "Y lo que conseguís al final."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

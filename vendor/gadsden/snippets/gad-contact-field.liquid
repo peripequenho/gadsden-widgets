@@ -1,0 +1,80 @@
+
+{%- liquid
+  assign input_type = 'text'
+  assign autocomplete = 'off'
+  case type
+    when 'name'
+      assign def_label = 'templates.contact.form.name' | t
+      assign autocomplete = 'name'
+    when 'email'
+      assign def_label = 'templates.contact.form.email' | t
+      assign input_type = 'email'
+      assign autocomplete = 'email'
+    when 'phone'
+      assign def_label = 'templates.contact.form.phone' | t
+      assign input_type = 'tel'
+      assign autocomplete = 'tel'
+    when 'comment', 'textarea'
+      assign def_label = 'templates.contact.form.comment' | t
+    else
+      assign def_label = 'gadsden.contact.field' | t
+  endcase
+  assign lbl = label | default: def_label
+  assign is_required = required
+  if type == 'email'
+    assign is_required = true
+    assign field_name = 'contact[email]'
+  else
+    assign field_name = 'contact[' | append: lbl | append: ']'
+  endif
+  assign err_id = id | append: '-error'
+  assign err_text = 'gadsden.contact.required' | t
+  if type == 'email'
+    assign err_text = 'gadsden.contact.email' | t
+  endif
+  if error != blank
+    assign err_text = error
+  endif
+-%}
+<div class="gad-cf__cell">
+<div class="field gad-cf__field{% if type == 'comment' or type == 'textarea' %} gad-cf__field--area{% endif %}">
+  {%- if type == 'comment' or type == 'textarea' -%}
+    <textarea
+      rows="6"
+      id="{{ id }}"
+      class="text-area field__input"
+      name="{{ field_name | escape }}"
+      placeholder="{{ lbl | escape }}"
+      {% if maxlength > 0 %}
+        maxlength="{{ maxlength }}"
+      {% endif %}
+      {% if is_required %}
+        aria-required="true" data-gad-required
+      {% endif %}
+      data-gad-error="{{ err_id }}"
+    >{{ value }}</textarea>
+  {%- else -%}
+    <input
+      class="field__input"
+      type="{{ input_type }}"
+      id="{{ id }}"
+      name="{{ field_name | escape }}"
+      autocomplete="{{ autocomplete }}"
+      value="{{ value | escape }}"
+      placeholder="{{ lbl | escape }}"
+      {% if type == 'email' %}
+        spellcheck="false" autocapitalize="off"
+      {% endif %}
+      {% if is_required %}
+        aria-required="true" data-gad-required
+      {% endif %}
+      data-gad-error="{{ err_id }}"
+    >
+  {%- endif -%}
+  <label class="field__label" for="{{ id }}">
+    {{- lbl | escape -}}
+    {%- if is_required %} <span aria-hidden="true">*</span>{% endif -%}
+  </label>
+</div>
+  <small class="gad-cf__error" id="{{ err_id }}" role="alert" hidden>{{ err_text | escape }}</small>
+</div>

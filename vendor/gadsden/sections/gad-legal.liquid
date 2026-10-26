@@ -1,0 +1,119 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign pend = '[PENDIENTE]'
+  assign inci = product.metafields.athlex.inci | default: pend
+  assign titular = product.metafields.athlex.titular | default: pend
+  assign legajo = product.metafields.athlex.anmat_legajo | default: pend
+  assign neto = product.metafields.athlex.contenido_neto | default: section.settings.neto
+-%}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+
+<style>
+  
+  #ax-legal-{{ uid }}{
+    --tinta:#141210;--papel:#E6DFCE;--lima:#93D920;
+    --impacto:'Archivo Black','Arial Black',Haettenschweiler,Impact,sans-serif;
+    --texto:'Barlow Semi Condensed','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif;
+    background:var(--tinta);color:var(--papel);font-family:var(--texto);
+    padding:16px 20px 18px;border-top:4px solid var(--lima);
+  }
+  #ax-legal-{{ uid }} .ax-wrap{max-width:1000px;margin:0 auto}
+
+  
+  #ax-legal-{{ uid }} .ax-aviso{display:flex;align-items:flex-start;gap:9px;
+    font-size:13.5px;line-height:1.35;margin:0 0 10px}
+  #ax-legal-{{ uid }} .ax-aviso svg{flex:none;width:17px;height:17px;color:var(--lima);margin-top:1px}
+
+  
+  #ax-legal-{{ uid }} details{border-top:1px solid rgba(230,223,206,.22)}
+  #ax-legal-{{ uid }} summary{list-style:none;cursor:pointer;min-height:38px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    font-family:var(--impacto);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--lima);opacity:.9}
+  #ax-legal-{{ uid }} summary::-webkit-details-marker{display:none}
+  #ax-legal-{{ uid }} summary:after{content:"+";font-size:15px;line-height:1}
+  #ax-legal-{{ uid }} details[open] summary:after{content:"–"}
+  #ax-legal-{{ uid }} .ax-cols{display:grid;gap:12px;padding:2px 0 12px}
+  #ax-legal-{{ uid }} .ax-cols h3{margin:0 0 3px;font-family:var(--impacto);
+    text-transform:uppercase;font-size:9.5px;letter-spacing:.16em;color:var(--lima);opacity:.85}
+  #ax-legal-{{ uid }} .ax-cols p{margin:0;font-size:14px;line-height:1.4;opacity:.8;max-width:62ch}
+  #ax-legal-{{ uid }} .ax-pend{opacity:.55;font-style:italic}
+
+  
+  #ax-legal-{{ uid }} .ax-pie{border-top:1px solid rgba(230,223,206,.22);padding:9px 0 0;
+    font-family:var(--impacto);font-size:8.5px;letter-spacing:.13em;
+    text-transform:uppercase;opacity:.55;line-height:1.5}
+
+  
+  @media(min-width:900px){
+    #ax-legal-{{ uid }}{padding:18px 28px 20px}
+    #ax-legal-{{ uid }} .ax-aviso{font-size:14px}
+    #ax-legal-{{ uid }} .ax-cols{grid-template-columns:1fr 1fr;gap:12px 40px}
+    #ax-legal-{{ uid }} .ax-pie{font-size:9px}
+  }
+</style>
+
+<div id="ax-legal-{{ uid }}">
+  <div class="ax-wrap">
+    {%- if section.settings.aviso != blank -%}
+      <p class="ax-aviso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>
+        </svg>
+        <span>{{ section.settings.aviso }}</span>
+      </p>
+    {%- endif -%}
+
+    <details>
+      <summary>{{ section.settings.titulo_detalle }}</summary>
+      <div class="ax-cols">
+        <div>
+          <h3>Advertencias</h3>
+          <p>{{ section.settings.advertencias }}</p>
+        </div>
+        <div>
+          <h3>Modo de uso</h3>
+          <p>{{ section.settings.modo_uso }}</p>
+        </div>
+        <div>
+          <h3>Ingredientes</h3>
+          <p{% if inci == pend %} class="ax-pend"{% endif %}>{{ inci }}</p>
+        </div>
+        <div>
+          <h3>Titular / Responsable</h3>
+          <p{% if titular == pend %} class="ax-pend"{% endif %}>{{ titular }}</p>
+          <h3 style="margin-top:8px">Inscripción ANMAT</h3>
+          <p{% if legajo == pend %} class="ax-pend"{% endif %}>{{ legajo }}</p>
+        </div>
+      </div>
+    </details>
+
+    <p class="ax-pie">
+      {{ section.settings.categoria }}
+      {%- if neto != blank %} · Cont. neto {{ neto }}{% endif -%}
+      {%- if section.settings.origen != blank %} · {{ section.settings.origen }}{% endif -%}
+    </p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Aviso y datos legales",
+  "tag": "section",
+  "class": "athlex-legal-section",
+  "settings": [
+    { "type": "textarea", "id": "aviso", "label": "Aviso destacado (siempre visible)", "default": "Uso externo. Suspender su uso en caso de irritación. Mantener fuera del alcance de los niños." },
+    { "type": "text", "id": "titulo_detalle", "label": "Título del desplegable", "default": "Advertencias, ingredientes y datos del producto" },
+    { "type": "textarea", "id": "advertencias", "label": "Advertencias", "default": "Uso externo. Evitá el contacto con los ojos y las mucosas. Si aparece irritación, suspendé el uso. No apliques sobre piel lastimada. No exponer a temperaturas mayores a 30 °C." },
+    { "type": "textarea", "id": "modo_uso", "label": "Modo de uso", "default": "Agitá antes de usar. Aplicá a 15 cm sobre la piel limpia y seca. Dejá secar unos segundos. No requiere enjuague. Repetí cuando lo necesites." },
+    { "type": "text", "id": "neto", "label": "Contenido neto (si el producto no lo trae)", "default": "120 ml" },
+    { "type": "header", "content": "Pie" },
+    { "type": "text", "id": "categoria", "label": "Categoría", "default": "Producto cosmético de higiene y cuidado personal" },
+    { "type": "text", "id": "origen", "label": "Origen", "default": "Industria Argentina" }
+  ],
+  "presets": [ { "name": "Aviso y datos legales" } ]
+}
+{% endschema %}

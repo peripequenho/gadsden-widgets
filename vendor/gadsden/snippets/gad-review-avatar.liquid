@@ -1,0 +1,8 @@
+
+{%- if b.settings.photo != blank -%}
+  {{ b.settings.photo | image_url: width: 120 | image_tag: loading: 'lazy', alt: '', width: 60, height: 60 }}
+{%- elsif mockup and i <= 8 -%}
+  <img src="{{ 'ct-cara-' | append: i | append: '.jpg' | asset_url }}" alt="" width="60" height="60" loading="lazy">
+{%- else -%}
+  {{- partes.first | slice: 0 -}}{%- if partes.size > 1 -%}{{- partes.last | slice: 0 -}}{%- endif -%}
+{%- endif -%}

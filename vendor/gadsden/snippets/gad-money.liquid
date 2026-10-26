@@ -1,0 +1,2 @@
+
+{%- if no_cents -%}{{ amount | money_without_trailing_zeros }}{%- else -%}{{ amount | money }}{%- endif -%}

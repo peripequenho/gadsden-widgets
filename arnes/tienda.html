@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Producto prueba 1 · Tienda simulada</title>
+<meta property="og:image" content="https://dcdn-us.mitiendanube.com/assets/stores/img/no-photo-1024-1024.webp">
+<style>
+  body { margin: 0; font: 15px system-ui, sans-serif; color: #121212; }
+  header { padding: 16px 24px; border-bottom: 1px solid #eee; font-weight: 700; }
+  .ficha { display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  @media (min-width: 768px) { .ficha { grid-template-columns: 1.2fr 1fr; } }
+  .foto { aspect-ratio: 1; background: #f1f1f1; display: grid; place-items: center; color: #888; }
+  h1 { margin: 0 0 8px; font-size: 26px; }
+  .precio { font-size: 22px; margin: 8px 0; }
+  select, .btn { font: inherit; padding: 10px; width: 100%; box-sizing: border-box; margin: 6px 0; }
+  .btn { background: #121212; color: #fff; border: 0; cursor: pointer; }
+  .relleno { max-width: 1100px; margin: 0 auto; padding: 16px; color: #888; }
+  footer { background: #121212; color: #fff; padding: 40px 24px; }
+</style>
+</head>
+<body>
+<!--
+  Una ficha de producto que imita a Ipanema (medida en lgademo el 23-oct): el objeto LS con la tienda, el producto y las
+  variantes, los lugares [data-nubesdk-slot] (con las secciones dinámicas, data-nubesdk-section-*, dentro de su .ns-section como en Ipanema) y el formulario de compra (#product_form, .js-addtocart). LS.addToCartEnhanced
+  anota lo que recibe en window.carrito. Para probar /preview.js (src/vista.ts) sin la tienda: herramientas/vista.mjs.
+-->
+<header data-nubesdk-slot="after_header">Tienda simulada (Ipanema)</header>
+<div data-nubesdk-slot="before_main_content"></div>
+<div class="ns-section" data-section-id="main_product" data-section-type="main-product">
+<div data-nubesdk-slot="before_dynamic_section_main_product" data-nubesdk-section-type="main-product" data-nubesdk-section-id="main_product" data-nubesdk-section-index="1"></div>
+<section class="ficha">
+  <div><div class="foto">Foto del producto</div><div data-nubesdk-slot="after_product_detail_image"></div></div>
+  <div>
+    <div data-nubesdk-slot="before_product_detail_name"></div>
+    <h1>Producto prueba 1</h1>
+    <div data-nubesdk-slot="after_product_detail_name"></div>
+    <div data-nubesdk-slot="before_product_detail_price"></div>
+    <div class="precio">$10.000,00</div>
+    <div data-nubesdk-slot="after_product_detail_price"></div>
+    <form id="product_form" class="js-product-form" method="post" action="/comprar/">
+      <input type="hidden" name="add_to_cart" value="374291669">
+      <select name="variation[0]"><option>S</option><option>M</option></select>
+      <input type="number" name="quantity" value="1" min="1">
+      <div data-nubesdk-slot="before_product_detail_add_to_cart"></div>
+      <input type="submit" class="js-addtocart btn" value="Agregar al carrito">
+      <div data-nubesdk-slot="after_product_detail_add_to_cart"></div>
+    </form>
+    <div data-nubesdk-slot="after_product_detail_payment_options"></div>
+    <div data-nubesdk-slot="after_product_detail_shipping_options"></div>
+  </div>
+</section>
+<div data-nubesdk-slot="after_dynamic_section_main_product" data-nubesdk-section-type="main-product" data-nubesdk-section-id="main_product" data-nubesdk-section-index="1"></div>
+</div>
+<!-- Una sección que el comerciante sumó a la ficha (Ipanema le pone un id que cambia). -->
+<div class="ns-section" data-section-id="product-list_1782228052519" data-section-type="product-list">
+<div data-nubesdk-slot="before_dynamic_section_product-list_1782228052519" data-nubesdk-section-type="product-list" data-nubesdk-section-id="product-list_1782228052519" data-nubesdk-section-index="2"></div>
+<section class="relleno" style="background:#f6f6f6">Productos destacados (una sección de la tienda)</section>
+<div data-nubesdk-slot="after_dynamic_section_product-list_1782228052519" data-nubesdk-section-type="product-list" data-nubesdk-section-id="product-list_1782228052519" data-nubesdk-section-index="2"></div>
+</div>
+<p class="relleno" style="height:900px">Descripción del producto y más contenido de la página, para scrollear.</p>
+<div data-nubesdk-slot="before_footer"></div>
+<footer>Pie de la tienda</footer>
+<form action="/comprar/" method="post" data-store="cart-form"></form>
+<script>
+  window.carrito = [];
+  window.LS = {
+    store: { id: 8359789, url: "lgademo.mitiendanube.com" },
+    template: "product",
+    product: { id: 374291669, name: "Producto prueba 1" },
+    currency: { code: "ARS" },
+    variants: [
+      { id: 1619178738, product_id: 374291669, price_number: 10000, compare_at_price_number: 12000, available: true, option0: "S", option1: null, option2: null, image_url: null },
+      { id: 1619178739, product_id: 374291669, price_number: 10000, compare_at_price_number: 12000, available: true, option0: "M", option1: null, option2: null, image_url: null },
+    ],
+    addToCartEnhanced(form) {
+      const f = form && form.jquery ? form[0] : form;
+      window.carrito.push(Object.fromEntries(new FormData(f)));
+    },
+  };
+  document.getElementById("product_form").addEventListener("submit", (e) => e.preventDefault());
+</script>
+</body>
+</html>

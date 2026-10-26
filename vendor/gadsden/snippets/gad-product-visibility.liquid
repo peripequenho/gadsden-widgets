@@ -1,0 +1,21 @@
+
+{%- liquid
+  assign show = true
+  if list != blank
+    assign listed = false
+    if product
+      for p in list
+        if p.id == product.id
+          assign listed = true
+          break
+        endif
+      endfor
+    endif
+    if only
+      assign show = listed
+    elsif listed
+      assign show = false
+    endif
+  endif
+  echo show
+-%}

@@ -1,0 +1,43 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+-%}
+
+{% style %}
+  #ax-prog-{{ uid }}{position:fixed;top:0;left:0;right:0;height:4px;z-index:9999;
+    pointer-events:none;background:rgba(20,18,16,.12)}
+  #ax-prog-{{ uid }} b{display:block;height:100%;background:#93D920;
+    transform-origin:left;transform:scaleX(0)}
+{% endstyle %}
+
+<div id="ax-prog-{{ uid }}" aria-hidden="true"><b></b></div>
+
+<script>
+  (function () {
+    var caja = document.getElementById('ax-prog-{{ uid }}');
+    if (!caja || caja.dataset.axListo) return;
+    caja.dataset.axListo = '1';
+    var barra = caja.querySelector('b');
+    var pedido = false;
+    function pintar () {
+      pedido = false;
+      var total = document.documentElement.scrollHeight - window.innerHeight;
+      barra.style.transform = 'scaleX(' + (total > 0 ? window.scrollY / total : 0) + ')';
+    }
+    window.addEventListener('scroll', function () {
+      if (!pedido) { pedido = true; requestAnimationFrame(pintar); }
+    }, { passive: true });
+    pintar();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Progreso de lectura",
+  "tag": "section",
+  "class": "athlex-progreso-section",
+  "settings": [],
+  "presets": [ { "name": "Progreso de lectura" } ]
+}
+{% endschema %}

@@ -1,0 +1,20 @@
+
+<main id="MainContent" class="gad-geo-block color-{{ settings.geo_scheme | default: 'scheme-1' }} gradient" role="main">
+  <div class="gad-geo-block__box page-width page-width--narrow">
+    <p class="gad-geo-block__shop h3">{{ shop.name | escape }}</p>
+    <div class="rte">{{ settings.geo_message }}</div>
+  </div>
+</main>
+<style>
+  .gad-geo-block {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .gad-geo-block__shop {
+    margin: 0 0 1.6rem;
+  }
+</style>

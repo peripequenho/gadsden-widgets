@@ -1,0 +1,269 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+-%}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
+
+<style>
+  
+  #ax-proc-{{ uid }}{overflow-x:clip;
+    --tinta:#141210;--papel:#E6DFCE;--papel-2:#D6CDB6;--lima:#93D920;--lima-honda:#6BA512;
+    --impacto:'Archivo Black','Arial Black',Haettenschweiler,Impact,sans-serif;
+    --texto:'Barlow Semi Condensed','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif;
+    background:var(--papel-2);color:var(--tinta);font-family:var(--texto);
+    padding:44px 20px 40px;border-bottom:4px solid var(--tinta);
+  }
+  #ax-proc-{{ uid }} h1,#ax-proc-{{ uid }} h2,#ax-proc-{{ uid }} h3{color:inherit}
+  #ax-proc-{{ uid }} .ax-wrap{max-width:1180px;margin:0 auto}
+
+  #ax-proc-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--tinta);color:var(--papel);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 16px}
+  #ax-proc-{{ uid }} .ax-eye span{display:inline-block;transform:skewX(9deg)}
+  #ax-proc-{{ uid }} h2{margin:0 0 12px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(25px,7.2vw,34px);line-height:1.02;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block}
+  #ax-proc-{{ uid }} h2 span{display:inline-block}
+  #ax-proc-{{ uid }} h2 em{font-style:normal;background:var(--lima);padding:1px 8px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-proc-{{ uid }} .ax-lead{font-size:16.5px;line-height:1.5;max-width:56ch;margin:0;opacity:.88}
+
+  
+  
+  #ax-proc-{{ uid }} .ax-stage{position:relative;aspect-ratio:4/5;
+    width:100vw;max-width:100vw;margin:22px calc(50% - 50vw) 0;
+    border-top:3px solid var(--tinta);border-bottom:3px solid var(--tinta);
+    background:var(--tinta);overflow:hidden}
+  #ax-proc-{{ uid }} .ax-cap{position:absolute;inset:0;opacity:0;pointer-events:none;
+    transition:opacity .25s ease}
+  #ax-proc-{{ uid }} .ax-cap.activa{opacity:1}
+  #ax-proc-{{ uid }} .ax-cap video,#ax-proc-{{ uid }} .ax-cap img{
+    width:100%;height:100%;object-fit:cover;display:block}
+  #ax-proc-{{ uid }} .ax-cap .ax-ph{width:100%;height:100%;
+    background-image:radial-gradient(rgba(147,217,32,.35) 1.7px,transparent 1.8px);
+    background-size:12px 12px;display:grid;place-items:center}
+  #ax-proc-{{ uid }} .ax-ph span{font-family:var(--impacto);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--papel);opacity:.55;text-align:center;padding:0 20px;line-height:1.8}
+  
+  #ax-proc-{{ uid }} .ax-stage:after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;
+    z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(13,12,10,0),rgba(13,12,10,.85))}
+  #ax-proc-{{ uid }} .ax-leyenda{position:absolute;left:0;right:0;bottom:0;z-index:2;
+    padding:0 14px 14px;color:var(--papel)}
+  #ax-proc-{{ uid }} .ax-leyenda .n{font-family:var(--impacto);font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--lima);display:block;margin:0 0 5px}
+  #ax-proc-{{ uid }} .ax-leyenda h3{margin:0 0 4px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:19px;line-height:1.1;letter-spacing:-.01em;color:var(--papel);
+    text-shadow:0 1px 10px rgba(13,12,10,.6)}
+  #ax-proc-{{ uid }} .ax-leyenda p{margin:0;font-size:16px;line-height:1.4;opacity:.9;max-width:46ch}
+
+  
+  #ax-proc-{{ uid }} .ax-fichas{display:grid;
+    grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr);
+    gap:6px;margin:10px 0 0}
+  #ax-proc-{{ uid }} .ax-ficha{position:relative;border:3px solid var(--tinta);background:var(--papel);
+    min-height:48px;padding:8px 6px 11px;cursor:pointer;overflow:hidden;
+    font-family:var(--impacto);text-transform:uppercase;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    -webkit-tap-highlight-color:transparent}
+  #ax-proc-{{ uid }} .ax-ficha .fn{font-size:13px;line-height:1;color:var(--lima-honda)}
+  #ax-proc-{{ uid }} .ax-ficha .ft{font-size:9.5px;letter-spacing:.06em;line-height:1.15;
+    overflow-wrap:anywhere}
+  #ax-proc-{{ uid }} .ax-ficha[aria-current="true"]{background:var(--tinta);color:var(--papel)}
+  #ax-proc-{{ uid }} .ax-ficha[aria-current="true"] .fn{color:var(--lima)}
+  #ax-proc-{{ uid }} .ax-ficha:focus-visible{outline:3px solid var(--lima-honda);outline-offset:-3px}
+  
+  #ax-proc-{{ uid }} .ax-ficha .fp{position:absolute;left:0;bottom:0;height:4px;width:100%;
+    background:var(--lima);transform-origin:left;transform:scaleX(0)}
+
+  #ax-proc-{{ uid }} .ax-pie{margin:22px 0 0;border-left:7px solid var(--lima);padding:3px 0 3px 14px;
+    font-family:var(--impacto);text-transform:uppercase;font-size:15px;line-height:1.25;max-width:30ch}
+
+  
+
+  
+  @media(min-width:900px){
+    #ax-proc-{{ uid }}{padding:74px 28px}
+    #ax-proc-{{ uid }} .ax-eye{font-size:10.5px;letter-spacing:.19em;padding:7px 14px;margin-bottom:24px}
+    #ax-proc-{{ uid }} h2{font-size:clamp(34px,4.3vw,48px);margin-bottom:14px}
+    #ax-proc-{{ uid }} .ax-lead{font-size:18px;line-height:1.55}
+    #ax-proc-{{ uid }} .ax-tablero{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;
+      align-items:stretch;margin-top:40px}
+    #ax-proc-{{ uid }} .ax-stage{margin:0;aspect-ratio:auto;min-height:520px;
+      width:auto;max-width:none;border:4px solid var(--tinta)}
+    #ax-proc-{{ uid }} .ax-fichas{grid-template-columns:1fr;gap:10px;margin:0;align-content:start}
+    #ax-proc-{{ uid }} .ax-ficha{flex-direction:row;justify-content:flex-start;gap:12px;
+      text-align:left;padding:14px 16px 17px;min-height:56px}
+    #ax-proc-{{ uid }} .ax-ficha .fn{font-size:15px}
+    #ax-proc-{{ uid }} .ax-ficha .ft{font-size:13px;letter-spacing:.07em}
+    #ax-proc-{{ uid }} .ax-leyenda{padding:0 18px 18px}
+    #ax-proc-{{ uid }} .ax-leyenda h3{font-size:22px}
+    #ax-proc-{{ uid }} .ax-pie{margin-top:34px;font-size:19px;padding-left:18px;
+      border-left-width:8px;max-width:44ch}
+  }
+</style>
+
+<div id="ax-proc-{{ uid }}">
+  <div class="ax-wrap">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="ax-eye"><span>{{ section.settings.eyebrow }}</span></div>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2><span>{{ section.settings.heading }}</span></h2>
+    {%- endif -%}
+
+    {%- if section.settings.lead != blank -%}
+      <p class="ax-lead">{{ section.settings.lead }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="ax-tablero">
+        <div class="ax-stage">
+          {%- for block in section.blocks -%}
+            <div class="ax-cap{% if forloop.first %} activa{% endif %}" data-i="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.video != blank -%}
+                {{ block.settings.video | video_tag: autoplay: false, loop: false, muted: true, controls: false, playsinline: true, preload: 'metadata' }}
+              {%- elsif block.settings.imagen != blank -%}
+                <img src="{{ block.settings.imagen | image_url: width: 1000 }}"
+                     alt="{{ block.settings.imagen.alt | default: block.settings.title | escape }}" loading="lazy">
+              {%- else -%}
+                <div class="ax-ph"><span>Clip de esta etapa<br>pendiente de cargar</span></div>
+              {%- endif -%}
+              <div class="ax-leyenda">
+                <span class="n">Etapa {{ block.settings.num | default: forloop.index }}</span>
+                {%- if block.settings.title != blank -%}<h3>{{ block.settings.title }}</h3>{%- endif -%}
+                {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="ax-fichas" role="tablist" aria-label="Etapas del proceso">
+          {%- for block in section.blocks -%}
+            <button type="button" class="ax-ficha" role="tab" data-i="{{ forloop.index0 }}"
+                    aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+              <span class="fn">{{ block.settings.num | default: forloop.index }}</span>
+              <span class="ft">{{ block.settings.title | default: 'Etapa' }}</span>
+              <span class="fp" aria-hidden="true"></span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.pie != blank -%}
+      <div class="ax-pie">{{ section.settings.pie }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var caja = document.getElementById('ax-proc-{{ uid }}');
+    if (!caja || caja.dataset.axListo) return;
+    caja.dataset.axListo = '1';
+
+    var caps   = [].slice.call(caja.querySelectorAll('.ax-cap'));
+    var fichas = [].slice.call(caja.querySelectorAll('.ax-ficha'));
+    if (!caps.length || fichas.length !== caps.length) return;
+
+    var visible = false;
+    var actual  = 0;
+
+    function video (i) { return caps[i] ? caps[i].querySelector('video') : null; }
+
+    function pintarProgreso (i, p) {
+      var barra = fichas[i] && fichas[i].querySelector('.fp');
+      if (barra) barra.style.transform = 'scaleX(' + Math.max(0, Math.min(1, p)) + ')';
+    }
+
+    function reproducir () {
+      var v = video(actual);
+      if (v && visible) { v.play().catch(function () {}); }
+    }
+
+    function ir (i) {
+      actual = (i + caps.length) % caps.length;
+      caps.forEach(function (c, k) { c.classList.toggle('activa', k === actual); });
+      fichas.forEach(function (f, k) {
+        f.setAttribute('aria-current', k === actual ? 'true' : 'false');
+        if (k !== actual) pintarProgreso(k, 0);
+      });
+      caps.forEach(function (c, k) {
+        var v = c.querySelector('video');
+        if (v && k !== actual) { v.pause(); try { v.currentTime = 0; } catch (e) {} }
+      });
+      reproducir();
+    }
+
+    fichas.forEach(function (f) {
+      f.addEventListener('click', function () { ir(parseInt(f.dataset.i, 10)); });
+    });
+
+    caps.forEach(function (c, i) {
+      var v = c.querySelector('video');
+      if (!v) return;
+      /* el encadenado: termina un clip, arranca el siguiente. Al final, vuelve. */
+      v.addEventListener('ended', function () { ir(actual + 1); });
+      v.addEventListener('timeupdate', function () {
+        if (i === actual && v.duration) pintarProgreso(i, v.currentTime / v.duration);
+      });
+    });
+
+    /* arranca al entrar en pantalla, se pausa al salir: nada corre invisible */
+    if ('IntersectionObserver' in window) {
+      var ojo = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          visible = e.isIntersecting;
+          if (visible) reproducir();
+          else caps.forEach(function (c) { var v = c.querySelector('video'); if (v) v.pause(); });
+        });
+      }, { threshold: 0.35 });
+      ojo.observe(caja.querySelector('.ax-stage'));
+    } else {
+      visible = true;
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Capítulos en video",
+  "tag": "section",
+  "class": "athlex-proceso-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Bajada (eyebrow)", "default": "06 — CÓMO SE HACE" },
+    { "type": "inline_richtext", "id": "heading", "label": "Título (cursiva → lima)", "default": "De dónde <em>sale</em>" },
+    { "type": "textarea", "id": "lead", "label": "Bajada", "default": "[TODO — escribir cuando esté definido el proceso real de producción.]" },
+    { "type": "header", "content": "Cierre" },
+    { "type": "text", "id": "pie", "label": "Frase de cierre", "info": "Opcional. Vacío no se muestra." }
+  ],
+  "blocks": [
+    {
+      "type": "etapa", "name": "Etapa", "limit": 5,
+      "settings": [
+        { "type": "video", "id": "video", "label": "Clip de la etapa", "info": "5–10 s, vertical, sin audio. Encadena solo con la siguiente." },
+        { "type": "image_picker", "id": "imagen", "label": "Imagen (mientras no haya clip)" },
+        { "type": "text", "id": "num", "label": "Número (vacío = automático)" },
+        { "type": "text", "id": "title", "label": "Título", "default": "[TODO — etapa]" },
+        { "type": "textarea", "id": "text", "label": "Texto", "default": "[TODO — qué pasa en esta etapa.]" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Capítulos en video",
+      "blocks": [
+        { "type": "etapa", "settings": { "num": "1", "title": "[TODO — etapa 1]", "text": "[TODO — qué pasa acá.]" } },
+        { "type": "etapa", "settings": { "num": "2", "title": "[TODO — etapa 2]", "text": "[TODO — qué pasa acá.]" } },
+        { "type": "etapa", "settings": { "num": "3", "title": "[TODO — etapa 3]", "text": "[TODO — qué pasa acá.]" } },
+        { "type": "etapa", "settings": { "num": "4", "title": "[TODO — etapa 4]", "text": "[TODO — qué pasa acá.]" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

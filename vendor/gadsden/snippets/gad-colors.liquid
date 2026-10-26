@@ -1,0 +1,77 @@
+
+{%- liquid
+  assign p = prefix | default: ''
+  assign k_on = p | append: 'custom_colors'
+-%}
+{%- if s[k_on] or force -%}
+  {%- liquid
+    assign k = p | append: 'cc_bg'
+    assign bg = s[k] | default: '#ffffff'
+    assign k = p | append: 'cc_text'
+    assign fg = s[k] | default: '#121212'
+    assign k = p | append: 'cc_accent'
+    assign accent = s[k] | default: fg
+    assign k = p | append: 'cc_btn_bg'
+    assign btn = s[k] | default: fg
+    assign k = p | append: 'cc_btn_text'
+    assign btn_text = s[k] | default: bg
+    assign k = p | append: 'cc_outline'
+    assign outline = s[k] | default: fg
+    assign k = p | append: 'cc_bg_gradient'
+    assign gradient = s[k]
+    assign k = p | append: 'cc_bg_image'
+    assign img_d = s[k]
+    assign k = p | append: 'cc_bg_image_mobile'
+    assign img_m = s[k] | default: img_d
+
+    assign bg_brightness = bg | color_brightness
+    if bg_brightness <= 26
+      assign contrast = bg | color_lighten: 50
+    elsif bg_brightness <= 65
+      assign contrast = bg | color_lighten: 5
+    else
+      assign contrast = bg | color_darken: 25
+    endif
+  -%}
+  {%- style -%}
+    .gad-cc-{{ key }} {
+      --color-background: {{ bg.red }},{{ bg.green }},{{ bg.blue }};
+      --gradient-background: {% if gradient != blank %}{{ gradient }}{% else %}{{ bg }}{% endif %};
+      --color-foreground: {{ fg.red }},{{ fg.green }},{{ fg.blue }};
+      --color-background-contrast: {{ contrast.red }},{{ contrast.green }},{{ contrast.blue }};
+      --color-shadow: {{ fg.red }},{{ fg.green }},{{ fg.blue }};
+      --color-accent: {{ accent.red }},{{ accent.green }},{{ accent.blue }};
+      --color-button: {{ btn.red }},{{ btn.green }},{{ btn.blue }};
+      --color-button-text: {{ btn_text.red }},{{ btn_text.green }},{{ btn_text.blue }};
+      --color-secondary-button: {{ bg.red }},{{ bg.green }},{{ bg.blue }};
+      --color-secondary-button-text: {{ outline.red }},{{ outline.green }},{{ outline.blue }};
+      --color-link: {{ outline.red }},{{ outline.green }},{{ outline.blue }};
+      --color-badge-foreground: {{ fg.red }},{{ fg.green }},{{ fg.blue }};
+      --color-badge-background: {{ bg.red }},{{ bg.green }},{{ bg.blue }};
+      --color-badge-border: {{ fg.red }},{{ fg.green }},{{ fg.blue }};
+      --payment-terms-background-color: rgb({{ bg.red }},{{ bg.green }},{{ bg.blue }});
+      color: rgb(var(--color-foreground));
+      background-color: rgb(var(--color-background));
+    }
+    {%- if img_m != blank %}
+      .gad-cc-{{ key }}.gradient {
+        background-image: url({{ img_m | image_url: width: 1500 }});
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+      }
+    {%- endif %}
+    {%- if img_d != blank %}
+      @media screen and (min-width: 750px) {
+        .gad-cc-{{ key }}.gradient {
+          background-image: url({{ img_d | image_url: width: 3000 }});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: scroll;
+        }
+      }
+    {%- endif %}
+  {%- endstyle -%}
+{%- endif -%}

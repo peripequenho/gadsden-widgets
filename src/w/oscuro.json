@@ -1,0 +1,239 @@
+{
+  "gad-marquee": {
+    "color_fondo": "#ffffff",
+    "color_contorno": "#d3e0d6",
+    "color_relleno": "#eef4ef",
+    "letra": "poppins_n8"
+  },
+  "gad-legal": {
+    "color_fondo": "#141210",
+    "color_texto": "#E6DFCE",
+    "color_acento": "#93D920",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-objections": {
+    "color_fondo": "#D6CDB6",
+    "color_tarjeta": "#E6DFCE",
+    "color_texto": "#141210",
+    "color_resalte": "#93D920",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-reviews-mini": {
+    "color_fondo": "#141210",
+    "color_texto": "#E6DFCE",
+    "color_acento": "#93D920",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-guarantee": {
+    "color_boton": "#0B0B0B",
+    "color_detalle": "#9FE1CB",
+    "color_boton_texto": "#ffffff",
+    "color_texto_suave": "#3d3c39",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B",
+    "ring_primary": "#0B0B0B",
+    "ring_secondary": "#E4E3DE"
+  },
+  "gad-cropped-cards": {
+    "color_tarjeta": "#ffffff",
+    "color_borde": "#ECEBE7",
+    "color_resalte": "#5F5E5A",
+    "color_leyenda": "#4a4946",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B"
+  },
+  "gad-reviews-wall": {
+    "color_fondo": "#E6DFCE",
+    "color_puntos": "#D6CDB6",
+    "color_texto": "#141210",
+    "color_resalte": "#93D920",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-stamps": {
+    "color_fondo": "#141210",
+    "color_texto": "#E6DFCE",
+    "color_acento": "#93D920",
+    "color_caja": "#0d0c0a",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-timed-steps": {
+    "color_fondo": "#E6DFCE",
+    "color_puntos": "#D6CDB6",
+    "color_texto": "#141210",
+    "color_resalte": "#93D920",
+    "color_foco": "#6BA512",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-compare-reveal": {
+    "color_marco": "#E4E3DE",
+    "color_foco": "#9FE1CB",
+    "color_icono": "#0B0B0B",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B"
+  },
+  "gad-coverflow": {
+    "color_estrellas": "#9FE1CB",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B"
+  },
+  "gad-cta-final": {
+    "color_fondo": "#ffffff",
+    "color_placa": "#0B1F3A",
+    "color_texto": "#ffffff",
+    "color_subtitulo": "#c9e0cf",
+    "color_brillo": "#2E7D32",
+    "color_boton": "#ffffff",
+    "color_boton_texto": "#2E7D32",
+    "color_boton_hover": "#e9f5ea",
+    "letra": "poppins_n4"
+  },
+  "gad-auto-steps": {
+    "color_tarjeta": "#ffffff",
+    "color_borde": "#ECEBE7",
+    "color_parrafo": "#4a4946",
+    "color_pista": "#DCDBD6",
+    "color_boton_texto": "#ffffff",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B",
+    "accent": "#0B0B0B",
+    "highlight": "#9FE1CB"
+  },
+  "gad-chapters": {
+    "color_fondo": "#D6CDB6",
+    "color_tarjeta": "#E6DFCE",
+    "color_texto": "#141210",
+    "color_resalte": "#93D920",
+    "color_numero": "#6BA512",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-rotating-hero": {
+    "color_marco": "#ffffff",
+    "color_pildora": "#ffffff",
+    "color_pildora_borde": "#D9D8D3",
+    "color_boton": "#0B0B0B",
+    "color_boton_texto": "#ffffff",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B",
+    "word_color": "#5F5E5A",
+    "promise_color": "#9FE1CB"
+  },
+  "gad-review-rows": {
+    "color_oscuro": "#0B0B0B",
+    "color_avatar2": "#9FE1CB",
+    "color_avatar3": "#5F5E5A",
+    "color_avatar4": "#E4E3DE",
+    "color_avatar_texto": "#ffffff",
+    "color_tarjeta": "#ffffff",
+    "color_borde": "#ECEBE7",
+    "color_aro": "#DCDBD6",
+    "color_parrafo": "#3d3c39",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B"
+  },
+  "gad-icon-content": {
+    "color_fondo": "#F5F7FA",
+    "color_fondo_claro": "#ffffff",
+    "color_titulos": "#0B1F3A",
+    "color_acento": "#2E7D32",
+    "color_parrafo": "#5f6b7a",
+    "color_tarjeta": "#ffffff",
+    "color_linea": "#cfe0d3",
+    "color_borde": "#e5eaf1",
+    "color_radar": "#e9f5ea",
+    "color_radar_borde": "#cfe6d3",
+    "letra": "poppins_n4"
+  },
+  "gad-vs-table": {
+    "color_fondo": "#ffffff",
+    "color_tabla": "#ffffff",
+    "color_titulos": "#0B1F3A",
+    "color_cabecera": "#0B1F3A",
+    "color_cabecera_texto": "#ffffff",
+    "color_cabecera_otros": "#b9c6cf",
+    "color_acento": "#2E7D32",
+    "color_acento_texto": "#ffffff",
+    "color_columna": "#e9f5ea",
+    "color_fila": "#F5F7FA",
+    "color_borde": "#e5eaf1",
+    "color_parcial": "#8aa2b1",
+    "color_no": "#e9eef2",
+    "color_no_icono": "#adb8c0",
+    "letra": "poppins_n4"
+  },
+  "gad-closing": {
+    "color_boton": "#0B0B0B",
+    "color_boton_texto": "#ffffff",
+    "color_tarjeta": "#ffffff",
+    "color_borde": "#E3E2DD",
+    "color_parrafo": "#3d3c39",
+    "color_escala": "#CFCDC6",
+    "background": "#F5F7FA",
+    "text_color": "#0B0B0B",
+    "mark_color": "#9FE1CB",
+    "stain_color": "#F1DC9C"
+  },
+  "gad-posters": {
+    "color_fondo": "#141210",
+    "color_texto": "#E6DFCE",
+    "color_texto_2": "#D6CDB6",
+    "color_acento": "#93D920",
+    "color_acento_hondo": "#6BA512",
+    "color_sello_texto": "#141210",
+    "color_tarjeta": "#0d0c0a",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-reveal-cards": {
+    "color_fondo": "#141210",
+    "color_texto": "#E6DFCE",
+    "color_texto_2": "#D6CDB6",
+    "color_acento": "#93D920",
+    "color_acento_hondo": "#6BA512",
+    "color_acento_texto": "#141210",
+    "color_tarjeta": "#0d0c0a",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4"
+  },
+  "gad-article": {
+    "color_texto": "#141210",
+    "color_fondo": "#E6DFCE",
+    "color_fondo_2": "#D6CDB6",
+    "color_acento": "#93D920",
+    "color_acento_hondo": "#6BA512",
+    "color_portal_texto": "#16181d",
+    "color_portal_fondo": "#ffffff",
+    "color_portal_fondo_2": "#eef0f3",
+    "color_portal_acento": "#93D920",
+    "color_portal_acento_hondo": "#4a5568",
+    "color_portal_gris": "#6b7280",
+    "color_portal_linea": "#dfe3e8",
+    "color_portal_rojo": "#c8102e",
+    "color_portal_caja": "#f7f8fa",
+    "color_portal_bajada": "#374151",
+    "color_portal_parrafo": "#1f2328",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4",
+    "letra_lectura": "barlow_n4",
+    "portal_letra_titulos": "archivo_n8",
+    "portal_letra_texto": "archivo_n6"
+  },
+  "gad-quiz": {
+    "color_texto": "#141210",
+    "color_fondo": "#E6DFCE",
+    "color_fondo_2": "#D6CDB6",
+    "color_acento": "#93D920",
+    "color_acento_hondo": "#6BA512",
+    "color_alerta": "#C0392B",
+    "color_alerta_texto": "#ffffff",
+    "letra_titulos": "archivo_black_n4",
+    "letra_texto": "barlow_semi_condensed_n4",
+    "letra_lectura": "barlow_n4"
+  }
+}

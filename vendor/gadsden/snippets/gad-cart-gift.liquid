@@ -1,0 +1,77 @@
+
+{%- assign b = block.settings -%}
+{%- liquid
+  assign p = b.product
+  assign v = p.selected_or_first_available_variant
+  assign gift_key = ''
+  assign gift_total = 0
+  for item in cart.items
+    if item.properties._gad_extra == 'regalo'
+      assign gift_total = gift_total | plus: item.final_line_price
+      if item.variant.id == v.id
+        assign gift_key = item.key
+      endif
+    endif
+  endfor
+  assign unlocked = false
+  assign remaining_txt = ''
+  case b.mode
+    when 'always'
+      if count > 0
+        assign unlocked = true
+      endif
+    when 'quantity'
+      assign goal = b.goal | default: 1
+      if count >= goal
+        assign unlocked = true
+      else
+        assign remaining_txt = goal | minus: count
+      endif
+    else
+      assign goal = b.goal | default: 0 | times: 100
+      assign base = cart.total_price | minus: gift_total
+      if base >= goal and count > 0
+        assign unlocked = true
+      else
+        assign remaining_txt = goal | minus: base | money
+      endif
+  endcase
+  assign product_name = p.title | escape
+  if unlocked
+    assign msg = b.unlocked_text | replace: '{producto}', product_name
+  else
+    assign msg = b.locked_text | replace: '{producto}', product_name | replace: '{monto}', remaining_txt
+  endif
+-%}
+{%- if p != blank and p.available -%}
+<gad-cart-gift
+  class="gad-cb gad-cart-gift{% if unlocked %} is-unlocked{% endif %}"
+  style="{{ mg }}"
+  data-variant="{{ v.id }}"
+  data-key="{{ gift_key }}"
+  {% if unlocked %}
+    data-unlocked
+  {% endif %}
+  {% if b.auto_add %}
+    data-auto
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  <div class="gad-cart-gift__media">
+    {%- if p.featured_media -%}
+      {{ p.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 80, height: 80 }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag }}
+    {%- endif -%}
+    {%- unless unlocked -%}
+      <span class="gad-cart-gift__lock">{% render 'gad-icon', name: 'lock', filled: true %}</span>
+    {%- endunless -%}
+  </div>
+  <p class="gad-cart-gift__msg" role="status">{{ msg }}</p>
+  {%- if unlocked and gift_key == '' -%}
+    <button type="button" class="button button--secondary gad-cart-gift__btn" data-gad-gift-add hidden>
+      {{ b.button_text }}
+    </button>
+  {%- endif -%}
+</gad-cart-gift>
+{%- endif -%}

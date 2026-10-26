@@ -1,0 +1,430 @@
+
+{%- liquid
+  assign s = section.settings
+  assign a1 = s.anchor_1 | remove: '#' | handleize
+  assign a2 = s.anchor_2 | remove: '#' | handleize
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<gad-merge
+  class="gad-merge gad-pad {% render 'gad-scheme', s: s, key: section.id %}{% if s.reverse_mobile %} gad-merge--rev{% endif %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --mg-cols: {{ s.ratio }}; --mg-gap: {{ s.gap }}px; --mg-align: {{ s.valign }};"
+  data-a1="{{ a1 }}"
+  data-a2="{{ a2 }}"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="gad-merge__grid{% unless s.full_width %} page-width{% endunless %}">
+    <div class="gad-merge__col" data-gad-merge-slot="1"></div>
+    <div class="gad-merge__col" data-gad-merge-slot="2"></div>
+  </div>
+  {%- if request.design_mode -%}
+    <p class="gad-merge__note page-width" hidden>{{ 'gadsden.merge.missing' | t }}</p>
+  {%- endif -%}
+</gad-merge>
+
+{% stylesheet %}
+  .gad-merge__grid {
+    display: grid;
+    gap: var(--mg-gap, 0);
+  }
+
+  .gad-merge--rev .gad-merge__col[data-gad-merge-slot='1'] {
+    order: 2;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-merge__grid {
+      grid-template-columns: var(--mg-cols, 1fr 1fr);
+      align-items: var(--mg-align, stretch);
+    }
+
+    .gad-merge--rev .gad-merge__col[data-gad-merge-slot='1'] {
+      order: 0;
+    }
+  }
+
+  .gad-merge__col {
+    min-width: 0;
+  }
+
+  .gad-merge__col,
+  .gad-merge__col > .shopify-section,
+  .gad-merge__col > .shopify-section > :not(.gad-sec-marker, style, script, link) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gad-merge__col > .shopify-section,
+  .gad-merge__col > .shopify-section > :not(.gad-sec-marker, style, script, link),
+  .gad-merge__col > .shopify-section > :not(.gad-sec-marker, style, script, link) > :last-child {
+    flex: 1 1 auto;
+  }
+
+  .gad-merge__col .page-width {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .gad-merge__note {
+    padding: 1.2rem 1.5rem;
+    border: 0.1rem dashed rgba(var(--color-foreground), 0.3);
+    font-size: 1.3rem;
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadMerge extends HTMLElement {
+    connectedCallback() {
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => this.merge(), { once: true });
+      else this.merge();
+    }
+
+    merge() {
+      if (!this.isConnected) return;
+      this.moved = [];
+      [this.dataset.a1, this.dataset.a2].forEach((id, i) => {
+        const target = id && document.getElementById(id);
+        const sec = target && target.closest('.shopify-section');
+        const slot = this.querySelector(`[data-gad-merge-slot="${i + 1}"]`);
+        if (!sec || sec.contains(this) || !slot) return;
+        const mark = document.createComment('gad-merge');
+        sec.before(mark);
+        slot.appendChild(sec);
+        this.moved.push([sec, mark]);
+      });
+      const note = this.querySelector('.gad-merge__note');
+      if (note) note.hidden = this.moved.length === 2;
+    }
+
+    disconnectedCallback() {
+      (this.moved || []).forEach(([sec, mark]) => {
+        if (mark.parentNode) mark.replaceWith(sec);
+      });
+      this.moved = [];
+    }
+  }
+
+  if (!customElements.get('gad-merge')) customElements.define('gad-merge', GadMerge);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Unión de dos secciones",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Poné un nombre de ancla a cada una de las dos secciones (ajuste \"Nombre del ancla\", al final de cada una) y escribilos acá. Las dos se muestran lado a lado en esta posición."
+    },
+    {
+      "type": "text",
+      "id": "anchor_1",
+      "label": "Ancla de la sección de la izquierda",
+      "placeholder": "texto"
+    },
+    {
+      "type": "text",
+      "id": "anchor_2",
+      "label": "Ancla de la sección de la derecha",
+      "placeholder": "video"
+    },
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Proporción",
+      "options": [
+        {
+          "value": "1fr 1fr",
+          "label": "Mitad y mitad"
+        },
+        {
+          "value": "2fr 3fr",
+          "label": "40 / 60"
+        },
+        {
+          "value": "3fr 2fr",
+          "label": "60 / 40"
+        },
+        {
+          "value": "1fr 2fr",
+          "label": "Un tercio / dos tercios"
+        },
+        {
+          "value": "2fr 1fr",
+          "label": "Dos tercios / un tercio"
+        }
+      ],
+      "default": "1fr 1fr"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Separación",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "valign",
+      "label": "Alineación vertical",
+      "options": [
+        {
+          "value": "stretch",
+          "label": "Misma altura"
+        },
+        {
+          "value": "start",
+          "label": "Arriba"
+        },
+        {
+          "value": "center",
+          "label": "Al medio"
+        }
+      ],
+      "default": "stretch"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Usar todo el ancho de la página",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse_mobile",
+      "label": "En mobile, mostrar primero la de la derecha",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 0,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Unión de dos secciones"
+    }
+  ]
+}
+{% endschema %}

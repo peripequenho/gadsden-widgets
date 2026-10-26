@@ -1,0 +1,30 @@
+
+{%- liquid
+  assign label = text | default: settings.sale_label_text
+  if label == blank
+    assign label = 'products.product.on_sale' | t
+  endif
+
+  assign pct = ''
+  assign saved = ''
+  if compare_at_price > price
+    assign pct_num = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round
+    assign pct = pct_num | append: '%'
+    assign saved_cents = compare_at_price | minus: price
+    if settings.currency_code_enabled
+      assign saved = saved_cents | money_with_currency
+    else
+      assign saved = saved_cents | money
+    endif
+  endif
+
+  assign label = label | replace: '{porcentaje}', pct | replace: '{monto}', saved
+  assign show_icon = settings.sale_label_icon
+  if icon != nil
+    assign show_icon = icon
+  endif
+-%}
+{%- if show_icon -%}
+  {%- render 'gad-icon', name: 'sell', filled: true, class: 'gad-sale-label__icon' -%}
+{%- endif -%}
+<span class="gad-sale-label__text">{{ label | strip }}</span>

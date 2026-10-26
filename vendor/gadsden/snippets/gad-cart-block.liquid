@@ -1,0 +1,448 @@
+
+{%- liquid
+  assign b = block.settings
+  assign type = block.type | default: fallback
+  case type
+    when 'progress', 'milestones', 'countdown', 'items'
+      assign block_zone = 'body'
+    when 'note', 'coupon', 'subtotals', 'checkout', 'payment_icons', 'terms'
+      assign block_zone = 'footer'
+    else
+      assign block_zone = b.zone | default: 'body'
+  endcase
+  assign count = count | plus: 0
+  assign mg = ''
+  if block
+    assign mg = '--gad-mt: ' | append: b.margin_top | append: 'px; --gad-mb: ' | append: b.margin_bottom | append: 'px;'
+  endif
+  if block_zone != zone
+    assign type = 'skip'
+  endif
+-%}
+{%- case type -%}
+  {%- when 'progress' -%}
+    {%- liquid
+      assign goal = b.goal | default: 0
+      if b.goal_type == 'quantity'
+        assign current = count
+      else
+        assign current = cart.total_price
+        assign goal = goal | times: 100
+      endif
+      assign remaining = goal | minus: current
+      assign pct = 100
+      if goal > 0
+        assign pct = current | times: 100.0 | divided_by: goal | at_most: 100
+      endif
+      if remaining > 0
+        if b.goal_type == 'quantity'
+          assign remaining_txt = remaining
+        elsif no_cents
+          assign remaining_txt = remaining | money_without_trailing_zeros
+        else
+          assign remaining_txt = remaining | money
+        endif
+        assign msg = b.message | replace: '{monto}', remaining_txt
+      else
+        assign msg = b.success_message
+      endif
+    -%}
+    <div
+      class="gad-cb gad-cart-progress{% if remaining <= 0 %} is-done{% endif %}"
+      style="{{ mg }} --pct: {{ pct }}%; --bar: var(--gad-c-{{ b.accent }});"
+      {{ block.shopify_attributes }}
+    >
+      <p class="gad-cart-progress__msg" role="status">{{ msg }}</p>
+      <div class="gad-cart-progress__track">
+        <span class="gad-cart-progress__fill"></span>
+        {%- if b.icon != blank or b.icon_image != blank -%}
+          <span class="gad-cart-progress__icon">
+            {%- render 'gad-icon', name: b.icon, filled: b.icon_filled, image: b.icon_image -%}
+          </span>
+        {%- endif -%}
+      </div>
+    </div>
+
+  {%- when 'milestones' -%}
+    {%- liquid
+      if b.goal_type == 'quantity'
+        assign current = count
+      else
+        assign current = cart.total_price
+      endif
+      assign max_goal = 0
+      assign next_prize = ''
+      assign remaining_txt = ''
+      for i in (1..3)
+        assign k_on = 'g' | append: i | append: '_on'
+        assign k_amount = 'g' | append: i | append: '_amount'
+        assign k_prize = 'g' | append: i | append: '_prize'
+        if b[k_on]
+          assign amt = b[k_amount] | default: 0
+          if b.goal_type != 'quantity'
+            assign amt = amt | times: 100
+          endif
+          if amt > max_goal
+            assign max_goal = amt
+          endif
+        endif
+      endfor
+      comment
+        El próximo premio es la meta activa más baja que todavía no se alcanzó.
+      endcomment
+      assign next_amt = max_goal | plus: 1
+      for i in (1..3)
+        assign k_on = 'g' | append: i | append: '_on'
+        assign k_amount = 'g' | append: i | append: '_amount'
+        assign k_prize = 'g' | append: i | append: '_prize'
+        if b[k_on]
+          assign amt = b[k_amount] | default: 0
+          if b.goal_type != 'quantity'
+            assign amt = amt | times: 100
+          endif
+          if amt > current and amt < next_amt
+            assign next_amt = amt
+            assign next_prize = b[k_prize]
+          endif
+        endif
+      endfor
+      if next_amt <= max_goal
+        assign rem = next_amt | minus: current
+        if b.goal_type == 'quantity'
+          assign remaining_txt = rem
+        else
+          assign remaining_txt = rem | money
+        endif
+        assign msg = b.message | replace: '{monto}', remaining_txt | replace: '{premio}', next_prize
+      else
+        assign msg = b.success_message
+      endif
+      assign pct = 0
+      if max_goal > 0
+        assign pct = current | times: 100 | divided_by: max_goal | at_most: 100
+      endif
+    -%}
+    {%- if max_goal > 0 -%}
+      <div
+        class="gad-cb gad-cart-ms"
+        style="{{ mg }} --pct: {{ pct }}%; --bar: var(--gad-c-{{ b.accent }}); --lbl-m: {{ b.label_size_m }}px; --lbl-d: {{ b.label_size_d }}px;"
+        {{ block.shopify_attributes }}
+      >
+        <p class="gad-cart-progress__msg" role="status">{{ msg }}</p>
+        <div class="gad-cart-ms__track">
+          <div class="gad-cart-progress__track"><span class="gad-cart-progress__fill"></span></div>
+          {%- for i in (1..3) -%}
+            {%- liquid
+              assign k_on = 'g' | append: i | append: '_on'
+              assign k_amount = 'g' | append: i | append: '_amount'
+              assign k_label = 'g' | append: i | append: '_label'
+              assign k_icon = 'g' | append: i | append: '_icon'
+              assign k_filled = 'g' | append: i | append: '_filled'
+            -%}
+            {%- if b[k_on] -%}
+              {%- liquid
+                assign amt = b[k_amount] | default: 0
+                if b.goal_type != 'quantity'
+                  assign amt = amt | times: 100
+                endif
+                assign left = amt | times: 100 | divided_by: max_goal
+              -%}
+              <div class="gad-cart-ms__goal{% if current >= amt %} is-done{% endif %}" style="--left: {{ left }}%;">
+                <span class="gad-cart-ms__icon">{% render 'gad-icon', name: b[k_icon], filled: b[k_filled] %}</span>
+                {%- if b[k_label] != blank -%}
+                  <span class="gad-cart-ms__label">{{ b[k_label] }}</span>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+  {%- when 'countdown' -%}
+    {%- liquid
+      assign secs = b.duration | default: 300 | at_least: 1
+      assign mm = secs | divided_by: 60
+      assign ss = secs | modulo: 60
+      assign mm = mm | prepend: '0' | slice: -2, 2
+      assign ss = ss | prepend: '0' | slice: -2, 2
+      assign value = '<strong class="gad-cart-timer__value">' | append: mm | append: ':' | append: ss | append: '</strong>'
+      assign text = b.text | replace: '{tiempo}', value
+    -%}
+    <gad-cart-timer
+      class="gad-cb gad-cart-timer gad-cart-timer--{{ b.text_size }} color-{{ b.color_scheme }}"
+      style="{{ mg }}"
+      data-seconds="{{ secs }}"
+      {{ block.shopify_attributes }}
+    >
+      <p>{{ text }}</p>
+    </gad-cart-timer>
+
+  {%- when 'note' -%}
+    <details id="Details-CartDrawer" class="gad-cb gad-cart-note" style="{{ mg }}" {{ block.shopify_attributes }}>
+      <summary>
+        <span class="summary__title">
+          {{ 'sections.cart.note' | t }}
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </span>
+      </summary>
+      <cart-note class="cart__note field">
+        <label class="visually-hidden" for="CartDrawer-Note">{{ 'sections.cart.note' | t }}</label>
+        <textarea
+          id="CartDrawer-Note"
+          class="text-area text-area--resize-vertical field__input"
+          name="note"
+          placeholder="{{ 'sections.cart.note' | t }}"
+        >{{ cart.note }}</textarea>
+      </cart-note>
+    </details>
+
+  {%- when 'coupon' -%}
+    {%- assign coupon_key = 'drawer-' | append: block.id -%}
+    {%- render 'gad-coupon', b: b, key: coupon_key, attrs: block.shopify_attributes, mg: mg -%}
+
+  {%- when 'subtotals' -%}
+    {%- liquid
+      assign base_total = 0
+      for item in cart.items
+        assign line_base = item.final_line_price
+        if compare_source != 'compare' and item.original_line_price > line_base
+          assign line_base = item.original_line_price
+        endif
+        if compare_source != 'cart' and item.variant.compare_at_price > item.variant.price
+          assign by_compare = item.variant.compare_at_price | times: item.quantity
+          if by_compare > line_base
+            assign line_base = by_compare
+          endif
+        endif
+        assign base_total = base_total | plus: line_base
+      endfor
+      assign savings = base_total | minus: cart.total_price
+      if no_cents
+        assign savings_money = savings | money_without_trailing_zeros
+      else
+        assign savings_money = savings | money
+      endif
+      assign subtotal_money = cart.total_price | money
+      if block == nil
+        assign show_subtotal = true
+        assign show_tax = true
+        assign sub_left = 'sections.cart.estimated_total' | t
+        assign sub_right = subtotal_money
+      else
+        assign show_subtotal = b.show_subtotal
+        assign show_tax = b.show_tax_note
+        assign sub_left = b.subtotal_left | replace: '{subtotal}', subtotal_money
+        assign sub_right = b.subtotal_right | replace: '{subtotal}', subtotal_money
+      endif
+    -%}
+    {%- capture savings_row -%}
+      {%- if b.show_savings and savings > 0 -%}
+        {%- liquid
+          assign sv_left = b.savings_left | replace: '{ahorro}', savings_money
+          assign sv_right = b.savings_right | replace: '{ahorro}', savings_money
+        -%}
+        <div
+          class="gad-cart-row gad-cart-row--{{ b.savings_layout }}"
+          style="--row-c: var(--gad-c-{{ b.savings_color }}); --row-fs: {{ b.savings_size }}px;"
+        >
+          <span>{{ sv_left }}</span>
+          <span>{{ sv_right }}</span>
+        </div>
+      {%- endif -%}
+    {%- endcapture -%}
+    <div
+      class="gad-cb gad-cart-sub"
+      style="{{ mg }} --row-gap: {{ b.savings_gap | default: 8 }}px;"
+      {{ block.shopify_attributes }}
+    >
+      {%- if b.show_discounts and cart.cart_level_discount_applications.size > 0 -%}
+        <div class="gad-cart-sub__discounts gad-cart-sub__discounts--{{ b.discounts_align }}">
+          {%- if b.discounts_title != blank -%}
+            <span class="gad-cart-sub__discounts-title">{{ b.discounts_title }}</span>
+          {%- endif -%}
+          <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <li class="discounts__discount">
+                {{- 'icon-discount.svg' | inline_asset_content -}}
+                {{ discount.title | escape }}
+                (-{{ discount.total_allocated_amount | money }})
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+      {%- unless b.savings_position == 'below' -%}{{ savings_row }}{%- endunless -%}
+      {%- if show_subtotal -%}
+        <div
+          class="gad-cart-row gad-cart-row--{{ b.subtotal_layout | default: 'spaced' }}{% if block == nil or b.subtotal_bold %} gad-cart-row--bold{% endif %}"
+          style="--row-c: var(--gad-c-{{ b.subtotal_color | default: 'text' }}); --row-fs: {{ b.subtotal_size | default: 18 }}px;"
+          role="status"
+        >
+          <span>{{ sub_left }}</span>
+          <span>{{ sub_right }}</span>
+        </div>
+      {%- endif -%}
+      {%- if b.savings_position == 'below' -%}{{ savings_row }}{%- endif -%}
+      {%- if show_tax -%}
+        <small class="tax-note caption-large rte">
+          {%- if cart.duties_included and cart.taxes_included -%}
+            {%- if shop.shipping_policy.body == blank -%}
+              {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
+            {%- else -%}
+              {{
+                'sections.cart.duties_and_taxes_included_shipping_at_checkout_with_policy_html'
+                | t: link: shop.shipping_policy.url
+              }}
+            {%- endif -%}
+          {%- elsif cart.duties_included == false and cart.taxes_included -%}
+            {%- if shop.shipping_policy.body == blank -%}
+              {{ 'sections.cart.taxes_included_shipping_at_checkout_without_policy' | t }}
+            {%- else -%}
+              {{
+                'sections.cart.taxes_included_shipping_at_checkout_with_policy_html'
+                | t: link: shop.shipping_policy.url
+              }}
+            {%- endif -%}
+          {%- elsif cart.duties_included and cart.taxes_included == false -%}
+            {%- if shop.shipping_policy.body == blank -%}
+              {{ 'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+            {%- else -%}
+              {{
+                'sections.cart.duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                | t: link: shop.shipping_policy.url
+              }}
+            {%- endif -%}
+          {%- elsif cart.duties_included == false and cart.taxes_included == false -%}
+            {%- if shop.shipping_policy.body == blank -%}
+              {{ 'sections.cart.taxes_at_checkout_shipping_at_checkout_without_policy' | t }}
+            {%- else -%}
+              {{
+                'sections.cart.taxes_at_checkout_shipping_at_checkout_with_policy_html'
+                | t: link: shop.shipping_policy.url
+              }}
+            {%- endif -%}
+          {%- endif -%}
+        </small>
+      {%- endif -%}
+    </div>
+
+  {%- when 'checkout' -%}
+    {%- liquid
+      assign label = 'sections.cart.checkout' | t
+      if b.label != blank
+        assign label = b.label
+      endif
+      assign icon_scale = b.icon_scale | default: 100 | divided_by: 100.0
+      assign btn_style = ''
+      if b.custom_color
+        assign btn_style = '--color-button: ' | append: b.btn_bg.red | append: ',' | append: b.btn_bg.green | append: ',' | append: b.btn_bg.blue | append: '; --color-button-text: ' | append: b.btn_fg.red | append: ',' | append: b.btn_fg.green | append: ',' | append: b.btn_fg.blue | append: ';'
+      endif
+    -%}
+    <div
+      class="gad-cb cart__ctas gad-cart-checkout"
+      style="{{ mg }} --ck-scale: {{ icon_scale }}; --ck-gap: {{ b.icon_gap | default: 10 }}px;"
+      {{ block.shopify_attributes }}
+    >
+      <button
+        type="submit"
+        id="CartDrawer-Checkout"
+        class="cart__checkout-button button"
+        name="checkout"
+        form="CartDrawer-Form"
+        {% if btn_style != '' %}
+          style="{{ btn_style }}"
+        {% endif %}
+        {% if cart == empty %}
+          disabled
+        {% endif %}
+      >
+        <span class="gad-cart-checkout__label">
+          {%- if b.icon_before != blank -%}
+            {{ b.icon_before | image_url: width: 96 | image_tag: class: 'gad-cart-checkout__icon', loading: 'lazy', alt: '' }}
+          {%- endif -%}
+          <span>
+            {{- label -}}
+            {%- if b.show_total %} • <span class="gad-cart-checkout__total">{{ cart.total_price | money }}</span>{% endif -%}
+          </span>
+          {%- if b.icon_after != blank -%}
+            {{ b.icon_after | image_url: width: 96 | image_tag: class: 'gad-cart-checkout__icon', loading: 'lazy', alt: '' }}
+          {%- endif -%}
+        </span>
+      </button>
+      {%- if b.express and additional_checkout_buttons -%}
+        <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+          {{ content_for_additional_checkout_buttons }}
+        </div>
+      {%- endif -%}
+    </div>
+
+  {%- when 'payment_icons' -%}
+    {%- liquid
+      assign types = shop.enabled_payment_types
+      if b.custom_list != blank
+        assign types = b.custom_list | replace: ' ', '' | downcase | split: ','
+      endif
+    -%}
+    {%- if types.size > 0 -%}
+      <div class="gad-cb gad-cart-pay gad-cart-pay--{{ b.align }}" style="{{ mg }}" {{ block.shopify_attributes }}>
+        <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
+        <ul class="gad-cart-pay__list list-unstyled" role="list">
+          {%- for type in types -%}
+            {%- if type != blank -%}
+              <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+  {%- when 'terms' -%}
+    <gad-cart-terms
+      class="gad-cb gad-cart-terms gad-cart-terms--{{ b.align }}"
+      style="{{ mg }} --terms-fs: {{ b.text_size }}px; --terms-warn: {{ b.warning_color }};"
+      {% if b.dim_checkout %}
+        data-dim
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      <label class="gad-cart-terms__label">
+        <input type="checkbox" class="gad-cart-terms__box">
+        <span>{{ b.text }}</span>
+      </label>
+      <p class="gad-cart-terms__warn" role="alert" hidden>{{ b.warning }}</p>
+    </gad-cart-terms>
+
+  {%- when 'upsells' -%}
+    {%- render 'gad-cart-upsells', block: block, mg: mg -%}
+
+  {%- when 'gift' -%}
+    {%- render 'gad-cart-gift', block: block, mg: mg, count: count -%}
+
+  {%- when 'text_icons' -%}
+    <div class="gad-cb" style="{{ mg }}" {{ block.shopify_attributes }}>
+      {%- render 'gad-text-icons', b: b, key: block.id -%}
+    </div>
+
+  {%- when 'image' -%}
+    {%- if b.image != blank -%}
+      <div
+        class="gad-cb gad-cart-img gad-cart-img--{{ b.align }}"
+        style="{{ mg }} --img-w: {{ b.width }}%; --img-r: {{ b.radius }}px;"
+        {{ block.shopify_attributes }}
+      >
+        {%- assign img_alt = b.image.alt | default: '' -%}
+        {{ b.image | image_url: width: 900 | image_tag: loading: 'lazy', alt: img_alt, sizes: '(min-width: 750px) 400px, 90vw', widths: '300, 450, 600, 900' }}
+      </div>
+    {%- endif -%}
+
+  {%- when 'icons' -%}
+    <div class="gad-cb" style="{{ mg }}" {{ block.shopify_attributes }}>
+      {%- render 'gad-product-block', block: block -%}
+    </div>
+
+  {%- when 'custom' -%}
+    <div class="gad-cb" style="{{ mg }}" {{ block.shopify_attributes }}>
+      {{ b.custom_liquid }}
+    </div>
+{%- endcase -%}

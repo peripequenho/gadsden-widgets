@@ -1,0 +1,233 @@
+{%- comment -%}
+  Tarjetas recortadas: beneficios en tarjetas con la foto recortada abajo y la leyenda encima.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+
+<style>
+  #ct-ben-{{ section.id }} {
+    --ct-img: {{ s.image_size }}px;
+    background: {{ s.background | default: 'rgb(var(--color-background))' }}; color: {{ s.text_color | default: 'rgb(var(--color-foreground))' }};
+    padding: {{ s.padding_top }}px 16px {{ s.padding_bottom }}px;
+  }
+  #ct-ben-{{ section.id }} .ct-ben__wrap { max-width: 560px; margin: 0 auto; }
+  #ct-ben-{{ section.id }} .ct-ben__titulo { margin: 0 0 14px; text-align: center; line-height: 1.15; text-wrap: balance; }
+  #ct-ben-{{ section.id }} .ct-ben__titulo em { font-style: normal; color: rgb(var(--r-resalte)); }
+  #ct-ben-{{ section.id }} .ct-ben__grilla { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #ct-ben-{{ section.id }} .ct-ben__card {
+    position: relative; overflow: hidden; box-sizing: border-box; margin: 0;
+    height: {{ s.card_height }}px;
+    padding: 14px 14px 0; border-radius: 16px; background: rgb(var(--r-tarjeta)); border: 1px solid rgb(var(--r-borde));
+  }
+  #ct-ben-{{ section.id }} .ct-ben__card h3 { position: relative; margin: 0 0 4px; font-size: 15px; line-height: 1.2; }
+  #ct-ben-{{ section.id }} .ct-ben__card p {
+    position: relative; margin: 0; font-size: 12.5px; line-height: 1.35; color: rgb(var(--r-leyenda));
+    text-shadow: 0 0 4px rgb(var(--r-tarjeta)), 0 0 8px rgb(var(--r-tarjeta)); 
+  }
+  
+  #ct-ben-{{ section.id }} .ct-ben__img {
+    position: absolute; right: calc(var(--ct-img) * -.2); bottom: calc(var(--ct-img) * -.22);
+    width: var(--ct-img); height: var(--ct-img); max-width: none; object-fit: contain; mix-blend-mode: multiply;
+    opacity: 0; translate: 16px 16px; transition: opacity .5s ease, translate .6s cubic-bezier(.22, 1, .36, 1);
+  }
+  #ct-ben-{{ section.id }}.is-visible .ct-ben__img { opacity: 1; translate: 0 0; }
+  @media (prefers-reduced-motion: reduce) {
+    #ct-ben-{{ section.id }} .ct-ben__img { translate: 0 0; transition: opacity .5s ease; }
+  }
+
+  
+  @media (min-width: 990px) {
+    #ct-ben-{{ section.id }} { --ct-img: calc({{ s.image_size }}px * 1.35); padding-top: 48px; padding-bottom: 48px; }
+    #ct-ben-{{ section.id }} .ct-ben__wrap { max-width: 1180px; }
+    #ct-ben-{{ section.id }} .ct-ben__titulo { margin-bottom: 28px; }
+    #ct-ben-{{ section.id }} .ct-ben__grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    #ct-ben-{{ section.id }} .ct-ben__card { height: calc({{ s.card_height }}px * 1.6); padding: 22px 22px 0; border-radius: 20px; }
+    #ct-ben-{{ section.id }} .ct-ben__card h3 { font-size: 19px; margin-bottom: 6px; }
+    #ct-ben-{{ section.id }} .ct-ben__card p { font-size: 15px; }
+  }
+</style>
+
+<section id="ct-ben-{{ section.id }}" class="ct-ben" style="--r-tarjeta: {%- render 'gad-rol', c: section.settings.color_tarjeta, d: 'var(--color-background)' -%}; --r-borde: {%- render 'gad-rol', c: section.settings.color_borde, d: 'var(--color-background-contrast)' -%}; --r-resalte: {%- render 'gad-rol', c: section.settings.color_resalte, d: 'var(--color-foreground)' -%}; --r-leyenda: {%- render 'gad-rol', c: section.settings.color_leyenda, d: 'var(--color-foreground)' -%};">
+  <div class="ct-ben__wrap">
+    {%- if s.heading != blank -%}<h2 class="ct-ben__titulo {{ s.heading_size }}">{{ s.heading }}</h2>{%- endif -%}
+    <div class="ct-ben__grilla">
+      {%- for b in section.blocks -%}
+        {%- liquid
+          if b.settings.image != blank
+            assign img = b.settings.image | image_url: width: 360
+          else
+            capture img
+              render 'gad-relleno'
+            endcapture
+          endif
+        -%}
+        <article class="ct-ben__card" {{ b.shopify_attributes }}>
+          <img class="ct-ben__img" src="{{ img }}" alt="" width="{{ s.image_size }}" height="{{ s.image_size }}" loading="lazy"
+            style="transition-delay: {{ forloop.index0 | times: 80 }}ms;{% if b.settings.image_down != 0 %} margin-bottom: -{{ b.settings.image_down }}px;{% endif %}">
+          <h3>{{ b.settings.title }}</h3>
+          {%- if b.settings.text != blank -%}<p>{{ b.settings.text }}</p>{%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-ben-{{ section.id }}');
+    if (!raiz) return;
+    if (window.Shopify?.designMode) { raiz.classList.add('is-visible'); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { raiz.classList.add('is-visible'); io.disconnect(); } }, { threshold: 0.3 });
+    io.observe(raiz);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Tarjetas recortadas",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titular (lo que va en <em> sale gris)",
+      "default": "Tu título <em>con un resaltado</em>"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del titular",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Alto de cada card",
+      "min": 110,
+      "max": 260,
+      "step": 10,
+      "unit": "px",
+      "default": 170
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Tamaño de la imagen (se recorta por la card)",
+      "min": 60,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 152
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Color de la sección",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Margen arriba",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Margen abajo",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_tarjeta",
+      "label": "Fondo de las tarjetas"
+    },
+    {
+      "type": "color",
+      "id": "color_borde",
+      "label": "Borde de las tarjetas"
+    },
+    {
+      "type": "color",
+      "id": "color_resalte",
+      "label": "Parte resaltada del título"
+    },
+    {
+      "type": "color",
+      "id": "color_leyenda",
+      "label": "Texto de las tarjetas"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "beneficio",
+      "name": "Beneficio",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen",
+          "info": "Vacío: un dibujo de relleno."
+        },
+        {
+          "type": "range",
+          "id": "image_down",
+          "label": "Bajar la imagen",
+          "min": 0,
+          "max": 60,
+          "step": 2,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Beneficio"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Una frase"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tarjetas recortadas"
+    }
+  ]
+}
+{% endschema %}

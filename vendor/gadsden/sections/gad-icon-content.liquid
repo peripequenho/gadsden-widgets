@@ -1,0 +1,108 @@
+
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign bg = '#F5F7FA'
+  if section.settings.bg == 'light'
+    assign bg = '#ffffff'
+  endif
+-%}
+
+<style>
+  #gps-steps-{{ uid }}{background:{{ bg }};padding:80px 20px;font-family:'Poppins',system-ui,sans-serif}
+  #gps-steps-{{ uid }} .gs-wrap{max-width:1180px;margin:0 auto;text-align:center}
+  #gps-steps-{{ uid }} .gs-eye{font-weight:700;font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:#2E7D32}
+  #gps-steps-{{ uid }} h2{font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:#0B1F3A;margin:12px 0 0}
+  #gps-steps-{{ uid }} h2 em{font-style:normal;color:#2E7D32}
+  #gps-steps-{{ uid }} .gs-lead{color:#5f6b7a;font-size:18px;max-width:640px;margin:16px auto 0;line-height:1.5}
+  #gps-steps-{{ uid }} .gs-steps{display:grid;grid-template-columns:repeat({{ section.blocks.size | at_least: 1 }},1fr);gap:30px;margin-top:52px;position:relative}
+  #gps-steps-{{ uid }} .gs-steps:before{content:"";position:absolute;top:32px;left:17%;right:17%;border-top:2px dashed #cfe0d3}
+  #gps-steps-{{ uid }} .gs-step{position:relative;z-index:1;text-align:center}
+  #gps-steps-{{ uid }} .gs-n{width:66px;height:66px;border-radius:50%;background:#fff;border:2px solid #2E7D32;color:#2E7D32;display:grid;place-items:center;margin:0 auto 20px;font-weight:800;font-size:24px;position:relative}
+  #gps-steps-{{ uid }} .gs-n.sig:before,#gps-steps-{{ uid }} .gs-n.sig:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid #2E7D32;opacity:0;animation:gs-ripple-{{ uid }} 2.6s ease-out infinite}
+  #gps-steps-{{ uid }} .gs-n.sig:after{animation-delay:1.3s}
+  @keyframes gs-ripple-{{ uid }}{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+  #gps-steps-{{ uid }} .gs-step h3{font-size:21px;font-weight:800;color:#0B1F3A;margin:0 0 8px}
+  #gps-steps-{{ uid }} .gs-step p{color:#5f6b7a;font-size:15.5px;margin:0;line-height:1.5}
+  #gps-steps-{{ uid }} .gs-note{max-width:720px;margin:44px auto 0;border:1px solid #e5eaf1;border-radius:16px;padding:20px 26px;font-weight:600;font-size:16.5px;color:#0B1F3A;background:#fff;display:flex;align-items:center;gap:22px;text-align:left}
+  #gps-steps-{{ uid }} .gs-note small{color:#5f6b7a;font-weight:400;font-size:inherit}
+  #gps-steps-{{ uid }} .gs-mrad{position:relative;width:74px;height:74px;flex:none;border-radius:50%;background:#e9f5ea;border:1px solid #cfe6d3;overflow:hidden}
+  #gps-steps-{{ uid }} .gs-mrad:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(46,125,50,.35),transparent 85deg);animation:gs-rot-{{ uid }} 4s linear infinite}
+  #gps-steps-{{ uid }} .gs-mrad i{position:absolute;width:10px;height:10px;border-radius:50%;background:#2E7D32;top:50%;left:50%;transform:translate(-50%,-50%)}
+  @keyframes gs-rot-{{ uid }}{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){#gps-steps-{{ uid }} *{animation:none!important}}
+  @media(max-width:900px){
+    #gps-steps-{{ uid }}{padding:56px 18px}
+    #gps-steps-{{ uid }} h2{font-size:30px}
+    #gps-steps-{{ uid }} .gs-steps{grid-template-columns:1fr}
+    #gps-steps-{{ uid }} .gs-steps:before{display:none}
+    #gps-steps-{{ uid }} .gs-note{flex-direction:column;text-align:center}
+  }
+</style>
+
+<div id="gps-steps-{{ uid }}">
+  <div class="gs-wrap">
+    {%- if section.settings.eyebrow != blank -%}<span class="gs-eye">{{ section.settings.eyebrow }}</span>{%- endif -%}
+    {%- if section.settings.heading != blank -%}<h2>{{ section.settings.heading }}</h2>{%- endif -%}
+    {%- if section.settings.lead != blank -%}<p class="gs-lead">{{ section.settings.lead }}</p>{%- endif -%}
+
+    <div class="gs-steps">
+      {%- for block in section.blocks -%}
+        <div class="gs-step" {{ block.shopify_attributes }}>
+          <div class="gs-n{% if block.settings.signal %} sig{% endif %}">{{ block.settings.num | default: forloop.index }}</div>
+          {%- if block.settings.title != blank -%}<h3>{{ block.settings.title }}</h3>{%- endif -%}
+          {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_note and section.settings.note != blank -%}
+      <div class="gs-note">
+        <span class="gs-mrad"><i></i></span>
+        <div>{{ section.settings.note }}</div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Íconos con contenido",
+  "tag": "section",
+  "class": "gps-steps-section",
+  "settings": [
+    {
+      "type": "select", "id": "bg", "label": "Fondo", "default": "alt",
+      "options": [ { "value": "light", "label": "Blanco" }, { "value": "alt", "label": "Gris claro" } ]
+    },
+    { "type": "text", "id": "eyebrow", "label": "Bajada (eyebrow)", "default": "02 — Cómo funciona" },
+    { "type": "inline_richtext", "id": "heading", "label": "Titulo (cursiva = verde)", "default": "Se ubica por <em>red celular</em>, sin depender de nadie" },
+    { "type": "textarea", "id": "lead", "label": "Subtitulo", "default": "Le ponés un chip prepago con datos y te manda la ubicación aproximada a tu celular. Sin abono de plataforma." },
+    { "type": "header", "content": "Nota inferior" },
+    { "type": "checkbox", "id": "show_note", "label": "Mostrar nota", "default": true },
+    { "type": "text", "id": "note", "label": "Texto de la nota", "default": "Ubicación aproximada por antena de red celular · sin abono de plataforma · funciona en Android y iPhone." }
+  ],
+  "blocks": [
+    {
+      "type": "step", "name": "Paso", "limit": 4,
+      "settings": [
+        { "type": "text", "id": "num", "label": "Numero (vacio = automatico)" },
+        { "type": "text", "id": "title", "label": "Titulo", "default": "Poné un chip prepago" },
+        { "type": "textarea", "id": "text", "label": "Texto", "default": "Con datos (Personal, Claro o Movistar): es lo que le da señal para ubicarlo. El chip no viene incluido." },
+        { "type": "checkbox", "id": "signal", "label": "Animacion de señal en el numero", "default": false }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Íconos con contenido",
+      "blocks": [
+        { "type": "step", "settings": { "num": "1", "title": "Poné un chip prepago", "text": "Con datos (Personal, Claro o Movistar): es lo que le da señal para ubicarlo. El chip no viene incluido.", "signal": true } },
+        { "type": "step", "settings": { "num": "2", "title": "Activalo desde el celular", "text": "Seguí la guía paso a paso y vinculalo a la app (o por SMS). En unos minutos queda andando." } },
+        { "type": "step", "settings": { "num": "3", "title": "Localizá cuando quieras", "text": "Pedís la ubicación desde el celu y ves dónde quedó tu moto, mochila o valija." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

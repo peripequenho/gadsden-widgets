@@ -1,0 +1,1073 @@
+{%- liquid
+  assign s = section.settings
+  assign has_text = false
+  if s.heading != blank or s.text != blank or s.button_label != blank or s.atc_label != blank
+    assign has_text = true
+  endif
+  assign ratio = 1.5
+  if s.before_image != blank
+    assign ratio = s.before_image.aspect_ratio
+  elsif s.after_image != blank
+    assign ratio = s.after_image.aspect_ratio
+  endif
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+
+<div
+  class="gad-ba-section gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px;"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width gad-ba-layout{% if has_text %} gad-ba-layout--text gad-ba-layout--media-{{ s.position }}{% endif %}">
+    {%- if has_text -%}
+      <div class="gad-ba-layout__text{% if s.text_box %} gad-ba-layout__text--box{% endif %} gad-ba--a-{{ s.align }} gad-ba--m-a-{{ s.m_align }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %}data-cascade style="--animation-order: 1;"{% endif %}>
+        {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text -%}
+        {%- if s.button_label != blank or s.atc_label != blank -%}
+          <div class="gad-buttons">
+            {%- if s.button_label != blank -%}
+              <a
+                {% if s.button_link == blank %}
+                  role="link" aria-disabled="true"
+                {% else %}
+                  href="{{ s.button_link }}"
+                {% endif %}
+                class="button{% if s.button_outline %} button--secondary{% else %} button--primary{% endif %}"
+              >
+                {{- s.button_label | escape -}}
+              </a>
+            {%- endif -%}
+            {%- render 'gad-atc-button', label: s.atc_label, product: s.atc_product, skip_cart: s.atc_skip_cart -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="gad-ba-layout__media{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}" {% if settings.animations_reveal_on_scroll %}data-cascade style="--animation-order: 2;"{% endif %}>
+      <gad-before-after
+        class="gad-ba gad-ba--{{ s.handle_style }}{% if s.handle_style == 'triangles' %} gad-ba--circle{% endif %}{% if s.elastic %} gad-ba--elastic{% endif %}{% if s.labels_style == 'corner' %} gad-ba--labels-corner{% endif %}{% if s.before_fit == 'part' %} gad-ba--before-part{% endif %}"
+        data-start="{{ s.start }}"
+        style="--pos: {{ s.start }}%; --ratio: {{ ratio }}; --line: {% if s.line_custom != blank %}{{ s.line_custom }}{% else %}rgb(var(--color-{{ s.line_color }})){% endif %};{% if s.handle_style == 'filled' %} --handle-fg: rgb(var(--color-{{ s.handle_arrows | default: 'background' }}));{% endif %}{% if s.max_width > 0 %} max-width: {{ s.max_width }}px; margin-inline: auto;{% endif %}"
+      >
+        <div class="gad-ba__img gad-ba__img--before">
+          {%- if s.before_image != blank -%}
+            {%- assign alt_before = s.before_image.alt | default: s.before_label -%}
+            {{ s.before_image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: alt_before, sizes: '(min-width: 990px) 50vw, 100vw', widths: '550, 750, 1100, 1500, 2000' }}
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag: 'gad-ba__placeholder' }}
+          {%- endif -%}
+        </div>
+        <div class="gad-ba__img gad-ba__img--after" aria-hidden="false">
+          {%- if s.after_image != blank -%}
+            {%- assign alt_after = s.after_image.alt | default: s.after_label -%}
+            {{ s.after_image | image_url: width: 2000 | image_tag: loading: 'lazy', alt: alt_after, sizes: '(min-width: 990px) 50vw, 100vw', widths: '550, 750, 1100, 1500, 2000' }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'gad-ba__placeholder' }}
+          {%- endif -%}
+        </div>
+        {%- if s.before_label != blank -%}
+          <span class="gad-ba__label gad-ba__label--before color-{{ s.labels_scheme }}">{{ s.before_label }}</span>
+        {%- endif -%}
+        {%- if s.after_label != blank -%}
+          <span class="gad-ba__label gad-ba__label--after color-{{ s.labels_scheme }}">{{ s.after_label }}</span>
+        {%- endif -%}
+        <span class="gad-ba__line" aria-hidden="true"></span>
+        {%- if s.elastic -%}<svg class="gad-ba__curve" aria-hidden="true"><path></path></svg>{%- endif -%}
+        <span class="gad-ba__handle" aria-hidden="true">
+          {%- render 'gad-icon', name: 'arrow_left', filled: true, class: 'gad-ba__arrow' -%}
+          {%- render 'gad-icon', name: 'arrow_right', filled: true, class: 'gad-ba__arrow' -%}
+        </span>
+        <input
+          class="gad-ba__range"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="{{ s.start }}"
+          aria-label="{{ 'gadsden.before_after.label' | t }}"
+        >
+      </gad-before-after>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-ba-layout {
+    display: grid;
+    gap: 3.2rem;
+    align-items: center;
+  }
+
+  .gad-ba-layout__text .gad-heading {
+    margin-bottom: 2rem;
+  }
+
+  .gad-ba--m-a-left {
+    text-align: left;
+  }
+
+  .gad-ba--m-a-center {
+    text-align: center;
+  }
+
+  .gad-ba--m-a-center .gad-buttons {
+    justify-content: center;
+  }
+
+  .gad-ba--m-a-right {
+    text-align: right;
+  }
+
+  .gad-ba--m-a-right .gad-buttons {
+    justify-content: flex-end;
+  }
+
+  .gad-ba--m-a-left .gad-heading,
+  .gad-ba--m-a-center .gad-heading,
+  .gad-ba--m-a-right .gad-heading {
+    text-align: inherit;
+  }
+
+  .gad-ba-layout:not(.gad-ba-layout--text) .gad-ba-layout__media {
+    max-width: 100rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  @media screen and (min-width: 990px) {
+    .gad-ba-layout--text {
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+    }
+
+    .gad-ba-layout--media-first .gad-ba-layout__media {
+      order: -1;
+    }
+
+    .gad-ba--a-left {
+      text-align: left;
+    }
+
+    .gad-ba--a-center {
+      text-align: center;
+    }
+
+    .gad-ba--a-right {
+      text-align: right;
+    }
+
+    .gad-ba--a-left .gad-buttons {
+      justify-content: flex-start;
+    }
+
+    .gad-ba--a-center .gad-buttons {
+      justify-content: center;
+    }
+
+    .gad-ba--a-right .gad-buttons {
+      justify-content: flex-end;
+    }
+  }
+
+  gad-before-after {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: var(--ratio, 1.5);
+    border-radius: var(--media-radius);
+    background: rgba(var(--color-foreground), 0.04);
+    touch-action: pan-y pinch-zoom;
+    cursor: ew-resize;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .gad-ba__img {
+    position: absolute;
+    inset: 0;
+  }
+
+  .gad-ba__img img,
+  .gad-ba__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+
+  .gad-ba__img--after {
+    clip-path: inset(0 0 0 var(--pos));
+  }
+
+  .gad-ba__label {
+    position: absolute;
+    top: 1.2rem;
+    z-index: 2;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+
+  .gad-ba__label--before {
+    left: 1.2rem;
+  }
+
+  .gad-ba__label--after {
+    right: 1.2rem;
+  }
+
+  .gad-ba__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    z-index: 2;
+    width: 0.3rem;
+    background: var(--line);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .gad-ba__handle {
+    position: absolute;
+    top: 50%;
+    left: var(--pos);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--line);
+    font-size: 2.8rem;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .gad-ba--circle .gad-ba__handle {
+    width: 5rem;
+    height: 5rem;
+    border: 0.3rem solid var(--line);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.25);
+    font-size: 2.2rem;
+    backdrop-filter: blur(2px);
+  }
+
+  /* círculo relleno: el color de la línea, flechas en contraste, se achica al arrastrar */
+  .gad-ba--filled .gad-ba__handle {
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--handle-fg, rgb(var(--color-background)));
+    font-size: 2rem;
+    box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .gad-ba--filled.is-dragging .gad-ba__handle {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  html.gad-reduce .gad-ba--filled .gad-ba__handle {
+    transition: none;
+  }
+
+  .gad-ba__curve {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .gad-ba__curve path {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 3;
+  }
+
+  gad-before-after.is-elastic .gad-ba__line {
+    display: none;
+  }
+
+  gad-before-after.is-elastic .gad-ba__handle {
+    top: var(--hy, 50%);
+  }
+
+  .gad-ba--simple .gad-ba__handle {
+    filter: drop-shadow(0 0 0.3rem rgba(0, 0, 0, 0.5));
+  }
+
+  .gad-ba__arrow {
+    margin: 0 -0.12em;
+  }
+
+  .gad-ba__range {
+    position: absolute;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  gad-before-after:focus-within .gad-ba__handle {
+    outline: 0.2rem solid rgb(var(--color-foreground));
+    outline-offset: 0.3rem;
+  }
+
+  .gad-ba-layout__text--box {
+    padding: 2.4rem;
+    border-radius: var(--text-boxes-radius);
+    background: rgb(var(--color-background));
+    box-shadow: var(--text-boxes-shadow-horizontal-offset) var(--text-boxes-shadow-vertical-offset) var(--text-boxes-shadow-blur-radius) rgba(var(--color-shadow), var(--text-boxes-shadow-opacity));
+  }
+
+  .gad-ba--labels-corner .gad-ba__label {
+    top: 0;
+    border-radius: 0;
+  }
+
+  .gad-ba--labels-corner .gad-ba__label--before {
+    left: 0;
+  }
+
+  .gad-ba--labels-corner .gad-ba__label--after {
+    right: 0;
+  }
+
+  .gad-ba--triangles .gad-ba__handle {
+    width: 4.2rem;
+    height: 4.2rem;
+    background: color-mix(in srgb, var(--line) 15%, transparent);
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+    backdrop-filter: none;
+  }
+
+  .gad-ba--triangles .gad-ba__line {
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+  }
+
+  .gad-ba--triangles .gad-ba__handle .gad-ba__arrow {
+    display: none;
+  }
+
+  .gad-ba--triangles .gad-ba__handle::before,
+  .gad-ba--triangles .gad-ba__handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 0.7rem;
+    height: 1.2rem;
+    background: var(--line);
+    transform: translate(-50%, -50%);
+  }
+
+  .gad-ba--triangles .gad-ba__handle::before {
+    left: 28%;
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  }
+
+  .gad-ba--triangles .gad-ba__handle::after {
+    left: 72%;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .gad-ba--before-part .gad-ba__img--before {
+    right: auto;
+    width: var(--pos);
+    overflow: hidden;
+  }
+
+  .gad-ba--before-part .gad-ba__img--before img {
+    object-position: left center;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadBeforeAfter extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      this.range = this.querySelector('.gad-ba__range');
+      this.range.addEventListener('input', () => this.set(parseFloat(this.range.value)));
+      this.addEventListener('pointerdown', (e) => this.down(e));
+      this.elastic = this.classList.contains('gad-ba--elastic') && !(window.Gadsden && Gadsden.reduceMotion());
+      if (this.elastic) this.setupElastic();
+    }
+
+    set(pct, yFrac) {
+      const v = Math.max(0, Math.min(100, pct));
+      this.style.setProperty('--pos', `${v}%`);
+      this.range.value = Math.round(v);
+      if (this.elastic) {
+        this.target = v;
+        if (yFrac != null) this.hy = Math.max(0.1, Math.min(0.9, yFrac));
+        this.style.setProperty('--hy', `${this.hy * 100}%`);
+        this.kick();
+      }
+    }
+
+    fromEvent(e) {
+      const r = this.getBoundingClientRect();
+      this.lastY = (e.clientY - r.top) / r.height;
+      return ((e.clientX - r.left) / r.width) * 100;
+    }
+
+    /* Línea elástica: los extremos de la línea siguen a la manija con un resorte. */
+    setupElastic() {
+      this.classList.add('is-elastic');
+      this.after = this.querySelector('.gad-ba__img--after');
+      this.curve = this.querySelector('.gad-ba__curve path');
+      const start = parseFloat(this.dataset.start) || 50;
+      this.target = start;
+      this.hy = 0.5;
+      this.ends = { top: start, bot: start, vt: 0, vb: 0 };
+      this.draw();
+      new ResizeObserver(() => this.draw()).observe(this);
+      const io = new IntersectionObserver((entries) => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+        setTimeout(() => this.set(start + 14), 150);
+        setTimeout(() => this.set(start), 650);
+      }, { threshold: 0.5 });
+      io.observe(this);
+    }
+
+    kick() {
+      if (this.raf) return;
+      let last = performance.now();
+      const step = (now) => {
+        const dt = Math.min(0.032, (now - last) / 1000);
+        last = now;
+        const e = this.ends;
+        const k = 620;
+        const c = 44;
+        e.vt += (k * (this.target - e.top) - c * e.vt) * dt;
+        e.vb += (k * (this.target - e.bot) - c * e.vb) * dt;
+        e.top += e.vt * dt;
+        e.bot += e.vb * dt;
+        this.draw();
+        const still = Math.abs(this.target - e.top) < 0.05 && Math.abs(this.target - e.bot) < 0.05 && Math.abs(e.vt) < 0.5 && Math.abs(e.vb) < 0.5;
+        if (still) {
+          e.top = e.bot = this.target;
+          e.vt = e.vb = 0;
+          this.draw();
+          this.raf = 0;
+          return;
+        }
+        this.raf = requestAnimationFrame(step);
+      };
+      this.raf = requestAnimationFrame(step);
+    }
+
+    draw() {
+      const W = this.clientWidth;
+      const H = this.clientHeight;
+      if (!W || !H) return;
+      const xt = (this.ends.top / 100) * W;
+      const xb = (this.ends.bot / 100) * W;
+      const xh = (this.target / 100) * W;
+      const yh = this.hy * H;
+      const t = this.hy;
+      const cx = (xh - (1 - t) * (1 - t) * xt - t * t * xb) / (2 * t * (1 - t));
+      const cy = (yh - t * t * H) / (2 * t * (1 - t));
+      const d = `M ${xt.toFixed(1)} 0 Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${xb.toFixed(1)} ${H}`;
+      this.curve.setAttribute('d', d);
+      this.after.style.clipPath = `path('${d} L ${W} ${H} L ${W} 0 Z')`;
+    }
+
+    down(e) {
+      if (e.button > 0) return;
+      const start = { x: e.clientX, y: e.clientY, decided: e.pointerType === 'mouse' };
+      if (start.decided) this.set(this.fromEvent(e), this.lastY);
+      this.classList.add('is-dragging');
+      const move = (ev) => {
+        if (!start.decided) {
+          const dx = Math.abs(ev.clientX - start.x);
+          const dy = Math.abs(ev.clientY - start.y);
+          if (dx < 6 && dy < 6) return;
+          start.decided = true;
+          if (dy > dx) return end();
+        }
+        ev.preventDefault();
+        this.set(this.fromEvent(ev), this.lastY);
+      };
+      const end = () => {
+        this.classList.remove('is-dragging');
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', end);
+        window.removeEventListener('pointercancel', end);
+      };
+      window.addEventListener('pointermove', move, { passive: false });
+      window.addEventListener('pointerup', end);
+      window.addEventListener('pointercancel', end);
+    }
+  }
+
+  if (!customElements.get('gad-before-after')) customElements.define('gad-before-after', GadBeforeAfter);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Antes y después",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Texto"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_box",
+      "label": "Texto en una caja",
+      "default": false,
+      "info": "Con la sombra y el redondeo de Configuración del tema > Cajas de texto."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "info": "Sin texto, el botón no aparece."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_outline",
+      "label": "Botón con contorno",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "atc_label",
+      "label": "Texto del botón de agregar al carrito",
+      "info": "Sin texto, el botón no aparece. En una ficha agrega ese producto con la variante y la cantidad elegidas."
+    },
+    {
+      "type": "product",
+      "id": "atc_product",
+      "label": "Producto",
+      "info": "Opcional. Si elegís uno, el botón agrega ése. Fuera de una ficha hace falta elegirlo."
+    },
+    {
+      "type": "checkbox",
+      "id": "atc_skip_cart",
+      "label": "Ir directo al pago",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Alineación en desktop",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "m_align",
+      "label": "Alineación en mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Comparador"
+    },
+    {
+      "type": "paragraph",
+      "content": "Sin título, texto ni botones, el comparador ocupa todo el ancho. En mobile el texto va arriba."
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Posición en desktop",
+      "options": [
+        {
+          "value": "first",
+          "label": "Comparador primero"
+        },
+        {
+          "value": "second",
+          "label": "Comparador segundo"
+        }
+      ],
+      "default": "second"
+    },
+    {
+      "type": "select",
+      "id": "before_fit",
+      "label": "Imagen \"antes\"",
+      "options": [
+        {
+          "value": "reveal",
+          "label": "Entera, se descubre al mover la línea"
+        },
+        {
+          "value": "part",
+          "label": "Ajustada a su parte"
+        }
+      ],
+      "default": "reveal"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Ancho máximo de las imágenes",
+      "min": 0,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "default": 0,
+      "info": "0: sin límite."
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "Imagen \"antes\"",
+      "info": "Las dos imágenes se recortan a la proporción de la imagen \"antes\"."
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "Imagen \"después\""
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "Etiqueta \"antes\"",
+      "default": "Antes"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "Etiqueta \"después\"",
+      "default": "Después"
+    },
+    {
+      "type": "color_scheme",
+      "id": "labels_scheme",
+      "label": "Combinación de las etiquetas",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "labels_style",
+      "label": "Estilo de las etiquetas",
+      "options": [
+        {
+          "value": "pill",
+          "label": "Redondeadas, separadas del borde"
+        },
+        {
+          "value": "corner",
+          "label": "En las esquinas, rectas"
+        }
+      ],
+      "default": "pill"
+    },
+    {
+      "type": "select",
+      "id": "line_color",
+      "label": "Color de la línea",
+      "options": [
+        {
+          "value": "background",
+          "label": "Fondo de la combinación"
+        },
+        {
+          "value": "foreground",
+          "label": "Texto de la combinación"
+        },
+        {
+          "value": "accent",
+          "label": "Acento de la combinación"
+        },
+        {
+          "value": "button",
+          "label": "Botón de la combinación"
+        }
+      ],
+      "default": "background"
+    },
+    {
+      "type": "color",
+      "id": "line_custom",
+      "label": "Color propio de la línea",
+      "info": "Vacío: el de arriba."
+    },
+    {
+      "type": "select",
+      "id": "handle_style",
+      "label": "Estilo de las flechas",
+      "options": [
+        {
+          "value": "simple",
+          "label": "Simples"
+        },
+        {
+          "value": "circle",
+          "label": "En círculo"
+        },
+        {
+          "value": "triangles",
+          "label": "Círculo con triángulos"
+        },
+        {
+          "value": "filled",
+          "label": "Círculo relleno"
+        }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "select",
+      "id": "handle_arrows",
+      "label": "Color de las flechas",
+      "default": "background",
+      "options": [
+        {
+          "value": "background",
+          "label": "Fondo de la sección"
+        },
+        {
+          "value": "foreground",
+          "label": "Texto de la sección"
+        }
+      ],
+      "info": "Con \"Círculo relleno\": el círculo toma el color de la línea.",
+      "visible_if": "{{ section.settings.handle_style == 'filled' }}"
+    },
+    {
+      "type": "range",
+      "id": "start",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Posición inicial de la línea",
+      "default": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "elastic",
+      "label": "Línea elástica",
+      "default": false,
+      "info": "La línea se curva al arrastrar rápido y vuelve, y al aparecer hace un barrido corto. Con \"reducir movimiento\" queda recta."
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Antes y después"
+    }
+  ]
+}
+{% endschema %}

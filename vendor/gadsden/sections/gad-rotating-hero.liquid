@@ -1,0 +1,329 @@
+
+{%- liquid
+  assign s = section.settings
+  if s.bg_image != blank
+    assign bg = s.bg_image | image_url: width: 1500
+  else
+    assign bg = 'ct-hero-bg.jpg' | asset_url
+  endif
+  if s.antes_image != blank
+    assign antes = s.antes_image | image_url: width: 700
+  else
+    assign antes = 'ct-hero-antes.jpg' | asset_url
+  endif
+  if s.despues_image != blank
+    assign despues = s.despues_image | image_url: width: 700
+  else
+    assign despues = 'ct-hero-despues.jpg' | asset_url
+  endif
+  assign palabras = s.words | split: ','
+-%}
+
+<style>
+  #ct-hero-{{ section.id }} {
+    --ct-fondo: {{ s.background }};
+    --ct-texto: {{ s.text_color }};
+    position: relative; overflow: hidden; isolation: isolate;
+    background: var(--ct-fondo); color: var(--ct-texto);
+    padding: {{ s.padding_top }}px 16px {{ s.padding_bottom }}px;
+  }
+  
+  #ct-hero-{{ section.id }} .ct-hero__bg {
+    display: block; position: absolute; left: -16px; right: -16px; top: {{ s.bg_offset }}px; z-index: -1;
+    aspect-ratio: {{ s.bg_ratio }};
+    background: url('{{ bg }}') center top / 100% auto no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 38%, transparent 62%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 38%, transparent 62%);
+    will-change: transform;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__wrap {
+    position: relative; isolation: isolate; max-width: 560px; margin: 0 auto; text-align: center;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__fotos {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: {{ s.fotos_width }}%; margin: 0 auto;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__foto {
+    position: relative; margin: 0; height: {{ s.fotos_height }}vh; min-height: 96px; border-radius: 12px; overflow: hidden;
+    background: #fff; box-shadow: 0 8px 24px rgba(11, 11, 11, .12);
+  }
+  #ct-hero-{{ section.id }} .ct-hero__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #ct-hero-{{ section.id }} .ct-hero__foto figcaption {
+    position: absolute; left: 6px; top: 6px; padding: 2px 8px; border-radius: 100px;
+    font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    background: rgba(255, 255, 255, .92); color: #0B0B0B;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__foto--despues figcaption { background: #0B0B0B; color: #fff; }
+  #ct-hero-{{ section.id }} .ct-hero__hueco { display: block; height: {{ s.gap_height }}px; }
+  #ct-hero-{{ section.id }} .ct-hero__cap {
+    margin: 0 0 12px; font-size: {{ s.caption_size }}px; font-weight: 700; line-height: 1.35;
+    letter-spacing: .16em; text-transform: uppercase; text-wrap: balance;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__titulo { margin: 0 0 18px; line-height: 1.1; }
+  
+  #ct-hero-{{ section.id }} .ct-hero__rot {
+    display: inline-grid; justify-items: start; text-align: left; vertical-align: bottom; color: {{ s.word_color }};
+  }
+  #ct-hero-{{ section.id }} .ct-hero__rot > span {
+    grid-area: 1 / 1; opacity: 0; transform: translateY(.45em);
+    transition: opacity .45s ease, transform .45s ease;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__rot > span.is-on { opacity: 1; transform: none; }
+  #ct-hero-{{ section.id }} .ct-hero__rot > span.is-off { transform: translateY(-.45em); }
+  
+  #ct-hero-{{ section.id }} .ct-hero__promesa { margin: 0 0 20px; line-height: 1.12; text-wrap: balance; }
+  #ct-hero-{{ section.id }} .ct-hero__junto { white-space: nowrap; }
+  #ct-hero-{{ section.id }} .ct-hero__marca {
+    padding: 0 .08em; background: linear-gradient(transparent 60%, {{ s.promise_color }} 60%, {{ s.promise_color }} 92%, transparent 92%);
+  }
+  #ct-hero-{{ section.id }} .ct-hero__pildora {
+    display: inline-flex; align-items: center; gap: 10px; max-width: 100%; margin: 0 0 18px; padding: 8px 14px;
+    border: 1px solid #D9D8D3; border-radius: 100px; background: #fff; font-size: 13px; white-space: nowrap;
+  }
+  #ct-hero-{{ section.id }} .ct-hero__pildora span { display: inline-flex; align-items: center; gap: 4px; }
+  #ct-hero-{{ section.id }} .ct-hero__pildora .material-symbols-outlined { font-size: 18px; }
+  #ct-hero-{{ section.id }} .ct-hero__cta {
+    display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px;
+    border-radius: 10px; background: #0B0B0B; color: #fff; font-weight: 700; font-size: 16px;
+    letter-spacing: .02em; text-decoration: none; text-transform: uppercase;
+  }
+  
+  #ct-hero-{{ section.id }} [data-contraste] { transition: color .3s ease, text-shadow .3s ease; }
+  #ct-hero-{{ section.id }} .ct-hero__nota { margin: 10px 0 0; font-size: 13px; opacity: .7; }
+  
+  @media (min-width: 990px) {
+    #ct-hero-{{ section.id }} { padding-top: 40px; padding-bottom: 56px; }
+    #ct-hero-{{ section.id }} .ct-hero__wrap {
+      max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      grid-template-rows: 1fr auto; column-gap: 72px; text-align: left;
+    }
+    #ct-hero-{{ section.id }} .ct-hero__bg {
+      position: relative; left: auto; right: auto; top: auto; z-index: 0; grid-column: 1; grid-row: 1 / 3;
+      aspect-ratio: auto; height: min(76vh, 660px); min-height: 520px; border-radius: 24px;
+      background-size: cover; background-position: center 30%;
+      -webkit-mask-image: none; mask-image: none; transform: none !important; will-change: auto;
+    }
+    #ct-hero-{{ section.id }} .ct-hero__fotos {
+      grid-column: 1; grid-row: 2; z-index: 1; width: auto; margin: 0 20px 20px; align-self: end;
+    }
+    #ct-hero-{{ section.id }} .ct-hero__foto { height: 150px; }
+    #ct-hero-{{ section.id }} .ct-hero__hueco { display: none; }
+    #ct-hero-{{ section.id }} .ct-hero__texto { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+    #ct-hero-{{ section.id }} .ct-hero__cap { font-size: 14px; }
+    #ct-hero-{{ section.id }} .ct-hero__promesa,
+    #ct-hero-{{ section.id }} .ct-hero__titulo { margin-bottom: 28px; font-size: clamp(44px, 4.2vw, 64px); line-height: 1.05; letter-spacing: -.01em; }
+    #ct-hero-{{ section.id }} .ct-hero__pildora { margin-bottom: 28px; font-size: 15px; padding: 10px 18px; }
+    #ct-hero-{{ section.id }} .ct-hero__cta { display: inline-flex; width: auto; min-width: 380px; min-height: 60px; padding: 0 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    
+    #ct-hero-{{ section.id }} .ct-hero__bg { will-change: auto; }
+    #ct-hero-{{ section.id }} .ct-hero__rot > span, #ct-hero-{{ section.id }} .ct-hero__rot > span.is-off { transform: none; }
+  }
+</style>
+
+<section id="ct-hero-{{ section.id }}" class="ct-hero" data-fondo-img="{{ bg }}" data-velocidad="{{ s.parallax_speed | divided_by: 100.0 }}"
+  data-intervalo="{{ s.rotate_speed | times: 100 }}">
+  <div class="ct-hero__wrap">
+    <div class="ct-hero__bg" aria-hidden="true"></div>
+    <div class="ct-hero__fotos">
+      <figure class="ct-hero__foto">
+        <img src="{{ antes }}" alt="{{ s.antes_label | escape }}" width="400" height="225" fetchpriority="high">
+        <figcaption>{{ s.antes_label }}</figcaption>
+      </figure>
+      <figure class="ct-hero__foto ct-hero__foto--despues">
+        <img src="{{ despues }}" alt="{{ s.despues_label | escape }}" width="400" height="225" fetchpriority="high">
+        <figcaption>{{ s.despues_label }}</figcaption>
+      </figure>
+    </div>
+
+    <div class="ct-hero__hueco"></div>
+
+    <div class="ct-hero__texto">
+    {%- if s.caption != blank -%}<p class="ct-hero__cap" data-contraste>{{ s.caption }}</p>{%- endif -%}
+    {%- if s.heading != blank -%}
+    <h1 class="ct-hero__titulo {{ s.heading_size }}" data-contraste>
+      {{ s.heading }}
+      <span class="ct-hero__rot" aria-live="polite">
+        {%- for p in palabras -%}<span{% if forloop.first %} class="is-on"{% else %} aria-hidden="true"{% endif %}>{{ p | strip }}</span>{%- endfor -%}
+      </span>
+    </h1>
+    {%- endif -%}
+
+    {%- if s.promise != blank or s.promise_highlight != blank -%}
+      
+      {%- if s.heading == blank -%}{%- assign tag_promesa = 'h1' -%}{%- else -%}{%- assign tag_promesa = 'p' -%}{%- endif -%}
+      
+      {%- assign ultima = s.promise | split: ' ' | last -%}
+      {%- assign resto = s.promise | remove_last: ultima | strip -%}
+      <{{ tag_promesa }} class="ct-hero__promesa {{ s.heading_size }}" data-contraste>{% if resto != blank %}{{ resto }} {% endif %}<span class="ct-hero__junto">{{ ultima }}{% if s.promise_highlight != blank %} <span class="ct-hero__marca">{{ s.promise_highlight }}</span>{% endif %}</span></{{ tag_promesa }}>
+    {%- endif -%}
+
+    <div class="ct-hero__pildora">
+      {%- if s.pill_1 != blank -%}<span><span class="material-symbols-outlined" aria-hidden="true">{{ s.pill_1_icon }}</span>{{ s.pill_1 }}</span>{%- endif -%}
+      {%- if s.pill_2 != blank -%}<span><span class="material-symbols-outlined" aria-hidden="true">{{ s.pill_2_icon }}</span>{{ s.pill_2 }}</span>{%- endif -%}
+      {%- if s.pill_3 != blank -%}<span><span class="material-symbols-outlined" aria-hidden="true">{{ s.pill_3_icon }}</span>{{ s.pill_3 }}</span>{%- endif -%}
+    </div>
+
+    <a class="ct-hero__cta" href="#ct-oferta" data-ct-oferta>{{ s.button_label }}</a>
+    {%- if s.note != blank -%}<p class="ct-hero__nota">{{ s.note }}</p>{%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-hero-{{ section.id }}');
+    if (!raiz) return;
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // la palabra que cambia
+    const palabras = [...raiz.querySelectorAll('.ct-hero__rot > span')];
+    if (palabras.length > 1) {
+      let i = 0;
+      setInterval(() => {
+        const vieja = palabras[i];
+        i = (i + 1) % palabras.length;
+        vieja.classList.replace('is-on', 'is-off');
+        vieja.setAttribute('aria-hidden', 'true');
+        palabras[i].classList.remove('is-off');
+        palabras[i].classList.add('is-on');
+        palabras[i].removeAttribute('aria-hidden');
+        setTimeout(() => vieja.classList.remove('is-off'), 500);
+      }, Number(raiz.dataset.intervalo) || 2200);
+    }
+
+    // parallax del fondo (sólo celular: en escritorio la foto es una imagen al costado y no se mueve)
+    const fondo = raiz.querySelector('.ct-hero__bg');
+    const velocidad = Number(raiz.dataset.velocidad) || 0;
+    const escritorio = matchMedia('(min-width: 990px)');
+    const conParallax = !quieto && velocidad;
+
+    // contraste: se mira la foto (con su máscara de fundido sobre el color de la sección) justo detrás de cada texto
+    // y se lleva el texto de oscuro a blanco según qué tan clara sea esa franja. Así no se pierde cuando el parallax
+    // pasa por la tira negra o el pelo.
+    const textos = [...raiz.querySelectorAll('[data-contraste]')];
+    const hex = getComputedStyle(raiz).backgroundColor.match(/\d+/g)?.map(Number) || [245, 247, 250];
+    let px = null, pw = 0, ph = 0;
+    const foto = new Image();
+    foto.crossOrigin = 'anonymous';
+    foto.onload = () => {
+      try {
+        pw = 120; ph = Math.round(pw * foto.naturalHeight / foto.naturalWidth);
+        const c = document.createElement('canvas'); c.width = pw; c.height = ph;
+        const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(foto, 0, 0, pw, ph);
+        px = g.getImageData(0, 0, pw, ph).data;
+        cuadro();
+      } catch (e) { px = null; } // sin CORS: los textos quedan con su color
+    };
+    foto.src = raiz.dataset.fondoImg;
+    // máscara del fondo: transparente 0% → opaca 12%-38% → transparente 62% (igual que el CSS)
+    const mascara = (v) => v <= 0 || v >= .62 ? 0 : v < .12 ? v / .12 : v <= .38 ? 1 : (.62 - v) / .24;
+    // luminancia relativa (WCAG): canales linealizados
+    const lin = (c) => { c /= 255; return c <= .03928 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4; };
+    const luz = (r, g, b) => .2126 * lin(r) + .7152 * lin(g) + .0722 * lin(b);
+    const contraste = () => {
+      if (!px || escritorio.matches) { textos.forEach((t) => { t.style.color = ''; t.style.textShadow = ''; }); return; }
+      const f = fondo.getBoundingClientRect();
+      const altoFoto = f.width * ph / pw;
+      for (const t of textos) {
+        const r = t.getBoundingClientRect();
+        let suma = 0, n = 0, cob = 0;
+        for (let y = r.top + 4; y < r.bottom - 2; y += 6) {
+          const v = (y - f.top) / f.height, a = mascara(v), fy = Math.floor((y - f.top) / altoFoto * ph);
+          for (let x = r.left + 4; x < r.right - 2; x += 8) {
+            let c = hex;
+            const fx = Math.floor((x - f.left) / f.width * pw);
+            if (a > 0 && fy >= 0 && fy < ph && fx >= 0 && fx < pw) {
+              const i = (fy * pw + fx) * 4;
+              c = [px[i] * a + hex[0] * (1 - a), px[i + 1] * a + hex[1] * (1 - a), px[i + 2] * a + hex[2] * (1 - a)];
+              cob += a;
+            }
+            suma += luz(c[0], c[1], c[2]); n++;
+          }
+        }
+        // se queda con el color que más contrasta (oscuro o blanco; el cambio lo suaviza la transición del CSS)
+        // y le pone un halo del color contrario, que lo despega de la foto donde el fondo es mezcla
+        const Y = suma / Math.max(n, 1);
+        const blanco = 1.05 / (Y + .05) > (Y + .05) / .0538;
+        // el halo crece con cuánta foto hay detrás (0 = fondo liso): es lo que separa las letras de la textura
+        const k = Math.min(1, cob / Math.max(n, 1) * 1.6).toFixed(2);
+        t.style.color = blanco ? '#fff' : '';
+        t.style.textShadow = blanco
+          ? `0 1px 16px rgba(11,11,11,${.7 * k}), 0 0 3px rgba(11,11,11,${.5 * k})`
+          : `0 0 18px rgba(255,255,255,${.95 * k}), 0 0 6px rgba(255,255,255,${.9 * k}), 0 0 2px rgba(255,255,255,${k})`;
+      }
+    };
+    const cuadro = () => {
+      const r = raiz.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      if (conParallax && !escritorio.matches) fondo.style.transform = `translate3d(0, ${(-r.top * velocidad).toFixed(1)}px, 0)`;
+      else fondo.style.transform = '';
+      contraste();
+    };
+    let pendiente = false;
+    addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(() => { pendiente = false; cuadro(); }); } }, { passive: true });
+    addEventListener('resize', cuadro);
+    cuadro();
+
+    // el botón baja a la oferta (bloque main-product de la plantilla)
+    raiz.querySelector('[data-ct-oferta]')?.addEventListener('click', (e) => {
+      const oferta = document.querySelector('[id$="__main"]');
+      if (!oferta) return;
+      e.preventDefault();
+      oferta.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero con palabra que rota",
+  "tag": "div",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "Antes / después" },
+    { "type": "image_picker", "id": "antes_image", "label": "Foto antes", "info": "Vacío = placeholder de stock (assets/ct-hero-antes.jpg). Reemplazar por una foto real." },
+    { "type": "text", "id": "antes_label", "label": "Etiqueta antes", "default": "Antes" },
+    { "type": "image_picker", "id": "despues_image", "label": "Foto después", "info": "Vacío = placeholder de stock (assets/ct-hero-despues.jpg). Reemplazar por una foto real." },
+    { "type": "text", "id": "despues_label", "label": "Etiqueta después", "default": "Después" },
+    { "type": "range", "id": "fotos_width", "label": "Ancho de las fotos", "min": 30, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "fotos_height", "label": "Alto de las fotos", "min": 10, "max": 40, "step": 1, "unit": "vh", "default": 15, "info": "Porcentaje del alto de la pantalla" },
+    { "type": "header", "content": "Fondo" },
+    { "type": "image_picker", "id": "bg_image", "label": "Imagen de fondo", "info": "Vacío = assets/ct-hero-bg.jpg" },
+    { "type": "range", "id": "bg_offset", "label": "Bajar el fondo", "min": 0, "max": 400, "step": 10, "unit": "px", "default": 0, "info": "Para que la boca quede entre las fotos y el texto" },
+    { "type": "text", "id": "bg_ratio", "label": "Proporción de la imagen de fondo", "default": "752 / 1344", "info": "ancho / alto de la imagen" },
+    { "type": "range", "id": "parallax_speed", "label": "Parallax", "min": 0, "max": 50, "step": 5, "default": 25, "info": "0 = sin parallax" },
+    { "type": "color", "id": "background", "label": "Color de la sección", "default": "#F5F7FA" },
+    { "type": "color", "id": "text_color", "label": "Color del texto", "default": "#0B0B0B" },
+    { "type": "range", "id": "gap_height", "label": "Espacio entre las fotos y el texto", "min": 40, "max": 400, "step": 10, "unit": "px", "default": 220 },
+    { "type": "header", "content": "Texto" },
+    { "type": "text", "id": "caption", "label": "Texto de arriba del titular", "default": "Tiras blanqueadoras de carbón activado" },
+    { "type": "range", "id": "caption_size", "label": "Tamaño del texto de arriba", "min": 12, "max": 28, "step": 1, "unit": "px", "default": 18 },
+    { "type": "text", "id": "heading", "label": "Titular (parte fija)", "info": "Vacío = no se muestra y la promesa pasa a ser el titular", "default": "Chau manchas de" },
+    { "type": "text", "id": "words", "label": "Palabras que cambian", "info": "Separadas por coma", "default": "mate, café, pucho, té" },
+    { "type": "color", "id": "word_color", "label": "Color de la palabra que cambia", "default": "#5F5E5A" },
+    { "type": "range", "id": "rotate_speed", "label": "Cada cuánto cambia", "min": 15, "max": 50, "step": 5, "unit": "ds", "default": 20 },
+    {
+      "type": "select", "id": "heading_size", "label": "Tamaño del titular", "default": "h1",
+      "options": [{ "value": "h2", "label": "Chico" }, { "value": "h1", "label": "Mediano" }, { "value": "h0", "label": "Grande" }]
+    },
+    { "type": "header", "content": "Promesa" },
+    { "type": "text", "id": "promise", "label": "Promesa", "default": "Dientes más blancos en" },
+    { "type": "text", "id": "promise_highlight", "label": "Parte destacada", "default": "7 días" },
+    { "type": "color", "id": "promise_color", "label": "Color del resaltado", "default": "#9FE1CB" },
+    { "type": "header", "content": "Píldora" },
+    { "type": "text", "id": "pill_1", "label": "Ítem 1", "default": "7 días" },
+    { "type": "text", "id": "pill_1_icon", "label": "Ícono 1", "default": "calendar_month" },
+    { "type": "text", "id": "pill_2", "label": "Ítem 2", "default": "30 min" },
+    { "type": "text", "id": "pill_2_icon", "label": "Ícono 2", "default": "timer" },
+    { "type": "text", "id": "pill_3", "label": "Ítem 3", "default": "Garantía" },
+    { "type": "text", "id": "pill_3_icon", "label": "Ícono 3", "default": "verified_user" },
+    { "type": "header", "content": "Botón" },
+    { "type": "text", "id": "button_label", "label": "Texto del botón", "default": "Quiero blanquear mis dientes" },
+    { "type": "text", "id": "note", "label": "Nota debajo del botón" },
+    { "type": "range", "id": "padding_top", "label": "Margen arriba", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "label": "Margen abajo", "min": 0, "max": 80, "step": 4, "unit": "px", "default": 40 }
+  ],
+  "presets": [{ "name": "Hero con palabra que rota" }]
+}
+{% endschema %}

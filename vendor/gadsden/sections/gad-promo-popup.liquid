@@ -1,0 +1,598 @@
+
+{%- assign s = section.settings -%}
+{%- if s.mode != 'disabled' -%}
+  {%- render 'gad-colors', s: s, key: section.id -%}
+  <gad-promo-popup
+    data-mode="{{ s.mode }}"
+    data-seconds="{{ s.delay_seconds }}"
+    data-days="{{ s.delay_days }}"
+    {% if request.design_mode %}
+      data-design
+    {% endif %}
+  >
+    <dialog class="gad-promo {% render 'gad-scheme', s: s, key: section.id %}{% if s.image != blank %} gad-promo--image gad-promo--{{ s.layout }}{% endif %}" aria-labelledby="GadPromoTitle-{{ section.id }}"{% if s.title_scale != blank and s.title_scale != '100' %} data-gad-hs="{{ s.title_scale }}"{% endif %}{% if s.text_scale != blank and s.text_scale != '100' %} data-gad-ts="{{ s.text_scale }}"{% endif %}>
+      <button type="button" class="gad-promo__close" data-gad-promo-close aria-label="{{ 'accessibility.close' | t }}">
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+      {%- if s.image != blank -%}
+        <div class="gad-promo__media" data-gad-promo-media>
+          {{ s.image | image_url: width: 900 | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 750px) 400px, 100vw', widths: '400, 600, 900' }}
+        </div>
+      {%- endif -%}
+      <div class="gad-promo__body" data-gad-promo-offer>
+        {%- if s.prefix != blank -%}<p class="gad-promo__pre">{{ s.prefix | escape }}</p>{%- endif -%}
+        <p id="GadPromoTitle-{{ section.id }}" class="gad-promo__title gad-hl {{ s.heading_size }}"{% if s.heading_accent != blank %} style="--gad-hl: {{ s.heading_accent }};"{% endif %}>{{ s.heading }}</p>
+        {%- if s.suffix != blank -%}<p class="gad-promo__pre">{{ s.suffix | escape }}</p>{%- endif -%}
+        {%- if s.text != blank -%}<div class="rte">{{ s.text }}</div>{%- endif -%}
+        {%- if s.timer -%}
+          <p class="gad-promo__timer" data-gad-promo-timer data-seconds="{{ s.timer_minutes | times: 60 }}">
+            {{- s.timer_label | escape }} <strong data-gad-promo-time>{{ s.timer_minutes }}:00</strong>
+          </p>
+        {%- endif -%}
+        {%- if s.email_form -%}
+          {%- form 'customer', class: 'gad-promo__form', id: 'GadPromoForm' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter,popup">
+            <div class="field">
+              <input class="field__input" type="email" name="contact[email]" id="GadPromoEmail-{{ section.id }}" placeholder="{{ s.email_placeholder | escape }}" autocomplete="email" required>
+              <label class="field__label" for="GadPromoEmail-{{ section.id }}">{{ s.email_placeholder | escape }}</label>
+            </div>
+            <button type="submit" class="button button--full-width">{{ s.button_label | escape }}</button>
+          {%- endform -%}
+        {%- elsif s.button_label != blank and s.button_link != blank -%}
+          <a href="{{ s.button_link }}" class="button button--full-width">{{ s.button_label | escape }}</a>
+        {%- endif -%}
+        {%- if s.dismiss_label != blank -%}
+          <button type="button" class="gad-promo__dismiss link" data-gad-promo-close>{{ s.dismiss_label | escape }}</button>
+        {%- endif -%}
+      </div>
+      <div class="gad-promo__body" data-gad-promo-success hidden>
+        {%- if s.success_prefix != blank -%}<p class="gad-promo__pre">{{ s.success_prefix | escape }}</p>{%- endif -%}
+        <p class="gad-promo__title gad-hl {{ s.heading_size }}"{% if s.heading_accent != blank %} style="--gad-hl: {{ s.heading_accent }};"{% endif %}>{{ s.success_heading }}</p>
+        {%- if s.success_text != blank -%}<div class="rte">{{ s.success_text }}</div>{%- endif -%}
+        {%- if s.code != blank -%}
+          <div class="gad-promo__code">
+            {%- if s.code_label != blank -%}<span>{{ s.code_label | escape }}</span>{%- endif -%}
+            <gad-copy class="gad-ann__coupon gad-promo__coupon" data-code="{{ s.code | escape }}" data-copied="{{ s.copied | escape }}">
+              <span class="gad-ann__code">{{ s.code | escape }}</span>
+              <button type="button" class="gad-ann__copy"><span data-gad-copy-label>{{ s.copy_label | escape }}</span></button>
+              <span class="visually-hidden" role="status" data-gad-copy-status></span>
+            </gad-copy>
+          </div>
+        {%- endif -%}
+        <button type="button" class="gad-promo__dismiss link" data-gad-promo-close>{{ s.success_close | escape }}</button>
+      </div>
+    </dialog>
+  </gad-promo-popup>
+{%- endif -%}
+
+{% stylesheet %}
+  .gad-promo {
+    width: min(56rem, calc(100vw - 3rem));
+    max-height: calc(100vh - 4rem);
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--popup-corner-radius, 0);
+    box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.3);
+  }
+
+  .gad-promo[open] {
+    display: grid;
+  }
+
+  .gad-promo::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .gad-promo--image[open] {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gad-promo--image_second .gad-promo__media {
+    order: 2;
+  }
+
+  .gad-promo__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gad-promo__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.2rem;
+    padding: 3.2rem 2.4rem 2.4rem;
+    text-align: center;
+  }
+
+  .gad-promo__body[hidden] {
+    display: none;
+  }
+
+  .gad-promo__pre,
+  .gad-promo__title {
+    margin: 0;
+  }
+
+  .gad-promo__pre {
+    opacity: 0.85;
+    font-weight: var(--font-body-weight-bold, 700);
+  }
+
+  .gad-promo__timer {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+
+  .gad-promo__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .gad-promo__form .field {
+    margin: 0;
+  }
+
+  .gad-promo__dismiss {
+    align-self: center;
+    padding: 0.4rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 1.3rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .gad-promo__code {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  .gad-promo__coupon {
+    font-size: 1.6rem;
+  }
+
+  .gad-promo__close {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .gad-promo__close svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .gad-promo--image[open] {
+      grid-template-columns: 1fr;
+    }
+
+    .gad-promo__media {
+      max-height: 18rem;
+      overflow: hidden;
+    }
+
+    .gad-promo--image_second .gad-promo__media {
+      order: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Popup promocional",
+  "settings": [
+    {
+      "type": "select",
+      "id": "mode",
+      "label": "Modo",
+      "options": [
+        {
+          "value": "disabled",
+          "label": "Desactivado"
+        },
+        {
+          "value": "testing",
+          "label": "Prueba (se abre siempre)"
+        },
+        {
+          "value": "success_testing",
+          "label": "Prueba del estado de éxito"
+        },
+        {
+          "value": "enabled",
+          "label": "Activado"
+        }
+      ],
+      "default": "disabled",
+      "info": "Activado: se abre a los segundos indicados y, si lo cierran, no vuelve por los días indicados. En el editor sólo se abre en los modos de prueba."
+    },
+    {
+      "type": "range",
+      "id": "delay_seconds",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "label": "Abrir después de",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "delay_days",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "label": "No volver a mostrar por (días)",
+      "default": 30
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Ubicación de la imagen",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "A la izquierda"
+        },
+        {
+          "value": "image_second",
+          "label": "A la derecha"
+        }
+      ],
+      "default": "image_first",
+      "info": "En mobile va arriba."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Oferta"
+    },
+    {
+      "type": "text",
+      "id": "prefix",
+      "label": "Texto antes del título",
+      "default": "Suscribite y"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "llevate un <strong>10 % off</strong>"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h3",
+          "label": "Chico"
+        },
+        {
+          "value": "h2",
+          "label": "Mediano"
+        },
+        {
+          "value": "h1",
+          "label": "Grande"
+        },
+        {
+          "value": "h0",
+          "label": "Muy grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas"
+    },
+    {
+      "type": "text",
+      "id": "suffix",
+      "label": "Texto después del título"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "checkbox",
+      "id": "timer",
+      "label": "Cuenta regresiva",
+      "default": true,
+      "info": "Es sólo un aviso: no vence nada."
+    },
+    {
+      "type": "text",
+      "id": "timer_label",
+      "label": "Texto de la cuenta",
+      "default": "La oferta termina en"
+    },
+    {
+      "type": "range",
+      "id": "timer_minutes",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "min",
+      "label": "Minutos",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "email_form",
+      "label": "Formulario de suscripción",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Texto del campo",
+      "default": "Tu email"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "default": "Quiero el descuento"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Enlace del botón",
+      "info": "Sólo sin formulario."
+    },
+    {
+      "type": "text",
+      "id": "dismiss_label",
+      "label": "Texto para cerrar",
+      "default": "No, gracias"
+    },
+    {
+      "type": "header",
+      "content": "Éxito (después de suscribirse)"
+    },
+    {
+      "type": "text",
+      "id": "success_prefix",
+      "label": "Texto antes del título",
+      "default": "Listo:"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "success_heading",
+      "label": "Título",
+      "default": "tu <strong>descuento</strong>"
+    },
+    {
+      "type": "richtext",
+      "id": "success_text",
+      "label": "Texto",
+      "default": "<p>Usá el código al pagar.</p>"
+    },
+    {
+      "type": "text",
+      "id": "code",
+      "label": "Código de descuento",
+      "info": "Tiene que existir en Shopify (Descuentos)."
+    },
+    {
+      "type": "text",
+      "id": "code_label",
+      "label": "Etiqueta del código",
+      "default": "Código:"
+    },
+    {
+      "type": "text",
+      "id": "copy_label",
+      "label": "Botón para copiar",
+      "default": "Copiar"
+    },
+    {
+      "type": "text",
+      "id": "copied",
+      "label": "Mensaje al copiar",
+      "default": "¡Copiado!"
+    },
+    {
+      "type": "text",
+      "id": "success_close",
+      "label": "Texto para cerrar",
+      "default": "Seguir comprando"
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ]
+}
+{% endschema %}

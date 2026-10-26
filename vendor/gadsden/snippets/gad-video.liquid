@@ -1,0 +1,56 @@
+
+{%- if video != blank -%}
+  {%- liquid
+    assign poster_w = width | default: 1500
+    assign poster_size = poster_w | append: 'x'
+    assign poster_url = ''
+    if poster != blank
+      assign poster_url = poster | image_url: width: poster_w
+    endif
+    assign show_tap = tap
+    if autoplay != true
+      assign show_tap = true
+    endif
+  -%}
+  <gad-video
+    class="gad-video{% if cover %} gad-video--cover{% endif %}{% if show_tap %} gad-video--tap{% endif %}"
+    data-autoplay="{% if autoplay %}true{% else %}false{% endif %}"
+    {% if timeline_color != blank %}
+      style="--gad-timeline: {{ timeline_color.red }},{{ timeline_color.green }},{{ timeline_color.blue }};"
+    {% endif %}
+  >
+    {%- if poster_url != '' -%}
+      {{ video | video_tag: image_size: poster_size, poster: poster_url, loop: loop, muted: true, playsinline: true, controls: false, preload: 'none', class: 'gad-video__el' }}
+    {%- else -%}
+      {{ video | video_tag: image_size: poster_size, loop: loop, muted: true, playsinline: true, controls: false, preload: 'none', class: 'gad-video__el' }}
+    {%- endif -%}
+    {%- if show_tap -%}
+      <button
+        type="button"
+        class="gad-video__play color-{{ button_scheme | default: 'scheme-1' }}{% if pulse %} gad-video__play--pulse{% endif %}"
+        aria-label="{{ 'gadsden.video.play' | t }}"
+        data-label-play="{{ 'gadsden.video.play' | t }}"
+        data-label-pause="{{ 'gadsden.video.pause' | t }}"
+      >
+        {%- render 'gad-icon', name: 'play_arrow', filled: true, class: 'gad-video__icon-play' -%}
+        {%- render 'gad-icon', name: 'pause', filled: true, class: 'gad-video__icon-pause' -%}
+      </button>
+    {%- endif -%}
+    {%- if sound -%}
+      <button
+        type="button"
+        class="gad-video__sound color-{{ sound_scheme | default: 'scheme-1' }}"
+        aria-label="{{ 'gadsden.video.unmute' | t }}"
+        aria-pressed="false"
+        data-label-mute="{{ 'gadsden.video.mute' | t }}"
+        data-label-unmute="{{ 'gadsden.video.unmute' | t }}"
+      >
+        {%- render 'gad-icon', name: 'volume_off', filled: true, class: 'gad-video__icon-muted' -%}
+        {%- render 'gad-icon', name: 'volume_up', filled: true, class: 'gad-video__icon-sound' -%}
+      </button>
+    {%- endif -%}
+    {%- if timeline -%}
+      <div class="gad-video__timeline" aria-hidden="true"><span></span></div>
+    {%- endif -%}
+  </gad-video>
+{%- endif -%}

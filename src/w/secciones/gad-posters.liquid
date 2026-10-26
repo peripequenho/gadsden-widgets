@@ -1,0 +1,461 @@
+{%- comment -%}
+  Pósters con texto: tarjetas con una imagen de fondo y el rótulo encima (palabra, línea y filas NOMBRE|DATO); carrusel en celular, una fila en escritorio; una lista desplegable y un sello que entra de golpe.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- if section.settings.letra_titulos != blank and section.settings.letra_titulos.family != settings.type_header_font.family and section.settings.letra_titulos.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_titulos | font_face: font_display: 'swap' }}</style>{%- endif -%}
+{%- if section.settings.letra_texto != blank and section.settings.letra_texto.family != settings.type_header_font.family and section.settings.letra_texto.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_texto | font_face: font_display: 'swap' }}</style>{%- endif -%}
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+-%}
+
+{%- if section.settings.letra_titulos != blank or section.settings.letra_texto != blank -%}<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">{%- endif -%}
+
+<style>
+  
+  #ax-ing-{{ uid }}{
+    --tinta:rgb(var(--r-fondo));--papel:rgb(var(--r-texto));--papel-2:rgb(var(--r-texto_2));--lima:rgb(var(--r-acento));--lima-honda:rgb(var(--r-acento_hondo));
+    --impacto:var(--r-letra_titulos);
+    --texto:var(--r-letra_texto);
+    background:var(--tinta);color:var(--papel);font-family:var(--texto);
+    padding:44px 0 40px;border-bottom:4px solid var(--lima);
+    background-image:radial-gradient(rgba(var(--r-acento),.10) 1.5px,transparent 1.6px);
+    background-size:15px 15px;
+  }
+  #ax-ing-{{ uid }} h1,#ax-ing-{{ uid }} h2,#ax-ing-{{ uid }} h3{color:inherit}
+  #ax-ing-{{ uid }} .ax-pad{padding:0 20px;max-width:1100px;margin:0 auto}
+
+  #ax-ing-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--lima);display:block;width:max-content;
+    max-width:100%;margin:0 0 14px}
+  #ax-ing-{{ uid }} h2{margin:0 0 12px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(25px,7.2vw,34px);line-height:1.02;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block}
+  #ax-ing-{{ uid }} h2 span{display:inline-block}
+  #ax-ing-{{ uid }} h2 em{font-style:normal;color:var(--lima)}
+  #ax-ing-{{ uid }} .ax-lead{font-size:16.5px;line-height:1.5;max-width:56ch;margin:0;opacity:.9}
+
+  
+  #ax-ing-{{ uid }} .ax-eqs{display:flex;gap:12px;margin:24px 0 0;padding:0 20px 4px;
+    overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;align-items:stretch;list-style:none}
+  #ax-ing-{{ uid }} .ax-eqs::-webkit-scrollbar{display:none}
+  #ax-ing-{{ uid }} .ax-eqs:focus-visible{outline:3px solid var(--lima-honda);outline-offset:-3px}
+  #ax-ing-{{ uid }} .ax-eq{flex:0 0 78%;scroll-snap-align:center;position:relative;
+    aspect-ratio:4/5;border:3px solid rgba(var(--r-texto),.25);overflow:hidden;
+    display:flex;align-items:flex-end;background:rgb(var(--r-tarjeta))}
+  #ax-ing-{{ uid }} .ax-fondo{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block}
+  
+  #ax-ing-{{ uid }} .ax-fondo-ph{position:absolute;inset:0;
+    background-image:radial-gradient(rgba(var(--r-acento),.2) 1.6px,transparent 1.7px);
+    background-size:13px 13px}
+  
+  #ax-ing-{{ uid }} .ax-eq:after{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(var(--r-tarjeta),0) 30%,rgba(var(--r-tarjeta),.55) 62%,rgba(var(--r-tarjeta),.92) 100%)}
+  #ax-ing-{{ uid }} .ax-rotulo{position:relative;z-index:2;padding:0 14px 14px;width:100%}
+  #ax-ing-{{ uid }} .ax-rotulo b{font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(24px,7vw,30px);line-height:.95;letter-spacing:-.01em;
+    color:var(--lima);transform:skewX(-9deg);display:inline-block;
+    text-shadow:0 1px 10px rgba(var(--r-tarjeta),.6)}
+  #ax-ing-{{ uid }} .ax-rotulo p{margin:5px 0 9px;font-size:16px;line-height:1.35;opacity:.92;max-width:40ch}
+  
+  #ax-ing-{{ uid }} .ax-pills{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+  #ax-ing-{{ uid }} .ax-pills li{border:2px solid rgba(var(--r-texto),.28);
+    background:rgba(var(--r-tarjeta),.55);padding:5px 8px;
+    font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.25;
+    display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+    overflow-wrap:anywhere}
+  #ax-ing-{{ uid }} .ax-pills i{font-style:normal;font-family:var(--impacto);
+    color:var(--lima);font-size:11.5px;white-space:nowrap;flex:none}
+
+  
+  #ax-ing-{{ uid }} .ax-dots{display:flex;gap:0;justify-content:center;margin:4px 0 0}
+  #ax-ing-{{ uid }} .ax-dots button{width:44px;height:44px;padding:0;border:0;background:none;
+    cursor:pointer;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+  #ax-ing-{{ uid }} .ax-dots button:before{content:"";width:7px;height:7px;background:var(--papel);
+    opacity:.3;transition:opacity .18s ease,transform .18s ease}
+  #ax-ing-{{ uid }} .ax-dots button[aria-current="true"]:before{opacity:.95;transform:scale(1.45)}
+  #ax-ing-{{ uid }} .ax-dots button:focus-visible{outline:3px solid var(--lima-honda);outline-offset:-8px}
+
+  
+  #ax-ing-{{ uid }} details{margin:18px 20px 0;border:3px solid rgba(var(--r-texto),.26)}
+  #ax-ing-{{ uid }} summary{list-style:none;cursor:pointer;min-height:44px;
+    display:flex;align-items:center;gap:10px;padding:13px 46px 13px 15px;
+    font-family:var(--impacto);text-transform:uppercase;font-size:13.5px;
+    letter-spacing:.08em;position:relative}
+  #ax-ing-{{ uid }} summary::-webkit-details-marker{display:none}
+  #ax-ing-{{ uid }} summary:before,#ax-ing-{{ uid }} summary:after{content:"";position:absolute;
+    right:16px;top:50%;background:var(--lima);transition:transform .16s ease}
+  #ax-ing-{{ uid }} summary:before{width:15px;height:3px;transform:translateY(-50%)}
+  #ax-ing-{{ uid }} summary:after{width:3px;height:15px;right:22px;transform:translateY(-50%)}
+  #ax-ing-{{ uid }} details[open] summary:after{transform:translateY(-50%) scaleY(0)}
+  #ax-ing-{{ uid }} .ax-lista{margin:0;padding:4px 15px 14px;list-style:none;columns:1;column-gap:26px}
+  #ax-ing-{{ uid }} .ax-lista li{display:flex;align-items:baseline;gap:9px;
+    padding:5px 0;font-size:16px;letter-spacing:.03em;text-transform:uppercase;
+    break-inside:avoid;border-bottom:1px solid rgba(var(--r-texto),.12)}
+  #ax-ing-{{ uid }} .ax-lista li:last-child{border-bottom:0}
+  #ax-ing-{{ uid }} .ax-lista .n{font-family:var(--impacto);font-size:10.5px;
+    color:var(--lima);opacity:.75;min-width:2.2ch;text-align:right;flex:none}
+  #ax-ing-{{ uid }} .ax-nota-lista{margin:0;padding:0 15px 14px;font-size:15.5px;
+    line-height:1.45;opacity:.6;max-width:60ch}
+
+  
+  #ax-ing-{{ uid }} .ax-sello{margin:18px 20px 0;background:var(--lima);color:rgb(var(--r-sello_texto));
+    font-family:var(--impacto);text-transform:uppercase;font-size:clamp(16px,4.2vw,18px);
+    line-height:1.3;padding:12px 14px;display:flex;align-items:center;
+    justify-content:space-between;gap:12px;flex-wrap:wrap}
+  #ax-ing-{{ uid }} .ax-sello span{white-space:nowrap}
+  #ax-ing-{{ uid }}.ax-armado .ax-sello{opacity:0;transform:scale(1.18)}
+  #ax-ing-{{ uid }}.ax-armado .ax-sello.ax-va{opacity:1;transform:scale(1);
+    transition:transform .3s cubic-bezier(.2,1.7,.4,1),opacity .1s linear}
+
+  
+
+  
+  @media(min-width:900px){
+    #ax-ing-{{ uid }}{padding:74px 0}
+    #ax-ing-{{ uid }} .ax-pad{padding:0 28px}
+    #ax-ing-{{ uid }} .ax-eye{font-size:10.5px;letter-spacing:.19em;margin-bottom:18px}
+    #ax-ing-{{ uid }} h2{font-size:clamp(34px,4.3vw,48px);margin-bottom:14px}
+    #ax-ing-{{ uid }} .ax-lead{font-size:18px;line-height:1.55}
+    #ax-ing-{{ uid }} .ax-eqs{display:grid;grid-template-columns:repeat(6,1fr);
+      gap:14px;overflow:visible;max-width:1100px;margin:34px auto 0;padding:0 28px}
+    #ax-ing-{{ uid }} .ax-eq{flex:none;aspect-ratio:auto;height:440px}
+    #ax-ing-{{ uid }} .ax-eq:first-child{grid-column:span 2}
+    #ax-ing-{{ uid }} .ax-rotulo{padding:0 14px 14px}
+    
+    #ax-ing-{{ uid }} .ax-rotulo b{font-size:20px}
+    #ax-ing-{{ uid }} .ax-eq:first-child .ax-rotulo b{font-size:clamp(26px,2.4vw,32px)}
+    #ax-ing-{{ uid }} .ax-eq:first-child .ax-rotulo{padding:0 16px 16px}
+    #ax-ing-{{ uid }} .ax-rotulo p{font-size:15px;line-height:1.3}
+    #ax-ing-{{ uid }} .ax-dots{display:none}
+    #ax-ing-{{ uid }} details{max-width:1044px;margin:26px auto 0}
+    #ax-ing-{{ uid }} summary{font-size:14.5px;padding:15px 50px 15px 18px}
+    #ax-ing-{{ uid }} .ax-lista{columns:2;padding:6px 18px 16px}
+    #ax-ing-{{ uid }} .ax-nota-lista{padding:0 18px 16px}
+    #ax-ing-{{ uid }} .ax-sello{max-width:1044px;margin:24px auto 0;font-size:19px;padding:16px 20px}
+  }
+</style>
+
+<div id="ax-ing-{{ uid }}" style="--r-fondo: {%- render 'gad-rol', c: section.settings.color_fondo, d: 'var(--color-background)' -%}; --r-texto: {%- render 'gad-rol', c: section.settings.color_texto, d: 'var(--color-foreground)' -%}; --r-texto_2: {%- render 'gad-rol', c: section.settings.color_texto_2, d: 'var(--color-foreground)' -%}; --r-acento: {%- render 'gad-rol', c: section.settings.color_acento, d: 'var(--color-button)' -%}; --r-acento_hondo: {%- render 'gad-rol', c: section.settings.color_acento_hondo, d: 'var(--color-button)' -%}; --r-sello_texto: {%- render 'gad-rol', c: section.settings.color_sello_texto, d: 'var(--color-button-text)' -%}; --r-tarjeta: {%- render 'gad-rol', c: section.settings.color_tarjeta, d: 'var(--color-background)' -%}; --r-letra_titulos: {% if section.settings.letra_titulos != blank %}'{{ section.settings.letra_titulos.family }}','Arial Black',Haettenschweiler,Impact,sans-serif{% else %}var(--font-heading-family){% endif %}; --r-letra_texto: {% if section.settings.letra_texto != blank %}'{{ section.settings.letra_texto.family }}','Barlow','Segoe UI Semibold','Segoe UI',Arial,sans-serif{% else %}var(--font-body-family){% endif %};">
+  <div class="ax-pad">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="ax-eye">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.heading != blank -%}
+      <h2><span>{{ section.settings.heading }}</span></h2>
+    {%- endif -%}
+
+    {%- if section.settings.lead != blank -%}
+      <p class="ax-lead">{{ section.settings.lead }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <ul class="ax-eqs" tabindex="0" role="group" aria-label="Pósters, deslizá para ver más">
+      {%- for block in section.blocks -%}
+        <li class="ax-eq" {{ block.shopify_attributes }}>
+          {%- if block.settings.imagen != blank -%}
+            <img class="ax-fondo" src="{{ block.settings.imagen | image_url: width: 900 }}"
+                 alt="{{ block.settings.imagen.alt | default: block.settings.palabra | escape }}"
+                 width="{{ block.settings.imagen.width }}" height="{{ block.settings.imagen.height }}"
+                 loading="lazy">
+          {%- else -%}
+            <span class="ax-fondo-ph" aria-hidden="true"></span>
+          {%- endif -%}
+          <div class="ax-rotulo">
+            {%- if block.settings.palabra != blank -%}<b>{{ block.settings.palabra }}</b>{%- endif -%}
+            {%- if block.settings.linea != blank -%}<p>{{ block.settings.linea }}</p>{%- endif -%}
+            {%- if block.settings.ingredientes != blank -%}
+              <ul class="ax-pills">
+                {%- assign filas = block.settings.ingredientes | newline_to_br | split: '<br />' -%}
+                {%- for fila in filas -%}
+                  {%- assign fila = fila | strip -%}
+                  {%- if fila != blank -%}
+                    {%- assign partes = fila | split: '|' -%}
+                    <li>{{ partes[0] | strip }}{% if partes[1] %} <i>{{ partes[1] | strip }}</i>{% endif %}</li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="ax-dots">
+      {%- for block in section.blocks -%}
+        <button type="button" aria-label="Ir al póster {{ forloop.index }} de {{ section.blocks.size }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.lista != blank -%}
+    <details>
+      <summary>{{ section.settings.lista_titulo }}</summary>
+      <ol class="ax-lista">
+        {%- assign items = section.settings.lista | newline_to_br | split: '<br />' -%}
+        {%- for it in items -%}
+          {%- assign it = it | strip -%}
+          {%- if it != blank -%}
+            <li><span class="n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>{{ it }}</li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ol>
+      {%- if section.settings.lista_nota != blank -%}
+        <p class="ax-nota-lista">{{ section.settings.lista_nota }}</p>
+      {%- endif -%}
+    </details>
+  {%- endif -%}
+
+  {%- if section.settings.sello != blank -%}
+    <p class="ax-sello"><span>{{ section.settings.sello }}</span><span>{{ section.settings.sello_dato }}</span></p>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    var caja = document.getElementById('ax-ing-{{ uid }}');
+    if (!caja || caja.dataset.axListo) return;
+    caja.dataset.axListo = '1';
+
+    var hayIO = 'IntersectionObserver' in window;
+
+    
+    var pista = caja.querySelector('.ax-eqs');
+    var eqs = [].slice.call(caja.querySelectorAll('.ax-eq'));
+    var dots = [].slice.call(caja.querySelectorAll('.ax-dots button'));
+    if (pista && eqs.length && dots.length === eqs.length) {
+      dots.forEach(function (d, i) {
+        d.addEventListener('click', function () {
+          eqs[i].scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest', inline: 'center',
+          });
+        });
+      });
+      if (hayIO) {
+        var ojo = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            var i = eqs.indexOf(e.target);
+            dots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+          });
+        }, { root: pista, threshold: 0.6 });
+        eqs.forEach(function (x) { ojo.observe(x); });
+      }
+    }
+
+    
+    if (!hayIO) return;
+    var sello = caja.querySelector('.ax-sello');
+    if (!sello) return;
+    caja.classList.add('ax-armado');
+    var ojo2 = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('ax-va'); ojo2.unobserve(e.target); }
+      });
+    }, { threshold: 0.6 });
+    ojo2.observe(sello);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Pósters con texto",
+  "tag": "section",
+  "class": "gad-posters-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Bajada (eyebrow)",
+      "default": "Tu volanta"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título (la cursiva va en el color de acento)",
+      "default": "Tu título, <em>resaltado</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Bajada",
+      "default": "Una bajada corta que presente los pósters."
+    },
+    {
+      "type": "header",
+      "content": "Lista completa (desplegable)"
+    },
+    {
+      "type": "text",
+      "id": "lista_titulo",
+      "label": "Título del desplegable",
+      "default": "La lista completa"
+    },
+    {
+      "type": "textarea",
+      "id": "lista",
+      "label": "Un elemento por línea",
+      "info": "Vacío: sin desplegable."
+    },
+    {
+      "type": "text",
+      "id": "lista_nota",
+      "label": "Nota al pie de la lista",
+      "default": "Una nota al pie de la lista."
+    },
+    {
+      "type": "header",
+      "content": "Sello de cierre"
+    },
+    {
+      "type": "text",
+      "id": "sello",
+      "label": "Texto del sello",
+      "default": "Tu sello"
+    },
+    {
+      "type": "text",
+      "id": "sello_dato",
+      "label": "Dato del sello",
+      "default": "Un dato"
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "color_texto",
+      "label": "Texto"
+    },
+    {
+      "type": "color",
+      "id": "color_texto_2",
+      "label": "Texto secundario"
+    },
+    {
+      "type": "color",
+      "id": "color_acento",
+      "label": "Acento (cursiva del título, palabras, sello)"
+    },
+    {
+      "type": "color",
+      "id": "color_acento_hondo",
+      "label": "Contorno de foco"
+    },
+    {
+      "type": "color",
+      "id": "color_sello_texto",
+      "label": "Texto del sello"
+    },
+    {
+      "type": "color",
+      "id": "color_tarjeta",
+      "label": "Fondo de las tarjetas y su degradado"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_titulos",
+      "label": "Letra de los títulos"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_texto",
+      "label": "Letra del texto"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "equipo",
+      "name": "Póster",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "imagen",
+          "label": "Imagen de fondo",
+          "info": "Sin imagen se muestra una trama de puntos."
+        },
+        {
+          "type": "text",
+          "id": "palabra",
+          "label": "Palabra grande",
+          "default": "Título"
+        },
+        {
+          "type": "text",
+          "id": "linea",
+          "label": "Línea corta",
+          "default": "Una línea corta."
+        },
+        {
+          "type": "textarea",
+          "id": "ingredientes",
+          "label": "Filas (una por línea, NOMBRE|DATO)",
+          "info": "El dato es opcional: NOMBRE solo también vale."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Pósters con texto",
+      "blocks": [
+        {
+          "type": "equipo",
+          "settings": {
+            "palabra": "PRIMERO",
+            "linea": "Una línea corta sobre este punto.",
+            "ingredientes": "DETALLE|DATO\nDETALLE|DATO"
+          }
+        },
+        {
+          "type": "equipo",
+          "settings": {
+            "palabra": "SEGUNDO",
+            "linea": "Una línea corta sobre este punto.",
+            "ingredientes": "DETALLE|DATO\nDETALLE|DATO"
+          }
+        },
+        {
+          "type": "equipo",
+          "settings": {
+            "palabra": "TERCERO",
+            "linea": "Una línea corta sobre este punto.",
+            "ingredientes": "DETALLE|DATO\nDETALLE|DATO\nDETALLE|DATO\nDETALLE|DATO"
+          }
+        },
+        {
+          "type": "equipo",
+          "settings": {
+            "palabra": "CUARTO",
+            "linea": "Una línea corta sobre este punto.",
+            "ingredientes": "DETALLE|DATO\nDETALLE|DATO\nDETALLE|DATO\nDETALLE|DATO"
+          }
+        },
+        {
+          "type": "equipo",
+          "settings": {
+            "palabra": "QUINTO",
+            "linea": "Una línea corta sobre este punto.",
+            "ingredientes": "DETALLE|DATO\nDETALLE|DATO\nDETALLE|DATO"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

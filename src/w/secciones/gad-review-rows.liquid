@@ -1,0 +1,353 @@
+{%- comment -%}
+  Filas de reseñas: la nota con avatares que entran y dos filas de tarjetas de reseñas que corren en sentidos opuestos.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+{%- assign colores = 'ct-av--carbon,ct-av--menta,ct-av--ceniza,ct-av--niebla' | split: ',' -%}
+
+<style>
+  #ct-res-{{ section.id }} {
+    --ct-carbon: rgb(var(--r-oscuro)); --ct-menta: rgb(var(--r-avatar2)); --ct-fondo: {{ s.background | default: 'rgb(var(--color-background))' }};
+    --ct-dur: {{ s.speed }}s; --ct-gap: 12px; --ct-av: {{ s.avatar_size }}px;
+    background: var(--ct-fondo); color: {{ s.text_color | default: 'rgb(var(--color-foreground))' }};
+    padding: {{ s.padding_top }}px 0 {{ s.padding_bottom }}px;
+  }
+  #ct-res-{{ section.id }} .ct-res__cab {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    max-width: 560px; margin: 0 auto 8px; padding: 0 16px;
+  }
+  #ct-res-{{ section.id }} .ct-res__nota { display: flex; flex-direction: column; gap: 2px; }
+  #ct-res-{{ section.id }} .ct-res__num { margin: 0; font-size: 34px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+  #ct-res-{{ section.id }} .ct-res__num small { font-size: 18px; font-weight: 700; opacity: .55; }
+  #ct-res-{{ section.id }} .ct-res__estrellas { display: flex; gap: 2px; color: var(--ct-carbon); }
+  #ct-res-{{ section.id }} .ct-res__estrellas svg { width: 15px; height: 15px; }
+  #ct-res-{{ section.id }} .ct-res__sub { margin: 0; font-size: 12px; opacity: .65; }
+
+  
+  #ct-res-{{ section.id }} .ct-res__grupo { display: flex; align-items: center; flex: none; cursor: pointer; padding: 4px; }
+  #ct-res-{{ section.id }} .ct-av {
+    position: relative; display: grid; place-items: center; width: var(--ct-av); height: var(--ct-av);
+    border-radius: 50%; border: 2px solid var(--ct-fondo); font-size: calc(var(--ct-av) * .36); font-weight: 700;
+    margin-left: calc(var(--ct-av) * -.3); opacity: 0; transform: scale(.4);
+    transition: margin-left .25s cubic-bezier(.34, 1.3, .64, 1), transform .3s cubic-bezier(.34, 1.56, .64, 1), opacity .25s;
+  }
+  #ct-res-{{ section.id }} .ct-av:first-child { margin-left: 0; }
+  #ct-res-{{ section.id }} .ct-av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  #ct-res-{{ section.id }}.is-visible .ct-av { opacity: 1; transform: none; }
+  #ct-res-{{ section.id }} .ct-res__grupo.is-abierto .ct-av { margin-left: 4px; transform: scale(1.05); }
+  #ct-res-{{ section.id }} .ct-res__grupo.is-abierto .ct-av:first-child { margin-left: 0; }
+  #ct-res-{{ section.id }} .ct-av--carbon { background: var(--ct-carbon); color: rgb(var(--r-avatar_texto)); }
+  #ct-res-{{ section.id }} .ct-av--menta { background: var(--ct-menta); color: var(--ct-carbon); }
+  #ct-res-{{ section.id }} .ct-av--ceniza { background: rgb(var(--r-avatar3)); color: rgb(var(--r-avatar_texto)); }
+  #ct-res-{{ section.id }} .ct-av--niebla { background: rgb(var(--r-avatar4)); color: var(--ct-carbon); }
+  #ct-res-{{ section.id }} .ct-av--mas { background: rgb(var(--r-tarjeta)); color: var(--ct-carbon); font-size: calc(var(--ct-av) * .3); box-shadow: inset 0 0 0 1px rgb(var(--r-aro)); }
+  @media (hover: hover) and (pointer: fine) {
+    #ct-res-{{ section.id }} .ct-res__grupo:hover .ct-av { margin-left: 4px; transform: scale(1.05); }
+    #ct-res-{{ section.id }} .ct-res__grupo:hover .ct-av:first-child { margin-left: 0; }
+  }
+
+  
+  #ct-res-{{ section.id }} .ct-res__fila {
+    display: flex; gap: var(--ct-gap); overflow: hidden; padding: 4px 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+  #ct-res-{{ section.id }} .ct-res__tira {
+    display: flex; flex-shrink: 0; gap: var(--ct-gap);
+    animation: ct-marquee-{{ section.id }} var(--ct-dur) linear infinite;
+  }
+  #ct-res-{{ section.id }} .ct-res__fila--rev .ct-res__tira { animation-direction: reverse; }
+  #ct-res-{{ section.id }} .ct-res__fila:hover .ct-res__tira,
+  #ct-res-{{ section.id }} .ct-res__fila.is-pausa .ct-res__tira { animation-play-state: paused; }
+  @keyframes ct-marquee-{{ section.id }} { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--ct-gap))); } }
+
+  #ct-res-{{ section.id }} .ct-res__card {
+    width: 240px; flex: none; box-sizing: border-box; margin: 0; padding: 10px 12px; border-radius: 12px;
+    background: rgb(var(--r-tarjeta)); border: 1px solid rgb(var(--r-borde));
+  }
+  #ct-res-{{ section.id }} .ct-res__quien { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  #ct-res-{{ section.id }} .ct-res__quien .ct-av { --ct-av: 28px; margin: 0; opacity: 1; transform: none; border: 0; }
+  #ct-res-{{ section.id }} .ct-res__nombre { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.15; }
+  #ct-res-{{ section.id }} .ct-res__lugar { margin: 0; font-size: 11px; line-height: 1.2; opacity: .6; }
+  #ct-res-{{ section.id }} .ct-res__card .ct-res__estrellas svg { width: 12px; height: 12px; }
+  #ct-res-{{ section.id }} .ct-res__card .ct-res__estrellas { margin-left: auto; align-self: flex-start; }
+  
+  #ct-res-{{ section.id }} .ct-res__texto {
+    margin: 0; padding: 0; border: 0; font-style: normal; font-size: 13px; line-height: 1.35; color: rgb(var(--r-parrafo));
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ct-res-{{ section.id }} .ct-av { transition: opacity .3s; transform: none; }
+    #ct-res-{{ section.id }} .ct-res__grupo.is-abierto .ct-av { transform: none; }
+  }
+</style>
+
+{%- capture estrella -%}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>{%- endcapture -%}
+
+<section id="ct-res-{{ section.id }}" class="ct-res" style="--r-oscuro: {%- render 'gad-rol', c: section.settings.color_oscuro, d: 'var(--color-foreground)' -%}; --r-avatar2: {%- render 'gad-rol', c: section.settings.color_avatar2, d: 'var(--color-background-contrast)' -%}; --r-avatar3: {%- render 'gad-rol', c: section.settings.color_avatar3, d: 'var(--color-button)' -%}; --r-avatar4: {%- render 'gad-rol', c: section.settings.color_avatar4, d: 'var(--color-background-contrast)' -%}; --r-avatar_texto: {%- render 'gad-rol', c: section.settings.color_avatar_texto, d: 'var(--color-background)' -%}; --r-tarjeta: {%- render 'gad-rol', c: section.settings.color_tarjeta, d: 'var(--color-background)' -%}; --r-borde: {%- render 'gad-rol', c: section.settings.color_borde, d: 'var(--color-background-contrast)' -%}; --r-aro: {%- render 'gad-rol', c: section.settings.color_aro, d: 'var(--color-background-contrast)' -%}; --r-parrafo: {%- render 'gad-rol', c: section.settings.color_parrafo, d: 'var(--color-foreground)' -%};">
+  <div class="ct-res__cab">
+    <div class="ct-res__nota">
+      <p class="ct-res__num">{{ s.rating }}<small>/5</small></p>
+      <div class="ct-res__estrellas" role="img" aria-label="{{ s.rating }} de 5 estrellas">
+        {%- for i in (1..5) -%}{{ estrella }}{%- endfor -%}
+      </div>
+      {%- if s.subtitle != blank -%}<p class="ct-res__sub">{{ s.subtitle }}</p>{%- endif -%}
+    </div>
+
+    <div class="ct-res__grupo" role="group" aria-label="Clientes" tabindex="0">
+      {%- for b in section.blocks limit: s.max_avatars -%}
+        {%- assign partes = b.settings.name | split: ' ' -%}
+        {%- assign ci = forloop.index0 | modulo: 4 -%}
+        <span class="ct-av {{ colores[ci] }}" style="z-index: {{ 10 | minus: forloop.index }}; transition-delay: {{ forloop.index0 | times: 60 }}ms" title="{{ b.settings.name | escape }}">
+          {%- render 'gad-review-avatar', b: b, i: forloop.index, partes: partes, mockup: s.mockup_faces -%}
+        </span>
+      {%- endfor -%}
+      {%- if s.more_label != blank -%}<span class="ct-av ct-av--mas" style="transition-delay: {{ s.max_avatars | times: 60 }}ms">{{ s.more_label }}</span>{%- endif -%}
+    </div>
+  </div>
+
+  {%- capture tarjetas -%}
+    {%- for b in section.blocks -%}
+      {%- assign partes = b.settings.name | split: ' ' -%}
+      <figure class="ct-res__card" {{ b.shopify_attributes }}>
+        <div class="ct-res__quien">
+          {%- assign ci = forloop.index0 | modulo: 4 -%}
+        <span class="ct-av {{ colores[ci] }}">{%- render 'gad-review-avatar', b: b, i: forloop.index, partes: partes, mockup: s.mockup_faces -%}</span>
+          <div>
+            <p class="ct-res__nombre">{{ b.settings.name }}</p>
+            {%- if b.settings.place != blank -%}<p class="ct-res__lugar">{{ b.settings.place }}</p>{%- endif -%}
+          </div>
+          <div class="ct-res__estrellas" role="img" aria-label="{{ b.settings.stars }} estrellas">
+            {%- for i in (1..b.settings.stars) -%}{{ estrella }}{%- endfor -%}
+          </div>
+        </div>
+        <blockquote class="ct-res__texto">{{ b.settings.text }}</blockquote>
+      </figure>
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- comment -%} fila 1 hacia la izquierda, fila 2 al revés; cada tira se repite para que el loop no corte {%- endcomment -%}
+  {%- for fila in (1..2) -%}
+    <div class="ct-res__fila{% if fila == 2 %} ct-res__fila--rev{% endif %}"{% if fila == 2 %} aria-hidden="true"{% endif %}>
+      {%- for r in (1..2) -%}
+        <div class="ct-res__tira"{% unless fila == 1 and r == 1 %} aria-hidden="true"{% endunless %}{% if fila == 2 %} style="animation-delay: calc(var(--ct-dur) / -2)"{% endif %}>{{ tarjetas }}</div>
+      {%- endfor -%}
+    </div>
+  {%- endfor -%}
+</section>
+
+<script>
+  (() => {
+    const raiz = document.getElementById('ct-res-{{ section.id }}');
+    if (!raiz) return;
+    // avatares: entran escalonados al aparecer; en celular se abren y cierran tocándolos
+    const grupo = raiz.querySelector('.ct-res__grupo');
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { raiz.classList.add('is-visible'); io.disconnect(); } }, { threshold: 0.3 });
+    io.observe(raiz);
+    if (window.Shopify?.designMode) raiz.classList.add('is-visible');
+    const alternar = () => grupo.classList.toggle('is-abierto');
+    grupo.addEventListener('click', alternar);
+    grupo.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternar(); } });
+    // marquee: se pausa mientras se toca
+    raiz.querySelectorAll('.ct-res__fila').forEach((f) => {
+      f.addEventListener('touchstart', () => f.classList.add('is-pausa'), { passive: true });
+      f.addEventListener('touchend', () => f.classList.remove('is-pausa'), { passive: true });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Filas de reseñas",
+  "tag": "div",
+  "class": "section",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "OJO: el contenido actual es DUMMY. Reemplazar por reseñas reales antes de publicar el producto."
+    },
+    {
+      "type": "text",
+      "id": "rating",
+      "label": "Nota",
+      "default": "4,8"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Texto debajo de las estrellas",
+      "default": "según nuestros clientes"
+    },
+    {
+      "type": "range",
+      "id": "max_avatars",
+      "label": "Avatares visibles",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "label": "Último círculo (+N)",
+      "default": "+1k"
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "label": "Tamaño de los avatares",
+      "min": 28,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Segundos por vuelta del carrusel",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "s",
+      "default": 45
+    },
+    {
+      "type": "checkbox",
+      "id": "mockup_faces",
+      "label": "Caras de prueba",
+      "default": false,
+      "info": "Vacío: un dibujo de relleno."
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Color de la sección",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "info": "Vacío: el de la tienda."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Margen arriba",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Margen abajo",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_oscuro",
+      "label": "Color oscuro (estrellas, avatar 1 y letras de los avatares claros)"
+    },
+    {
+      "type": "color",
+      "id": "color_avatar2",
+      "label": "Avatar 2"
+    },
+    {
+      "type": "color",
+      "id": "color_avatar3",
+      "label": "Avatar 3"
+    },
+    {
+      "type": "color",
+      "id": "color_avatar4",
+      "label": "Avatar 4"
+    },
+    {
+      "type": "color",
+      "id": "color_avatar_texto",
+      "label": "Letra de los avatares oscuros"
+    },
+    {
+      "type": "color",
+      "id": "color_tarjeta",
+      "label": "Fondo de las tarjetas y del avatar \"+\""
+    },
+    {
+      "type": "color",
+      "id": "color_borde",
+      "label": "Borde de las tarjetas"
+    },
+    {
+      "type": "color",
+      "id": "color_aro",
+      "label": "Borde del avatar \"+\""
+    },
+    {
+      "type": "color",
+      "id": "color_parrafo",
+      "label": "Texto de las reseñas"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "resena",
+      "name": "Reseña",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre",
+          "default": "Nombre A."
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Foto",
+          "info": "Vacía = iniciales"
+        },
+        {
+          "type": "text",
+          "id": "place",
+          "label": "Lugar"
+        },
+        {
+          "type": "range",
+          "id": "stars",
+          "label": "Estrellas",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Texto"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Filas de reseñas"
+    }
+  ]
+}
+{% endschema %}

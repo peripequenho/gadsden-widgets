@@ -1,0 +1,46 @@
+
+{%- liquid
+  assign mode = ''
+  if product != blank
+    assign mode = 'variant'
+    assign variant = product.selected_or_first_available_variant
+  elsif request.page_type == 'product'
+    assign mode = 'main'
+  endif
+-%}
+{%- if label != blank and mode != '' -%}
+  {%- liquid
+    assign sold_out = false
+    if mode == 'variant'
+      if product.available == false or variant.available == false
+        assign sold_out = true
+      endif
+    endif
+  -%}
+  <div class="gad-atc{% if class %} {{ class }}{% endif %}">
+    <button
+      type="button"
+      class="button gad-atc__btn{% if secondary %} button--secondary{% endif %}"
+      data-gad-atc="{{ mode }}"
+      {% if mode == 'variant' %}
+        data-variant-id="{{ variant.id }}"
+      {% endif %}
+      {% if skip_cart %}
+        data-skip-cart="true"
+      {% endif %}
+      {% if sold_out %}
+        disabled aria-disabled="true"
+      {% endif %}
+    >
+      <span class="gad-atc__label">
+        {%- if sold_out -%}
+          {{- 'products.product.sold_out' | t -}}
+        {%- else -%}
+          {{- label | escape -}}
+        {%- endif -%}
+      </span>
+      {%- render 'loading-spinner' -%}
+    </button>
+    <p class="gad-atc__error" role="alert" hidden></p>
+  </div>
+{%- endif -%}

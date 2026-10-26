@@ -1,0 +1,176 @@
+
+{%- liquid
+  assign b = block.settings
+  assign variant = product.selected_or_first_available_variant
+  assign sold_out = false
+  if variant.available == false
+    assign sold_out = true
+  endif
+  if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny' and variant.quantity_rule.min > variant.inventory_quantity
+    assign sold_out = true
+  endif
+  assign media = variant.featured_media | default: product.featured_media
+  assign label = b.button_label
+  if b.button_label == blank
+    assign label = 'products.product.add_to_cart' | t
+  endif
+  assign price_html = variant.price | money
+  if settings.currency_code_enabled
+    assign price_html = variant.price | money_with_currency
+  endif
+-%}
+<gad-sticky-bar
+  id="GadStickyBar-{{ section.id }}"
+  class="gad-sticky quick-add-hidden color-{{ b.color_scheme }} gradient{% if b.d_transparent %} gad-sticky--d-transparent{% endif %}{% if b.m_transparent %} gad-sticky--m-transparent{% endif %}"
+  data-gad-sticky-bar
+  data-show="{{ b.show_when }}"
+  data-action="{{ b.action }}"
+  data-section="{{ section.id }}"
+  data-form="{{ product_form_id }}"
+  aria-label="{{ 'gadsden.sticky.label' | t }}"
+  role="region"
+  {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+>
+  <div class="gad-sticky__inner page-width" id="GadStickyInner-{{ section.id }}" data-gad-sync>
+    {%- liquid
+      assign cls = ''
+      unless b.d_image
+        assign cls = cls | append: ' gad-sticky--d-no-image'
+      endunless
+      unless b.m_image
+        assign cls = cls | append: ' gad-sticky--m-no-image'
+      endunless
+      unless b.d_title
+        assign cls = cls | append: ' gad-sticky--d-no-title'
+      endunless
+      unless b.m_title
+        assign cls = cls | append: ' gad-sticky--m-no-title'
+      endunless
+      unless b.d_stars
+        assign cls = cls | append: ' gad-sticky--d-no-stars'
+      endunless
+      unless b.m_stars
+        assign cls = cls | append: ' gad-sticky--m-no-stars'
+      endunless
+      unless b.d_price
+        assign cls = cls | append: ' gad-sticky--d-no-price'
+      endunless
+      unless b.m_price
+        assign cls = cls | append: ' gad-sticky--m-no-price'
+      endunless
+      unless b.d_badge
+        assign cls = cls | append: ' gad-sticky--d-no-badge'
+      endunless
+      unless b.m_badge
+        assign cls = cls | append: ' gad-sticky--m-no-badge'
+      endunless
+      unless b.d_variants
+        assign cls = cls | append: ' gad-sticky--d-no-variants'
+      endunless
+      unless b.m_variants
+        assign cls = cls | append: ' gad-sticky--m-no-variants'
+      endunless
+      if b.d_full_button
+        assign cls = cls | append: ' gad-sticky--d-full'
+      endif
+      if b.m_full_button
+        assign cls = cls | append: ' gad-sticky--m-full'
+      endif
+      if b.m_stack
+        assign cls = cls | append: ' gad-sticky--m-stack'
+      endif
+      if b.d_price_in_button
+        assign cls = cls | append: ' gad-sticky--d-btn-price'
+      endif
+      if b.m_price_in_button
+        assign cls = cls | append: ' gad-sticky--m-btn-price'
+      endif
+    -%}
+    <div class="gad-sticky__row{{ cls }}">
+      {%- if media -%}
+        {{ media | image_url: width: 160 | image_tag: class: 'gad-sticky__img', loading: 'lazy', alt: '', width: 80, height: 80 }}
+      {%- endif -%}
+      <div class="gad-sticky__info">
+        <p class="gad-sticky__title">{{ product.title | escape }}</p>
+        {%- if b.stars_text != blank -%}
+          <p class="gad-sticky__stars" style="--star: {{ b.star_color }};">
+            <span class="gad-sticky__stars-icons" aria-hidden="true">
+              {%- for i in (1..5) -%}{%- render 'gad-icon', name: 'star', filled: true -%}{%- endfor -%}
+            </span>
+            <span>{{ b.stars_text }}</span>
+          </p>
+        {%- endif -%}
+        <div class="gad-sticky__price">
+          {%- render 'price', product: product, use_variant: true, show_badges: true, price_class: '' -%}
+        </div>
+      </div>
+
+      {%- unless product.has_only_default_variant -%}
+        <div class="gad-sticky__variants">
+          {%- if b.variant_mode == 'per_option' -%}
+            {%- for option in product.options_with_values -%}
+              <label class="visually-hidden" for="GadStickyOpt-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+              <div class="select gad-sticky__select">
+                <select
+                  id="GadStickyOpt-{{ section.id }}-{{ forloop.index0 }}"
+                  class="select__select"
+                  data-gad-sticky-option="{{ option.position }}"
+                >
+                  {%- for value in option.values -%}
+                    <option value="{{ value | escape }}"{% if value.selected %} selected{% endif %}>
+                      {%- if value.available -%}{{ value }}{%- else -%}{{ 'products.product.value_unavailable' | t: option_value: value }}{%- endif -%}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            <label class="visually-hidden" for="GadStickyVariant-{{ section.id }}">{{ 'gadsden.sticky.variant' | t }}</label>
+            <div class="select gad-sticky__select">
+              <select id="GadStickyVariant-{{ section.id }}" class="select__select" data-gad-sticky-variant>
+                {%- for v in product.variants -%}
+                  <option
+                    value="{{ v.id }}"
+                    data-options="{{ v.options | join: '|||' | escape }}"
+                    {% if v.id == variant.id %}
+                      selected
+                    {% endif %}
+                    {% unless v.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                    {%- if v.available -%}{{ v.title }}{%- else -%}{{ 'products.product.value_unavailable' | t: option_value: v.title }}{%- endif -%}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endunless -%}
+
+      <button
+        type="button"
+        class="button gad-sticky__btn"
+        data-gad-sticky-btn
+        {% if b.custom_button %}
+          style="--color-button: {{ b.button_color.red }},{{ b.button_color.green }},{{ b.button_color.blue }}; --color-button-text: {{ b.button_text_color.red }},{{ b.button_text_color.green }},{{ b.button_text_color.blue }};"
+        {% endif %}
+        {% if sold_out and b.action == 'add_to_cart' %}
+          disabled
+        {% endif %}
+      >
+        <span class="gad-sticky__btn-label">
+          {%- if sold_out and b.action == 'add_to_cart' -%}
+            {{- 'products.product.sold_out' | t -}}
+          {%- else -%}
+            <span class="gad-sticky__btn-price">{{ price_html }} &bull;</span>
+            {{ label | escape }}
+          {%- endif -%}
+        </span>
+        {%- render 'loading-spinner' -%}
+      </button>
+    </div>
+  </div>
+</gad-sticky-bar>

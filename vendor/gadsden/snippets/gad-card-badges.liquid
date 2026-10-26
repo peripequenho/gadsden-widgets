@@ -1,0 +1,40 @@
+
+{%- liquid
+  assign variant = card_product.selected_or_first_available_variant
+  assign compare = card_product.compare_at_price
+  assign price = card_product.price
+  if variant.compare_at_price > variant.price
+    assign compare = variant.compare_at_price
+    assign price = variant.price
+  endif
+
+  assign pct = ''
+  if compare > price
+    assign pct_num = compare | minus: price | times: 100.0 | divided_by: compare | round
+    assign pct = pct_num | append: '%'
+  endif
+-%}
+{%- if mode == 'none' -%}
+{%- elsif card_product.available == false -%}
+  <span id="{{ id }}" class="badge badge--bottom-left color-{{ settings.sold_out_badge_color_scheme }}">
+    {{- 'products.product.sold_out' | t -}}
+  </span>
+{%- elsif card_product.compare_at_price > card_product.price and settings.card_badges_mode != 'no_sale' -%}
+  <span id="{{ id }}" class="badge badge--bottom-left gad-sale-badge color-{{ settings.sale_badge_color_scheme }}">
+    {%- render 'gad-sale-label', price: price, compare_at_price: compare -%}
+  </span>
+{%- endif -%}
+{%- if mode != 'none' and mode != 'sale' and settings.card_badges_tags != blank and card_product.tags.size > 0 -%}
+  {%- assign wanted = settings.card_badges_tags | split: ',' -%}
+  {%- assign product_tags = card_product.tags | join: '|' | downcase | split: '|' -%}
+  {%- for entry in wanted -%}
+    {%- assign label = entry | strip -%}
+    {%- assign label_key = label | downcase -%}
+    {%- if label != blank and product_tags contains label_key -%}
+      {%- assign label = label | replace: '{porcentaje}', pct -%}
+      <span class="badge badge--bottom-left gad-tag-badge color-{{ settings.card_badges_scheme | default: settings.sale_badge_color_scheme }}">
+        {{- label | escape -}}
+      </span>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

@@ -1,0 +1,8 @@
+{%- comment -%}
+  El indicador de carga del botón de agregar (Gadsden lo pide con render 'loading-spinner' y le saca `hidden` mientras
+  agrega). Escrito de cero: un círculo que gira y se va cerrando.
+  - class: clases en lugar de "loading__spinner hidden" (opcional)
+{%- endcomment -%}
+<div class="{{ class | default: 'loading__spinner hidden' }}">
+  <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"><circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle></svg>
+</div>

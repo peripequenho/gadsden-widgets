@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soporte · Gadsden Widgets</title>
+<link rel="icon" href="/icono.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icono-200.png">
+<style>
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2937; background: #fff; }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 16px; }
+  h2 { font-size: 20px; margin: 32px 0 8px; }
+  li { margin: 4px 0; }
+  a { color: #0050c3; }
+  .contacto { padding: 16px 20px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb; }
+</style>
+</head>
+<body>
+<main>
+<img src="/icono.svg" alt="Gadsden Widgets" width="56" height="56" style="display:block; border-radius:12px; margin-bottom:16px">
+<!-- La sirve el Worker en /soporte (construir.mjs la copia a dist/ con el correo de soporte de wrangler.toml). -->
+<h1>Soporte de Gadsden Widgets</h1>
+<div class="contacto">
+  <p style="margin:0">Escribinos a <a href="mailto:{{SOPORTE}}"><b>{{SOPORTE}}</b></a> con el nombre de tu tienda y, si podés, una captura de lo que ves. Te respondemos en español.</p>
+</div>
+
+<h2>Cómo empezar</h2>
+<ol>
+  <li>Instalá Gadsden Widgets desde la Tienda de Aplicaciones de Tiendanube y aceptá los permisos.</li>
+  <li>Abrila desde tu administrador: <b>Mis aplicaciones &gt; Gadsden Widgets</b>. Se abre el editor, igual al de <b>Editar diseño</b> de Tiendanube, con tu tienda en el medio.</li>
+  <li>Arriba elegí la página (inicio, producto, categoría o búsqueda). A la izquierda tocá <b>Agregar sección</b> o la línea azul entre dos secciones, elegí un widget y tocá <b>Agregar</b>.</li>
+  <li>Editá sus textos, colores y productos a la derecha, mirando cómo queda en computadora y en celular. Para moverlo, arrastralo en la lista de la izquierda.</li>
+  <li>Tocá <b>Guardar y publicar</b>: ya se ve en tu tienda.</li>
+</ol>
+
+<h2>Preguntas frecuentes</h2>
+<p><b>No veo el widget en mi tienda.</b> Recargá la ficha de producto. Si elegiste un lugar junto a una sección que ya no está en tu ficha, el widget no se muestra hasta que la sección vuelva o elijas otro lugar. Si el widget está en una plantilla de producto, abrí un producto de esa plantilla.</p>
+<p><b>El widget muestra un precio con descuento, pero el carrito cobra el precio normal.</b> El descuento lo cobra tu tienda: creá la promoción en <b>Descuentos</b> de tu administrador con los mismos porcentajes que pusiste en el widget. El panel te avisa cuáles son.</p>
+<p><b>¿Puedo usar los colores y las letras de mi tienda?</b> Sí: en el editor, tocá la ruedita (<b>Ajustes globales</b>) &gt; <b>Estilo y colores</b>, elegí "El de mi tienda" y cargá tus colores y letras.</p>
+<p><b>¿Qué pasa si desinstalo la aplicación?</b> Los widgets dejan de verse y se borran tu configuración y tus archivos. Más detalles en la <a href="/privacidad">política de privacidad</a>.</p>
+</main>
+</body>
+</html>

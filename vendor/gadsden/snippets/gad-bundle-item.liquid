@@ -1,0 +1,41 @@
+
+{%- if p.available -%}
+  {%- assign v = p.selected_or_first_available_variant -%}
+  <li>
+    <label class="gad-bundle__item" {{ attrs }}>
+      <input
+        type="checkbox"
+        data-gad-bundle-check
+        {% if checked or locked %}
+          checked
+        {% endif %}
+        {% if locked %}
+          disabled
+        {% endif %}
+      >
+      {%- if p.featured_media -%}
+        {{ p.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 70, height: 70 }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag }}
+      {%- endif -%}
+      <span>
+        <span class="gad-bundle__name">{{ p.title | escape }}</span>
+        <span class="gad-bundle__price" data-gad-bundle-price>
+          {%- if v.compare_at_price > v.price -%}<s>{{ v.compare_at_price | money }}</s>{%- endif -%}
+          {{- v.price | money -}}
+        </span>
+        {%- if p.has_only_default_variant -%}
+          <input type="hidden" data-gad-bundle-variant value="{{ v.id }}" data-price="{{ v.price }}">
+        {%- else -%}
+          <select data-gad-bundle-variant aria-label="{{ p.title | escape }}">
+            {%- for variant in p.variants -%}
+              <option value="{{ variant.id }}" data-price="{{ variant.price }}"{% unless variant.available %} disabled{% endunless %}{% if variant.id == v.id %} selected{% endif %}>
+                {{ variant.title | escape }} – {{ variant.price | money }}
+              </option>
+            {%- endfor -%}
+          </select>
+        {%- endif -%}
+      </span>
+    </label>
+  </li>
+{%- endif -%}

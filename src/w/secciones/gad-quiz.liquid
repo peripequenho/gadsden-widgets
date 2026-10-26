@@ -1,0 +1,723 @@
+{%- comment -%}
+  Cuestionario: una pregunta por pantalla con barra de progreso; las preguntas y los resultados son bloques, y el resultado sale de las reglas de cada uno; repite lo que se contestó y muestra la caja del producto.
+  Copia configurable de la de Gadsden (white label, BUILD.md decisión 20): los colores y las letras que eran fijos
+  son ajustes; vacíos, los de la tienda. El estilo "oscuro" pone los originales (src/w/oscuro.json).
+{%- endcomment -%}
+{%- if section.settings.letra_titulos != blank and section.settings.letra_titulos.family != settings.type_header_font.family and section.settings.letra_titulos.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_titulos | font_face: font_display: 'swap' }}</style>{%- endif -%}
+{%- if section.settings.letra_texto != blank and section.settings.letra_texto.family != settings.type_header_font.family and section.settings.letra_texto.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_texto | font_face: font_display: 'swap' }}</style>{%- endif -%}
+{%- if section.settings.letra_lectura != blank and section.settings.letra_lectura.family != settings.type_header_font.family and section.settings.letra_lectura.family != settings.type_body_font.family -%}<style>{{ section.settings.letra_lectura | font_face: font_display: 'swap' }}</style>{%- endif -%}
+
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign p = all_products[section.settings.handle]
+  assign destino = p.url | default: '#'
+-%}
+
+{%- if section.settings.letra_titulos != blank or section.settings.letra_texto != blank or section.settings.letra_lectura != blank -%}<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">{%- endif -%}
+
+{% style %}
+  #ax-test-{{ uid }}{
+    --tinta:rgb(var(--r-texto));--papel:rgb(var(--r-fondo));--papel-2:rgb(var(--r-fondo_2));--lima:rgb(var(--r-acento));--lima-honda:rgb(var(--r-acento_hondo));
+    --rojo:rgb(var(--r-alerta));
+    --impacto:var(--r-letra_titulos);
+    --texto:var(--r-letra_texto);
+    --lectura:var(--r-letra_lectura);
+    background:var(--papel);color:var(--tinta);font-family:var(--lectura);
+    padding:0 0 46px;min-height:78vh;
+    background-image:radial-gradient(var(--papel-2) 1.1px,transparent 1.2px);background-size:7px 7px;
+  }
+  #ax-test-{{ uid }} *{box-sizing:border-box}
+  #ax-test-{{ uid }} h1,#ax-test-{{ uid }} h2,#ax-test-{{ uid }} h3,#ax-test-{{ uid }} h4{color:inherit}
+  #ax-test-{{ uid }} .ax-col{max-width:620px;margin:0 auto;padding:0 20px}
+  #ax-test-{{ uid }} [hidden]{display:none !important}
+
+  
+  #ax-test-{{ uid }} .ax-prog{position:sticky;top:0;z-index:5;background:var(--papel);
+    padding:14px 20px 12px;border-bottom:3px solid var(--tinta)}
+  #ax-test-{{ uid }} .ax-prog-txt{font-family:var(--impacto);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;margin:0 0 8px;display:flex;justify-content:space-between}
+  #ax-test-{{ uid }} .ax-prog-riel{height:8px;background:var(--papel-2);border:2px solid var(--tinta)}
+  #ax-test-{{ uid }} .ax-prog-riel b{display:block;height:100%;background:var(--lima);
+    transform-origin:left;transform:scaleX(0);transition:transform .25s ease}
+
+  
+  #ax-test-{{ uid }} .ax-eye{font-family:var(--impacto);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--tinta);color:var(--papel);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 16px}
+  #ax-test-{{ uid }} .ax-eye span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} h1{margin:0 0 14px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(27px,7.8vw,40px);line-height:1.03;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block;max-width:100%}
+  #ax-test-{{ uid }} h1 em{font-style:normal;background:var(--lima);padding:1px 8px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-test-{{ uid }} .ax-bajada{font-size:17.5px;line-height:1.55;margin:0 0 20px}
+  #ax-test-{{ uid }} .ax-nada{list-style:none;margin:0 0 24px;padding:0;
+    font-family:var(--texto);font-size:15px}
+  #ax-test-{{ uid }} .ax-nada li{display:flex;gap:9px;align-items:flex-start;margin:0 0 8px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-nada svg{width:18px;height:18px;flex:none;color:var(--lima-honda);margin-top:1px}
+
+  
+  #ax-test-{{ uid }} .ax-paso{padding-top:26px}
+  #ax-test-{{ uid }} .ax-num{font-family:var(--impacto);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--lima-honda);margin:0 0 8px}
+  #ax-test-{{ uid }} h2{margin:0 0 6px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:clamp(22px,6.4vw,30px);line-height:1.06;letter-spacing:-.02em;
+    transform:skewX(-9deg);display:inline-block;max-width:100%}
+  #ax-test-{{ uid }} .ax-ayuda{font-family:var(--texto);font-size:15px;line-height:1.4;
+    margin:0 0 18px;opacity:.8}
+  #ax-test-{{ uid }} .ax-aliento{font-family:var(--impacto);font-size:12px;letter-spacing:.06em;
+    text-transform:uppercase;background:var(--papel-2);border-left:5px solid var(--lima);
+    padding:9px 12px;margin:0 0 16px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-ops{display:grid;gap:10px;margin:0 0 18px}
+  #ax-test-{{ uid }} .ax-op{display:block;width:100%;text-align:left;background:var(--papel);
+    border:3px solid var(--tinta);padding:15px 16px;font-family:var(--texto);font-size:17px;
+    line-height:1.28;color:var(--tinta);cursor:pointer;transition:background .12s ease}
+  #ax-test-{{ uid }} .ax-op:hover,#ax-test-{{ uid }} .ax-op:focus-visible{background:var(--lima);outline:none}
+  #ax-test-{{ uid }} .ax-op b{display:block;font-family:var(--impacto);font-size:16px;
+    text-transform:uppercase;line-height:1.1;margin:0 0 3px}
+  #ax-test-{{ uid }} .ax-atras{background:none;border:none;padding:6px 0;cursor:pointer;
+    font-family:var(--impacto);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--tinta);opacity:.6}
+
+  
+  #ax-test-{{ uid }} .ax-chapa{font-family:var(--impacto);font-size:10px;letter-spacing:.16em;
+    text-transform:uppercase;background:var(--lima);color:var(--tinta);padding:7px 12px;
+    display:block;width:max-content;max-width:100%;transform:skewX(-9deg);margin:0 0 14px}
+  #ax-test-{{ uid }} .ax-chapa span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} .ax-chapa.ax-alerta{background:var(--rojo);color:rgb(var(--r-alerta_texto))}
+  #ax-test-{{ uid }} .ax-res h2{margin-bottom:14px}
+  #ax-test-{{ uid }} .ax-res p{font-size:17px;line-height:1.6;margin:0 0 16px}
+  #ax-test-{{ uid }} .ax-res h3{margin:26px 0 10px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:16px;letter-spacing:.02em;line-height:1.15;
+    border-bottom:3px solid var(--tinta);padding-bottom:7px}
+  #ax-test-{{ uid }} .ax-res ul{margin:0 0 16px;padding-left:20px;font-size:16.5px;line-height:1.5}
+  #ax-test-{{ uid }} .ax-res li{margin:0 0 9px}
+  #ax-test-{{ uid }} .ax-dest{margin:20px 0;padding:17px 18px;background:var(--tinta);color:var(--papel);
+    font-family:var(--impacto);text-transform:uppercase;font-size:clamp(16px,4.6vw,21px);line-height:1.2}
+  #ax-test-{{ uid }} .ax-dest em{font-style:normal;background:var(--lima);color:var(--tinta);padding:0 5px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone}
+  #ax-test-{{ uid }} .ax-espejo{margin:0 0 20px;padding:14px 16px;background:var(--papel-2);
+    border-left:6px solid var(--tinta);font-family:var(--texto);font-size:15px;line-height:1.45}
+  #ax-test-{{ uid }} .ax-espejo b{display:block;font-family:var(--impacto);font-size:11px;
+    letter-spacing:.14em;text-transform:uppercase;margin:0 0 7px}
+  #ax-test-{{ uid }} .ax-espejo ul{margin:0;padding-left:18px;font-size:15px}
+  #ax-test-{{ uid }} .ax-espejo li{margin:0 0 4px}
+
+  
+  #ax-test-{{ uid }} .ax-voces{margin:22px 0;border:3px solid var(--tinta);background:var(--papel)}
+  #ax-test-{{ uid }} .ax-voces-tit{background:var(--tinta);color:var(--papel);font-family:var(--impacto);
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:9px 14px;line-height:1.3}
+  #ax-test-{{ uid }} .ax-voces blockquote{margin:0;padding:14px 16px;border-bottom:2px dashed var(--papel-2);
+    font-size:16px;line-height:1.45;font-style:italic}
+  #ax-test-{{ uid }} .ax-voces blockquote:last-of-type{border-bottom:none}
+  #ax-test-{{ uid }} .ax-voces cite{display:block;margin-top:6px;font-family:var(--texto);font-size:12.5px;
+    font-style:normal;letter-spacing:.05em;text-transform:uppercase;opacity:.65}
+  #ax-test-{{ uid }} .ax-voces .ax-voces-pie{padding:10px 14px;background:var(--papel-2);
+    font-family:var(--texto);font-size:12.5px;line-height:1.4}
+
+  
+  #ax-test-{{ uid }} .ax-caja{margin:24px 0;background:var(--tinta);color:var(--papel);padding:20px}
+  #ax-test-{{ uid }} .ax-caja-top{display:flex;gap:16px;align-items:center}
+  #ax-test-{{ uid }} .ax-caja img{width:92px;height:92px;object-fit:contain;flex:none;background:var(--papel)}
+  #ax-test-{{ uid }} .ax-caja h4{margin:0 0 6px;font-family:var(--impacto);text-transform:uppercase;
+    font-size:19px;line-height:1.06}
+  #ax-test-{{ uid }} .ax-caja .ax-sub{font-family:var(--texto);font-size:14px;line-height:1.35;opacity:.85}
+  #ax-test-{{ uid }} .ax-bene{list-style:none;margin:14px 0 0;padding:0;font-family:var(--texto);font-size:15px}
+  #ax-test-{{ uid }} .ax-bene li{display:flex;gap:9px;align-items:flex-start;margin:0 0 7px;line-height:1.35}
+  #ax-test-{{ uid }} .ax-bene svg{width:17px;height:17px;flex:none;color:var(--lima);margin-top:1px}
+  #ax-test-{{ uid }} .ax-precio{display:flex;align-items:baseline;gap:10px;margin:14px 0 0;flex-wrap:wrap}
+  #ax-test-{{ uid }} .ax-precio b{font-family:var(--impacto);font-size:30px;letter-spacing:-.02em}
+  #ax-test-{{ uid }} .ax-precio s{font-family:var(--texto);font-size:16px;opacity:.6}
+  #ax-test-{{ uid }} .ax-cta{display:block;margin:14px 0 0;background:var(--lima);color:var(--tinta);
+    font-family:var(--impacto);text-transform:uppercase;font-size:17px;text-align:center;
+    padding:16px 14px;transform:skewX(-9deg);text-decoration:none;line-height:1.12;
+    border:none;width:100%;cursor:pointer}
+  #ax-test-{{ uid }} .ax-cta span{display:inline-block;transform:skewX(9deg)}
+  #ax-test-{{ uid }} .ax-caja-pie{margin:12px 0 0;font-family:var(--texto);font-size:13.5px;
+    line-height:1.4;display:flex;gap:8px;align-items:flex-start}
+  #ax-test-{{ uid }} .ax-caja-pie svg{width:17px;height:17px;flex:none;color:var(--lima);margin-top:1px}
+  
+  #ax-test-{{ uid }} .ax-op::before,#ax-test-{{ uid }} .ax-op::after,
+  #ax-test-{{ uid }} .ax-cta::before,#ax-test-{{ uid }} .ax-cta::after{content:none !important;display:none !important}
+  #ax-test-{{ uid }} .ax-op,#ax-test-{{ uid }} .ax-cta{border-radius:0 !important;box-shadow:none !important}
+
+  #ax-test-{{ uid }} .ax-legal{margin:26px 0 0;padding:13px 0 0;border-top:2px solid var(--tinta);
+    font-family:var(--texto);font-size:12.5px;line-height:1.5;opacity:.75}
+  #ax-test-{{ uid }} .ax-reset{margin:16px 0 0;background:none;border:none;padding:0;cursor:pointer;
+    font-family:var(--impacto);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--tinta);opacity:.6;text-decoration:underline}
+
+  @media (min-width:750px){
+    #ax-test-{{ uid }} .ax-caja img{width:120px;height:120px}
+  }
+{% endstyle %}
+
+<div id="ax-test-{{ uid }}" data-destino="{{ destino }}" style="--r-texto: {%- render 'gad-rol', c: section.settings.color_texto, d: 'var(--color-foreground)' -%}; --r-fondo: {%- render 'gad-rol', c: section.settings.color_fondo, d: 'var(--color-background)' -%}; --r-fondo_2: {%- render 'gad-rol', c: section.settings.color_fondo_2, d: 'var(--color-background-suave)' -%}; --r-acento: {%- render 'gad-rol', c: section.settings.color_acento, d: 'var(--color-background-contrast)' -%}; --r-acento_hondo: {%- render 'gad-rol', c: section.settings.color_acento_hondo, d: 'var(--color-foreground)' -%}; --r-alerta: {%- render 'gad-rol', c: section.settings.color_alerta, d: 'var(--color-button)' -%}; --r-alerta_texto: {%- render 'gad-rol', c: section.settings.color_alerta_texto, d: 'var(--color-button-text)' -%}; --r-letra_titulos: {% if section.settings.letra_titulos != blank %}'{{ section.settings.letra_titulos.family }}','Arial Black',Haettenschweiler,Impact,sans-serif{% else %}var(--font-heading-family){% endif %}; --r-letra_texto: {% if section.settings.letra_texto != blank %}'{{ section.settings.letra_texto.family }}','Barlow','Segoe UI',Arial,sans-serif{% else %}var(--font-body-family){% endif %}; --r-letra_lectura: {% if section.settings.letra_lectura != blank %}'{{ section.settings.letra_lectura.family }}','Barlow Semi Condensed','Segoe UI',Arial,sans-serif{% else %}var(--font-body-family){% endif %};">
+  {%- assign preguntas = section.blocks | where: 'type', 'pregunta' -%}
+  {%- assign resultados = section.blocks | where: 'type', 'resultado' -%}
+
+  <div class="ax-prog" data-prog hidden>
+    <div class="ax-prog-txt"><span data-prog-txt>Pregunta 1 de {{ preguntas.size }}</span><span>{{ section.settings.marca_progreso }}</span></div>
+    <div class="ax-prog-riel"><b data-prog-barra></b></div>
+  </div>
+
+  <div class="ax-col">
+
+    <div class="ax-paso" data-pantalla="intro">
+      {%- if section.settings.volanta != blank -%}
+        <span class="ax-eye"><span>{{ section.settings.volanta }}</span></span>
+      {%- endif -%}
+      <h1>{{ section.settings.titulo }}</h1>
+      <p class="ax-bajada">{{ section.settings.bajada }}</p>
+      {%- if section.settings.nada_1 != blank or section.settings.nada_2 != blank or section.settings.nada_3 != blank -%}
+        <ul class="ax-nada">
+          {%- for n in (1..3) -%}
+            {%- assign k = 'nada_' | append: n -%}
+            {%- if section.settings[k] != blank -%}
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg>
+                <span>{{ section.settings[k] }}</span>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <button type="button" class="ax-cta" data-empezar><span>{{ section.settings.boton_empezar }}</span></button>
+    </div>
+
+
+    {%- for block in preguntas -%}
+      <div class="ax-paso" data-q="{{ forloop.index0 }}" hidden {{ block.shopify_attributes }}>
+        <p class="ax-num">Pregunta {{ forloop.index }}{% if block.settings.marca != blank %} · {{ block.settings.marca }}{% endif %}</p>
+        {%- if block.settings.aliento != blank -%}<p class="ax-aliento">{{ block.settings.aliento }}</p>{%- endif -%}
+        <h2>{{ block.settings.titulo }}</h2>
+        {%- if block.settings.ayuda != blank -%}<p class="ax-ayuda">{{ block.settings.ayuda }}</p>{%- endif -%}
+        <div class="ax-ops">
+          {%- assign ops = block.settings.opciones | newline_to_br | split: '<br />' -%}
+          {%- for o in ops -%}
+            {%- assign partes = o | strip | split: '|' -%}
+            {%- if partes[0] != blank -%}
+              {%- assign v = partes[2] | strip -%}
+              <button type="button" class="ax-op" data-v="{{ v | default: forloop.index | escape }}"><b>{{ partes[0] | strip }}</b>{{ partes[1] | strip }}</button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {%- unless forloop.first -%}<button type="button" class="ax-atras" data-atras>← Volver</button>{%- endunless -%}
+      </div>
+    {%- endfor -%}
+
+    {%- for block in resultados -%}
+      <div class="ax-paso ax-res" data-res="{{ block.settings.clave | default: forloop.index | escape }}" data-reglas="{{ block.settings.reglas | escape }}" hidden {{ block.shopify_attributes }}>
+        {%- if block.settings.chapa != blank -%}
+          <span class="ax-chapa{% if block.settings.alerta %} ax-alerta{% endif %}"><span>{{ block.settings.chapa }}</span></span>
+        {%- endif -%}
+        <h2>{{ block.settings.titulo }}</h2>
+        <div data-espejo></div>
+        {{ block.settings.texto }}
+        {%- if block.settings.destacado -%}
+          <div class="ax-dest">{{ section.settings.absolucion }}</div>
+        {%- endif -%}
+        {%- if block.settings.cita != blank -%}
+          <div class="ax-voces">
+            <p class="ax-voces-tit">{{ section.settings.voces_titulo }}</p>
+            <blockquote>&laquo;{{ block.settings.cita }}&raquo;<cite>{{ block.settings.cita_fuente }}</cite></blockquote>
+            <p class="ax-voces-pie">{{ section.settings.voces_pie }}</p>
+          </div>
+        {%- endif -%}
+        {{ block.settings.texto_2 }}
+        {%- if block.settings.caja -%}<div data-caja></div>{%- endif -%}
+        <button type="button" class="ax-reset" data-reset>Volver a empezar el test</button>
+        <p class="ax-legal">{{ section.settings.legal }}</p>
+      </div>
+    {%- endfor -%}
+
+    <template data-molde-caja>
+      <div class="ax-caja">
+        <div class="ax-caja-top">
+          {%- if p.featured_image != blank -%}
+            <img src="{{ p.featured_image | image_url: width: 300 }}" alt="{{ p.featured_image.alt | escape }}" loading="lazy" width="300" height="300">
+          {%- endif -%}
+          <div>
+            <h4>{{ section.settings.caja_titulo }}</h4>
+            <div class="ax-sub">{{ section.settings.caja_sub }}</div>
+          </div>
+        </div>
+        <ul class="ax-bene">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_1 }}</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_2 }}</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 13 4 4L19 7"/></svg><span>{{ section.settings.bene_3 }}</span></li>
+        </ul>
+        {%- if p != blank -%}
+          <div class="ax-precio">
+            <b>{{ p.price | money }}</b>
+            {%- if p.compare_at_price > p.price -%}<s>{{ p.compare_at_price | money }}</s>{%- endif -%}
+          </div>
+        {%- endif -%}
+        <a class="ax-cta" href="{{ destino }}" data-cta><span>{{ section.settings.caja_boton }}</span></a>
+        {%- if section.settings.caja_pie != blank -%}
+          <p class="ax-caja-pie">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5Z"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>{{ section.settings.caja_pie }}</span>
+          </p>
+        {%- endif -%}
+      </div>
+    </template>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var raiz = document.getElementById('ax-test-{{ uid }}');
+    if (!raiz || raiz.dataset.axListo) return;
+    raiz.dataset.axListo = '1';
+
+    var pasos    = raiz.querySelectorAll('[data-q]');
+    var intro    = raiz.querySelector('[data-pantalla="intro"]');
+    var prog     = raiz.querySelector('[data-prog]');
+    var progTxt  = raiz.querySelector('[data-prog-txt]');
+    var progBar  = raiz.querySelector('[data-prog-barra]');
+    var molde    = raiz.querySelector('[data-molde-caja]');
+    var destino  = raiz.dataset.destino;
+    var total    = pasos.length;
+    var r = [];   // respuestas, por índice de pregunta
+    var t = [];   // el texto de cada respuesta, para el espejo
+
+    function pixel (evento, datos) {
+      if (window.fbq) { try { window.fbq('trackCustom', evento, datos || {}); } catch (e) {} }
+    }
+
+    function ocultarTodo () {
+      intro.hidden = true;
+      raiz.querySelectorAll('[data-q],[data-res]').forEach(function (n) { n.hidden = true; });
+    }
+
+    function irA (i) {
+      ocultarTodo();
+      prog.hidden = false;
+      pasos[i].hidden = false;
+      progTxt.textContent = 'Pregunta ' + (i + 1) + ' de ' + total;
+      progBar.style.transform = 'scaleX(' + (i / total) + ')';
+      raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+
+    // El resultado: el primero, en el orden de los bloques, con alguna regla que se cumpla ("N = valor" o "N != valor",
+    // N el número de la pregunta). Uno sin reglas vale siempre.
+    function perfil () {
+      var res = [].slice.call(raiz.querySelectorAll('[data-res]'));
+      var cual = res.filter(function (n) {
+        var reglas = n.dataset.reglas.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+        return !reglas.length || reglas.some(function (x) {
+          var m = /^(\d+)\s*(!?=)\s*(.+)$/.exec(x);
+          if (!m) return false;
+          var v = r[m[1] - 1];
+          return v !== undefined && (m[2] === '=' ? v === m[3].trim() : v !== m[3].trim());
+        });
+      })[0] || res[res.length - 1];
+      return cual.dataset.res;
+    }
+
+    function mostrarResultado () {
+      var cual = perfil();
+      var caja = raiz.querySelector('[data-res="' + cual + '"]');
+      ocultarTodo();
+      prog.hidden = true;
+
+      // espejo: le repetimos lo que dijo, con sus palabras
+      var espejo = caja.querySelector('[data-espejo]');
+      if (espejo) {
+        espejo.className = 'ax-espejo';
+        espejo.innerHTML = '<b>Lo que contaste</b><ul>' +
+          t.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>';
+      }
+
+      // la caja de producto (en los resultados que la muestran)
+      var hueco = caja.querySelector('[data-caja]');
+      if (hueco && molde && !hueco.firstElementChild) {
+        hueco.appendChild(molde.content.cloneNode(true));
+        var cta = hueco.querySelector('[data-cta]');
+        if (cta) cta.href = destino + (destino.indexOf('?') === -1 ? '?' : '&') + 'ref=test&perfil=' + cual;
+      }
+
+      caja.hidden = false;
+      raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      pixel('TestCompletado', { perfil: cual });
+    }
+
+    raiz.querySelector('[data-empezar]').addEventListener('click', function () {
+      pixel('TestArrancado');
+      irA(0);
+    });
+
+    pasos.forEach(function (paso, i) {
+      paso.querySelectorAll('.ax-op').forEach(function (op) {
+        op.addEventListener('click', function () {
+          r[i] = op.dataset.v;
+          t[i] = (op.querySelector('b') || op).textContent.trim();
+          if (i + 1 < total) irA(i + 1); else mostrarResultado();
+        });
+      });
+      var atras = paso.querySelector('[data-atras]');
+      if (atras) atras.addEventListener('click', function () { irA(i - 1); });
+    });
+
+    raiz.querySelectorAll('[data-reset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        r = []; t = [];
+        ocultarTodo();
+        prog.hidden = true;
+        intro.hidden = false;
+        raiz.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Cuestionario",
+  "tag": "section",
+  "class": "gad-quiz-section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "titulo",
+      "label": "Titular",
+      "default": "Tu test, en <em>pocas preguntas</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "bajada",
+      "label": "Bajada",
+      "default": "Contestá unas preguntas y al final te decimos qué te conviene."
+    },
+    {
+      "type": "text",
+      "id": "volanta",
+      "label": "Volanta",
+      "default": "Test · un minuto"
+    },
+    {
+      "type": "text",
+      "id": "nada_1",
+      "label": "Tilde 1",
+      "default": "No te pedimos el mail."
+    },
+    {
+      "type": "text",
+      "id": "nada_2",
+      "label": "Tilde 2",
+      "default": "No te pedimos el teléfono."
+    },
+    {
+      "type": "text",
+      "id": "nada_3",
+      "label": "Tilde 3",
+      "default": "Se contesta en un minuto."
+    },
+    {
+      "type": "text",
+      "id": "boton_empezar",
+      "label": "Boton de arranque",
+      "default": "Empezar el test"
+    },
+    {
+      "type": "text",
+      "id": "marca_progreso",
+      "label": "Texto a la derecha de la barra de progreso"
+    },
+    {
+      "type": "header",
+      "content": "Frase destacada (en los resultados que la muestran)"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "absolucion",
+      "label": "Frase destacada",
+      "default": "Una frase <em>destacada</em> para el resultado."
+    },
+    {
+      "type": "text",
+      "id": "voces_titulo",
+      "label": "Título de las citas",
+      "default": "Lo que escribió otra persona"
+    },
+    {
+      "type": "text",
+      "id": "voces_pie",
+      "label": "Aclaracion de las citas",
+      "default": "Cita textual."
+    },
+    {
+      "type": "header",
+      "content": "Producto"
+    },
+    {
+      "type": "text",
+      "id": "handle",
+      "label": "Handle del producto",
+      "info": "El producto de la caja de los resultados."
+    },
+    {
+      "type": "text",
+      "id": "caja_titulo",
+      "label": "Titulo de la caja",
+      "default": "Tu producto"
+    },
+    {
+      "type": "text",
+      "id": "caja_sub",
+      "label": "Bajada de la caja",
+      "default": "Una línea sobre el producto."
+    },
+    {
+      "type": "text",
+      "id": "bene_1",
+      "label": "Beneficio 1",
+      "default": "Un beneficio."
+    },
+    {
+      "type": "text",
+      "id": "bene_2",
+      "label": "Beneficio 2",
+      "default": "Otro beneficio."
+    },
+    {
+      "type": "text",
+      "id": "bene_3",
+      "label": "Beneficio 3",
+      "default": "Otro más."
+    },
+    {
+      "type": "text",
+      "id": "caja_boton",
+      "label": "Boton",
+      "default": "Ver el producto"
+    },
+    {
+      "type": "text",
+      "id": "caja_pie",
+      "label": "Linea de garantia",
+      "default": "Tu línea de garantía."
+    },
+    {
+      "type": "header",
+      "content": "Pie"
+    },
+    {
+      "type": "textarea",
+      "id": "legal",
+      "label": "Aviso legal",
+      "default": "Este test es una orientación."
+    },
+    {
+      "type": "header",
+      "content": "Colores y letras (vacíos: los de la tienda)"
+    },
+    {
+      "type": "color",
+      "id": "color_texto",
+      "label": "Texto"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo",
+      "label": "Fondo"
+    },
+    {
+      "type": "color",
+      "id": "color_fondo_2",
+      "label": "Fondo de los recuadros y la trama"
+    },
+    {
+      "type": "color",
+      "id": "color_acento",
+      "label": "Resaltado (marcas, barra, botones)"
+    },
+    {
+      "type": "color",
+      "id": "color_acento_hondo",
+      "label": "Número de la pregunta y tildes"
+    },
+    {
+      "type": "color",
+      "id": "color_alerta",
+      "label": "Fondo de la chapa de alerta"
+    },
+    {
+      "type": "color",
+      "id": "color_alerta_texto",
+      "label": "Texto de la chapa de alerta"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_titulos",
+      "label": "Letra de los títulos"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_texto",
+      "label": "Letra de los rótulos"
+    },
+    {
+      "type": "font_picker",
+      "id": "letra_lectura",
+      "label": "Letra de los párrafos"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pregunta",
+      "name": "Pregunta",
+      "settings": [
+        {
+          "type": "text",
+          "id": "titulo",
+          "label": "Pregunta",
+          "default": "¿Tu pregunta?"
+        },
+        {
+          "type": "text",
+          "id": "ayuda",
+          "label": "Ayuda",
+          "default": "Una ayuda corta."
+        },
+        {
+          "type": "text",
+          "id": "marca",
+          "label": "Al lado del número",
+          "info": "Por ejemplo, \"vas por la mitad\"."
+        },
+        {
+          "type": "text",
+          "id": "aliento",
+          "label": "Aliento (arriba de la pregunta)"
+        },
+        {
+          "type": "textarea",
+          "id": "opciones",
+          "label": "Opciones (una por línea: TÍTULO | descripción | valor)",
+          "default": "Primera opción | Una descripción corta.\nSegunda opción | Otra descripción.\nTercera opción | Otra más.",
+          "info": "El valor es opcional (si falta, el número de la opción) y es lo que leen las reglas de los resultados."
+        }
+      ]
+    },
+    {
+      "type": "resultado",
+      "name": "Resultado",
+      "settings": [
+        {
+          "type": "text",
+          "id": "clave",
+          "label": "Clave",
+          "info": "Va en el link al producto (?perfil=) y en el evento del píxel. Vacía: el número del resultado."
+        },
+        {
+          "type": "textarea",
+          "id": "reglas",
+          "label": "Reglas (una por línea: N = valor, o N != valor)",
+          "info": "Se muestra el primer resultado, en orden, con alguna regla que se cumpla (N es el número de la pregunta). Sin reglas vale siempre: ponelo último."
+        },
+        {
+          "type": "text",
+          "id": "chapa",
+          "label": "Chapa",
+          "default": "Tu resultado"
+        },
+        {
+          "type": "checkbox",
+          "id": "alerta",
+          "label": "Chapa de alerta",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "titulo",
+          "label": "Título",
+          "default": "El título del resultado."
+        },
+        {
+          "type": "richtext",
+          "id": "texto",
+          "label": "Texto",
+          "default": "<p>Lo que le querés decir a quien llegó a este resultado.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "destacado",
+          "label": "Mostrar la frase destacada",
+          "default": true
+        },
+        {
+          "type": "textarea",
+          "id": "cita",
+          "label": "Cita (vacía: sin cita)"
+        },
+        {
+          "type": "text",
+          "id": "cita_fuente",
+          "label": "Fuente de la cita"
+        },
+        {
+          "type": "richtext",
+          "id": "texto_2",
+          "label": "Texto después de la cita"
+        },
+        {
+          "type": "checkbox",
+          "id": "caja",
+          "label": "Mostrar la caja del producto",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cuestionario",
+      "blocks": [
+        {
+          "type": "pregunta",
+          "settings": {
+            "titulo": "¿Primera pregunta?",
+            "opciones": "Primera opción | Una descripción corta.\nSegunda opción | Otra descripción.\nTercera opción | Otra más."
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "titulo": "¿Segunda pregunta?",
+            "opciones": "Primera opción | Una descripción corta.\nSegunda opción | Otra descripción.\nTercera opción | Otra más."
+          }
+        },
+        {
+          "type": "pregunta",
+          "settings": {
+            "titulo": "¿Tercera pregunta?",
+            "opciones": "Primera opción | Una descripción corta.\nSegunda opción | Otra descripción.\nTercera opción | Otra más."
+          }
+        },
+        {
+          "type": "resultado",
+          "settings": {
+            "clave": "a",
+            "reglas": "3 = 1",
+            "chapa": "Tu resultado · A",
+            "titulo": "Un resultado para quien eligió la primera opción de la última pregunta."
+          }
+        },
+        {
+          "type": "resultado",
+          "settings": {
+            "clave": "b",
+            "chapa": "Tu resultado · B",
+            "titulo": "El resultado para todos los demás."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

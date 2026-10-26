@@ -1,0 +1,24 @@
+
+{%- liquid
+  assign icon_name = name | strip | downcase | replace: ' ', '_' | replace: '-', '_'
+  assign icon_style = ''
+  if size != blank
+    assign icon_style = 'font-size:' | append: size | append: 'px;'
+  endif
+-%}
+{%- if image != blank -%}
+  {%- liquid
+    assign icon_px = size | default: 48
+    assign icon_w2 = icon_px | times: 2
+    assign icon_w3 = icon_px | times: 3
+    assign icon_widths = icon_px | append: ',' | append: icon_w2 | append: ',' | append: icon_w3
+    assign icon_sizes = icon_px | append: 'px'
+  -%}
+  <span class="gad-icon gad-icon--image{% if class %} {{ class }}{% endif %}"{% if icon_style != '' %} style="{{ icon_style }}"{% endif %} aria-hidden="true">
+    {{- image | image_url: width: icon_w3 | image_tag: loading: 'lazy', alt: '', width: icon_px, height: icon_px, widths: icon_widths, sizes: icon_sizes -}}
+  </span>
+{%- elsif icon_name != blank -%}
+  <span class="gad-icon material-symbols-outlined{% if filled %} gad-icon--filled{% endif %}{% if class %} {{ class }}{% endif %}"{% if icon_style != '' %} style="{{ icon_style }}"{% endif %} aria-hidden="true" translate="no">
+    {{- icon_name | escape -}}
+  </span>
+{%- endif -%}

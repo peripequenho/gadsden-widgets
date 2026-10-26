@@ -1,0 +1,1067 @@
+
+{%- liquid
+  assign s = section.settings
+  assign n = s.competitors | default: 1
+  if s.table_style == 'minimal'
+    assign n = 1
+  endif
+  assign own_label = s.own_label | replace: '{tienda}', shop.name
+  if own_label == blank and s.own_logo == blank
+    assign own_label = shop.name
+  endif
+  assign hl_class = ''
+  if s.hl_style == 'scheme'
+    assign hl_class = ' color-' | append: s.hl_scheme
+  endif
+  assign reg_class = ''
+  if s.reg_style == 'scheme'
+    assign reg_class = ' color-' | append: s.reg_scheme
+  endif
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+{%- capture check_icon -%}{%- render 'gad-icon', name: 'check', filled: true -%}{%- endcapture -%}
+{%- capture cross_icon -%}{%- render 'gad-icon', name: 'close', filled: true -%}{%- endcapture -%}
+{%- capture part_icon -%}{%- render 'gad-icon', name: 'remove', filled: true -%}{%- endcapture -%}
+<style>
+  #GadCompare-{{ section.id }} .gad-cmp-pad{padding-top:{{ s.padding_top | times: 0.75 | round }}px;padding-bottom:{{ s.padding_bottom | times: 0.75 | round }}px}
+  @media(min-width:750px){#GadCompare-{{ section.id }} .gad-cmp-pad{padding-top:{{ s.padding_top }}px;padding-bottom:{{ s.padding_bottom }}px}}
+  #cmp-{{ section.id }}{width:100%;max-width:90rem;margin:0 auto;border-collapse:separate;border-spacing:0;border-radius:{{ s.radius }}px;overflow:hidden;table-layout:fixed
+    {%- if s.table_style == 'minimal' -%};border:1px solid rgba(var(--color-foreground),{{ s.min_line | divided_by: 100.0 }}){%- endif -%}}
+  #cmp-{{ section.id }} th,#cmp-{{ section.id }} td{padding:1.4rem 1.2rem;border-bottom:1px solid rgba(var(--color-foreground),{{ s.reg_separator | divided_by: 100.0 }});vertical-align:middle}
+  #cmp-{{ section.id }} tr:last-child td{border-bottom:0}
+  #cmp-{{ section.id }} th{font-weight:700;text-align:center}
+  #cmp-{{ section.id }} th:first-child,#cmp-{{ section.id }} td:first-child{text-align:{{ s.m_align | default: 'left' }};width:46%}
+  #cmp-{{ section.id }} td:not(:first-child){text-align:center}
+  {%- if s.hl_style == 'custom' %}
+  #cmp-{{ section.id }} .cmp__us{background:{{ s.hl_bg }};color:{{ s.hl_text }}}
+  {%- endif %}
+  {%- if s.reg_style == 'custom' %}
+  #cmp-{{ section.id }} .cmp__other{background:{{ s.reg_bg }};color:{{ s.reg_text }}}
+  {%- endif %}
+  #cmp-{{ section.id }} .cmp__logo{max-width:{{ s.own_logo_width_m }}px;height:auto;display:inline-block}
+  #cmp-{{ section.id }} .cmp__logo--other{max-width:{{ s.c1_logo_width_m }}px}
+  #cmp-{{ section.id }} .cmp__label{font-size:{{ s.own_size | times: 0.85 }}px;display:block}
+  #cmp-{{ section.id }} .cmp__label--other{font-size:{{ s.c1_size | times: 0.85 }}px}
+  #cmp-{{ section.id }} .cmp__ic{display:inline-grid;place-items:center;width:2.8rem;height:2.8rem;border-radius:50%}
+  #cmp-{{ section.id }} .cmp__ic .gad-icon{font-size:1.8rem;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 24}
+  #cmp-{{ section.id }} .cmp__ic--yes{background:{{ s.check_bg }};color:{{ s.check_color }}}
+  #cmp-{{ section.id }} .cmp__ic--part{background:{{ s.partial_color | default: s.check_bg }};color:{{ s.check_color }}}
+  {% if s.check_style == 'simple' %}#cmp-{{ section.id }} .cmp__ic--yes{background:transparent;color:{{ s.check_bg }}}#cmp-{{ section.id }} .cmp__ic--yes .gad-icon{font-size:2.6rem}{% endif %}
+  #cmp-{{ section.id }} .cmp__us{box-shadow:inset 0 0 0 100vmax rgba(0,0,0,{{ s.hl_zebra | divided_by: 100.0 }})}
+  #cmp-{{ section.id }} .cmp__other{box-shadow:inset 0 0 0 100vmax rgba(0,0,0,{{ s.reg_zebra | divided_by: 100.0 }})}
+  #cmp-{{ section.id }} td.cmp__us{border-bottom-color:rgba(255,255,255,{{ s.hl_separator | divided_by: 100.0 }})}
+  {% if s.table_style == 'classic' %}#cmp-{{ section.id }} thead th{border-bottom:2px solid rgba(var(--color-foreground),.2)}#cmp-{{ section.id }}{border:0}{% endif %}
+  {% if s.cross_style == 'simple' %}#cmp-{{ section.id }} .cmp__ic--no{background:transparent;color:{{ s.cross_bg }}}#cmp-{{ section.id }} .cmp__ic--no .gad-icon{font-size:2.6rem}{% endif %}
+  #cmp-{{ section.id }} .cmp__ic--no{background:{{ s.cross_bg }};color:{{ s.cross_color }}}
+  {% if s.inverted %}
+  #cmp-{{ section.id }} .cmp__other .cmp__ic--yes{background:{{ s.cross_bg }};color:{{ s.cross_color }}}
+  #cmp-{{ section.id }} .cmp__other .cmp__ic--no{background:{{ s.check_bg }};color:{{ s.check_color }}}
+  {% endif %}
+  #cmp-{{ section.id }} .cmp__feature{font-weight:700}
+  @media(min-width:750px){
+    #cmp-{{ section.id }} th:first-child,#cmp-{{ section.id }} td:first-child{text-align:{{ s.align | default: 'left' }}}
+    #cmp-{{ section.id }} .cmp__logo{max-width:{{ s.own_logo_width_d }}px}
+    #cmp-{{ section.id }} .cmp__logo--other{max-width:{{ s.c1_logo_width_d }}px}
+    #cmp-{{ section.id }} .cmp__label{font-size:{{ s.own_size }}px}
+    #cmp-{{ section.id }} .cmp__label--other{font-size:{{ s.c1_size }}px}
+  }
+  #GadCompare-{{ section.id }} .cmp__footer{text-align:center;margin-top:2.4rem}
+  #GadCompare-{{ section.id }} .cmp__footer .gad-buttons{justify-content:center}
+</style>
+<div id="GadCompare-{{ section.id }}" class="{% render 'gad-scheme', s: s, key: section.id %}" {% render 'gad-section-attrs', s: s %}>
+  <div class="page-width gad-cmp-pad">
+    {%- capture cmp_heading -%}
+      {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: 'center' -%}
+    {%- endcapture -%}
+    {%- if s.position != 'first' -%}{{ cmp_heading }}{%- endif -%}
+    <table id="cmp-{{ section.id }}" class="cmp cmp--{{ s.table_style }}">
+      <thead>
+        <tr>
+          <th class="cmp__other{{ reg_class }}">
+            {%- if s.feature_label != blank -%}<span class="cmp__feature">{{ s.feature_label | escape }}</span>{%- else -%}<span class="visually-hidden">{{ 'gadsden.compare.benefit' | t }}</span>{%- endif -%}
+          </th>
+          <th class="cmp__us{{ hl_class }}">
+            {%- if s.own_logo != blank -%}{{ s.own_logo | image_url: width: 300 | image_tag: class: 'cmp__logo', loading: 'lazy', alt: own_label }}{%- endif -%}
+            {%- if own_label != blank -%}<span class="cmp__label">{{ own_label }}</span>{%- endif -%}
+          </th>
+          {%- for i in (1..n) -%}
+            {%- liquid
+              assign k_label = 'c' | append: i | append: '_label'
+              assign k_logo = 'c' | append: i | append: '_logo'
+            -%}
+            <th class="cmp__other{{ reg_class }}">
+              {%- if s[k_logo] != blank -%}{{ s[k_logo] | image_url: width: 300 | image_tag: class: 'cmp__logo cmp__logo--other', loading: 'lazy', alt: s[k_label] }}{%- endif -%}
+              {%- if s[k_label] != blank -%}<span class="cmp__label cmp__label--other">{{ s[k_label] }}</span>{%- endif -%}
+            </th>
+          {%- endfor -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <tr {{ block.shopify_attributes }}>
+            <td class="cmp__other{{ reg_class }}">{{ b.benefit }}</td>
+            <td class="cmp__us{{ hl_class }}">
+              {%- if b.own and b.own_partial -%}
+                <span class="cmp__ic cmp__ic--part">{{ part_icon }}<span class="visually-hidden">{{ 'gadsden.compare.partial' | t }}</span></span>
+              {%- elsif b.own -%}
+                <span class="cmp__ic cmp__ic--yes">{{ check_icon }}<span class="visually-hidden">{{ 'gadsden.compare.yes' | t }}</span></span>
+              {%- else -%}
+                <span class="cmp__ic cmp__ic--no">{{ cross_icon }}<span class="visually-hidden">{{ 'gadsden.compare.no' | t }}</span></span>
+              {%- endif -%}
+            </td>
+            {%- for i in (1..n) -%}
+              {%- assign k_val = 'c' | append: i -%}
+              {%- assign k_partial = 'c' | append: i | append: '_partial' -%}
+              <td class="cmp__other{{ reg_class }}">
+                {%- if b[k_val] and b[k_partial] -%}
+                  <span class="cmp__ic cmp__ic--part">{{ part_icon }}<span class="visually-hidden">{{ 'gadsden.compare.partial' | t }}</span></span>
+                {%- elsif b[k_val] -%}
+                  <span class="cmp__ic cmp__ic--yes">{{ check_icon }}<span class="visually-hidden">{{ 'gadsden.compare.yes' | t }}</span></span>
+                {%- else -%}
+                  <span class="cmp__ic cmp__ic--no">{{ cross_icon }}<span class="visually-hidden">{{ 'gadsden.compare.no' | t }}</span></span>
+                {%- endif -%}
+              </td>
+            {%- endfor -%}
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+    {%- if s.position == 'first' -%}<div style="margin-top:2.4rem">{{ cmp_heading }}</div>{%- endif -%}
+    {%- if s.button_label != blank or s.atc_label != blank -%}
+      <div class="cmp__footer">
+        <div class="gad-buttons">
+          {%- if s.button_label != blank -%}
+            <a {% if s.button_link == blank %}role="link" aria-disabled="true"{% else %}href="{{ s.button_link }}"{% endif %} class="button{% if s.button_outline %} button--secondary{% endif %}">{{ s.button_label | escape }}</a>
+          {%- endif -%}
+          {%- render 'gad-atc-button', label: s.atc_label, product: s.atc_product, skip_cart: s.atc_skip_cart -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Tabla comparativa",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "¿Por qué elegirnos?",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "info": "Sin texto, el botón no aparece."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_outline",
+      "label": "Botón con contorno",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "atc_label",
+      "label": "Texto del botón de agregar al carrito",
+      "info": "Sin texto, el botón no aparece. En una ficha agrega ese producto con la variante y la cantidad elegidas."
+    },
+    {
+      "type": "product",
+      "id": "atc_product",
+      "label": "Producto",
+      "info": "Opcional. Si elegís uno, el botón agrega ése. Fuera de una ficha hace falta elegirlo."
+    },
+    {
+      "type": "checkbox",
+      "id": "atc_skip_cart",
+      "label": "Ir directo al pago",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "align",
+      "label": "Alineación en desktop",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "m_align",
+      "label": "Alineación en mobile",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Tabla"
+    },
+    {
+      "type": "paragraph",
+      "content": "Sin título, texto ni botones se ve sólo la tabla, centrada. En mobile el texto va siempre arriba."
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Posición en desktop",
+      "options": [
+        {
+          "value": "first",
+          "label": "Tabla primero"
+        },
+        {
+          "value": "second",
+          "label": "Tabla segundo"
+        },
+        {
+          "value": "top",
+          "label": "Texto arriba, centrado"
+        }
+      ],
+      "default": "second",
+      "info": "En mobile el texto va siempre arriba."
+    },
+    {
+      "type": "select",
+      "id": "table_style",
+      "label": "Estilo",
+      "options": [
+        {
+          "value": "classic",
+          "label": "Clásico"
+        },
+        {
+          "value": "centered",
+          "label": "Centrado"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimalista"
+        }
+      ],
+      "default": "classic",
+      "info": "El minimalista muestra siempre un solo competidor."
+    },
+    {
+      "type": "checkbox",
+      "id": "own_tab",
+      "label": "Columna propia que sobresale abajo",
+      "default": false,
+      "info": "Con el estilo clásico: la columna destacada termina un poco más abajo que la tabla."
+    },
+    {
+      "type": "text",
+      "id": "feature_label",
+      "label": "Encabezado de la columna de características",
+      "info": "Vacío: sin encabezado."
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Redondeo",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "competitors",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Cantidad de competidores",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Columna propia"
+    },
+    {
+      "type": "text",
+      "id": "own_label",
+      "label": "Texto",
+      "default": "{tienda}",
+      "info": "{tienda} se reemplaza por el nombre de la tienda. Se muestra si no hay logo."
+    },
+    {
+      "type": "range",
+      "id": "own_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño del texto",
+      "default": 18
+    },
+    {
+      "type": "image_picker",
+      "id": "own_logo",
+      "label": "Logo",
+      "info": "Reemplaza al texto."
+    },
+    {
+      "type": "range",
+      "id": "own_logo_width_d",
+      "min": 25,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en desktop",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "own_logo_width_m",
+      "min": 25,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en mobile",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Competidor 1"
+    },
+    {
+      "type": "text",
+      "id": "c1_label",
+      "label": "Texto",
+      "default": "Otros",
+      "info": "Se muestra si no hay logo."
+    },
+    {
+      "type": "range",
+      "id": "c1_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño del texto",
+      "default": 18
+    },
+    {
+      "type": "image_picker",
+      "id": "c1_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "c1_logo_width_d",
+      "min": 25,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en desktop",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "c1_logo_width_m",
+      "min": 25,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en mobile",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Competidor 2"
+    },
+    {
+      "type": "text",
+      "id": "c2_label",
+      "label": "Texto",
+      "default": "Competidor 2",
+      "info": "Se muestra si no hay logo."
+    },
+    {
+      "type": "range",
+      "id": "c2_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño del texto",
+      "default": 18
+    },
+    {
+      "type": "image_picker",
+      "id": "c2_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "c2_logo_width_d",
+      "min": 25,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en desktop",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "c2_logo_width_m",
+      "min": 25,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en mobile",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Competidor 3"
+    },
+    {
+      "type": "text",
+      "id": "c3_label",
+      "label": "Texto",
+      "default": "Competidor 3",
+      "info": "Se muestra si no hay logo."
+    },
+    {
+      "type": "range",
+      "id": "c3_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño del texto",
+      "default": 18
+    },
+    {
+      "type": "image_picker",
+      "id": "c3_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "c3_logo_width_d",
+      "min": 25,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en desktop",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "c3_logo_width_m",
+      "min": 25,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Ancho del logo en mobile",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Íconos"
+    },
+    {
+      "type": "select",
+      "id": "check_style",
+      "label": "Estilo del tilde",
+      "options": [
+        {
+          "value": "simple",
+          "label": "Simple"
+        },
+        {
+          "value": "filled",
+          "label": "Lleno"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "color",
+      "id": "check_color",
+      "label": "Color del tilde",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "check_bg",
+      "label": "Círculo del tilde",
+      "default": "#1E7F4F"
+    },
+    {
+      "type": "select",
+      "id": "cross_style",
+      "label": "Estilo de la cruz",
+      "options": [
+        {
+          "value": "simple",
+          "label": "Simple"
+        },
+        {
+          "value": "filled",
+          "label": "Lleno"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "color",
+      "id": "cross_color",
+      "label": "Color de la cruz",
+      "default": "#5C5C5C"
+    },
+    {
+      "type": "color",
+      "id": "cross_bg",
+      "label": "Círculo de la cruz",
+      "default": "#E4E4E4"
+    },
+    {
+      "type": "color",
+      "id": "partial_color",
+      "label": "Color de la tilde parcial",
+      "info": "Para las filas con \"parcial\". Vacío: el texto, suave."
+    },
+    {
+      "type": "checkbox",
+      "id": "inverted",
+      "label": "Invertir colores de los íconos \"al revés\"",
+      "default": false,
+      "info": "Un tilde en un competidor toma los colores de la cruz, y una cruz en la columna propia, los del tilde."
+    },
+    {
+      "type": "header",
+      "content": "Estilos clásico y centrado"
+    },
+    {
+      "type": "select",
+      "id": "hl_style",
+      "label": "Celdas destacadas (columna propia)",
+      "options": [
+        {
+          "value": "scheme",
+          "label": "Combinación de la paleta"
+        },
+        {
+          "value": "custom",
+          "label": "Colores propios"
+        }
+      ],
+      "default": "scheme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "hl_scheme",
+      "label": "Combinación",
+      "default": "scheme-5"
+    },
+    {
+      "type": "color",
+      "id": "hl_bg",
+      "label": "Fondo propio",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "hl_text",
+      "label": "Texto propio",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "hl_separator",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Opacidad de los separadores",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "hl_zebra",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "Intensidad de la cebra",
+      "default": 0,
+      "info": "Sombrea las filas pares."
+    },
+    {
+      "type": "select",
+      "id": "reg_style",
+      "label": "Celdas comunes",
+      "options": [
+        {
+          "value": "scheme",
+          "label": "Combinación de la paleta"
+        },
+        {
+          "value": "custom",
+          "label": "Colores propios"
+        }
+      ],
+      "default": "scheme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "reg_scheme",
+      "label": "Combinación",
+      "default": "scheme-2"
+    },
+    {
+      "type": "color",
+      "id": "reg_bg",
+      "label": "Fondo propio",
+      "default": "#F3F3F3"
+    },
+    {
+      "type": "color",
+      "id": "reg_text",
+      "label": "Texto propio",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "reg_separator",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Opacidad de los separadores",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "reg_zebra",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "label": "Intensidad de la cebra",
+      "default": 0,
+      "info": "Sombrea las filas pares."
+    },
+    {
+      "type": "header",
+      "content": "Estilo minimalista"
+    },
+    {
+      "type": "range",
+      "id": "min_line",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "%",
+      "label": "Opacidad de las líneas entre filas",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Fila",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "benefit",
+          "label": "Beneficio",
+          "default": "<strong>Beneficio</strong>"
+        },
+        {
+          "type": "checkbox",
+          "id": "own",
+          "label": "La columna propia lo tiene",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "c1",
+          "label": "El competidor 1 lo tiene",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "c2",
+          "label": "El competidor 2 lo tiene",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "c3",
+          "label": "El competidor 3 lo tiene",
+          "default": false
+        },
+        {
+          "type": "paragraph",
+          "content": "Parcial: la tilde va en otro color. Sólo cuenta si la columna está tildada."
+        },
+        {
+          "type": "checkbox",
+          "id": "own_partial",
+          "label": "Parcial en la columna propia",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "c1_partial",
+          "label": "Parcial en el competidor 1",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "c2_partial",
+          "label": "Parcial en el competidor 2",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "c3_partial",
+          "label": "Parcial en el competidor 3",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabla comparativa",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "benefit": "<strong>Calidad garantizada</strong>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "benefit": "<strong>Envío rápido</strong>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "benefit": "<strong>Atención personalizada</strong>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "benefit": "<strong>Cambios sin costo</strong>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,76 @@
+
+{%- liquid
+  assign font_url = settings.custom_font_url | strip
+  assign font_ok = false
+  if font_url != blank
+    assign font_start = font_url | slice: 0, 8
+    if font_start == 'https://'
+      assign font_ok = true
+    endif
+  endif
+  assign heading_font = settings.custom_heading_font | strip | remove: '"' | remove: ';' | remove: '{' | remove: '}'
+  assign body_font = settings.custom_body_font | strip | remove: '"' | remove: ';' | remove: '{' | remove: '}'
+-%}
+{%- if font_ok -%}
+  <link rel="stylesheet" href="{{ font_url | escape }}" crossorigin="anonymous">
+{%- endif -%}
+{%- if heading_font != blank or body_font != blank or settings.cursor_image != blank or settings.custom_scrollbar -%}
+  <style>
+    :root {
+      {%- if heading_font != blank %}
+        --font-heading-family: "{{ heading_font }}", {{ settings.type_header_font.fallback_families }};
+        --font-heading-weight: {{ settings.custom_heading_weight }};
+        --font-heading-style: normal;
+      {%- endif -%}
+      {%- if body_font != blank %}
+        --font-body-family: "{{ body_font }}", {{ settings.type_body_font.fallback_families }};
+        --font-body-weight: {{ settings.custom_body_weight }};
+        --font-body-weight-bold: {{ settings.custom_body_weight | plus: 300 | at_most: 900 }};
+        --font-body-style: normal;
+      {%- endif %}
+    }
+    {%- if settings.cursor_image != blank -%}
+      {%- liquid
+        assign cursor_size = settings.cursor_size | default: 32
+        assign cursor_hot = cursor_size | divided_by: 2
+        if settings.cursor_hotspot == 'top-left'
+          assign cursor_hot = 0
+        endif
+        assign cursor_url = settings.cursor_image | image_url: width: cursor_size, height: cursor_size, crop: 'center'
+      -%}
+      html,
+      body {
+        cursor: url('{{ cursor_url }}') {{ cursor_hot }} {{ cursor_hot }}, auto;
+      }
+      {%- unless settings.cursor_on_links %}
+        a, button, summary, label, select, [role='button'] {
+          cursor: pointer;
+        }
+      {%- else %}
+        a, button, summary, label, select, [role='button'] {
+          cursor: url('{{ cursor_url }}') {{ cursor_hot }} {{ cursor_hot }}, pointer;
+        }
+      {%- endunless %}
+      input, textarea {
+        cursor: text;
+      }
+    {%- endif -%}
+    {%- if settings.custom_scrollbar %}
+      html {
+        scrollbar-color: {{ settings.scrollbar_thumb }} {{ settings.scrollbar_track }};
+        scrollbar-width: {% if settings.scrollbar_width < 10 %}thin{% else %}auto{% endif %};
+      }
+      ::-webkit-scrollbar {
+        width: {{ settings.scrollbar_width }}px;
+        height: {{ settings.scrollbar_width }}px;
+      }
+      ::-webkit-scrollbar-track {
+        background: {{ settings.scrollbar_track }};
+      }
+      ::-webkit-scrollbar-thumb {
+        background: {{ settings.scrollbar_thumb }};
+        border-radius: {{ settings.scrollbar_radius }}px;
+      }
+    {%- endif %}
+  </style>
+{%- endif -%}

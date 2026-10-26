@@ -1,0 +1,836 @@
+
+{%- liquid
+  assign s = section.settings
+  case s.width
+    when 'xs'
+      assign tabs_max = '60%'
+    when 's'
+      assign tabs_max = '80%'
+    when 'm'
+      assign tabs_max = '100%'
+    else
+      assign tabs_max = 'none'
+  endcase
+-%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<style>
+  #GadTabs-{{ section.id }} .gad-tabs-pad{padding-top:{{ s.padding_top | times: 0.75 | round }}px;padding-bottom:{{ s.padding_bottom | times: 0.75 | round }}px}
+  @media(min-width:750px){#GadTabs-{{ section.id }} .gad-tabs-pad{padding-top:{{ s.padding_top }}px;padding-bottom:{{ s.padding_bottom }}px}}
+  #tabs-{{ section.id }}{max-width:{{ tabs_max }};margin:0 auto}
+  {% if s.nav_style == 'shadow' %}#tabs-{{ section.id }} .tabs__btn{border-color:transparent;box-shadow:0 2px 10px rgba(0,0,0,.12)}{% endif %}
+  {% if s.active_style == 'slide' %}#tabs-{{ section.id }} .tabs__btn.is-active{transform:translateY(-2px)}{% else %}#tabs-{{ section.id }} .tabs__btn{opacity:.55}#tabs-{{ section.id }} .tabs__btn.is-active{opacity:1}{% endif %}
+  #tabs-{{ section.id }} .tabs__nav{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:2.4rem}
+  {% if s.layout == 'vertical' %}@media(min-width:990px){#tabs-{{ section.id }}{display:grid;grid-template-columns:22rem 1fr;gap:3rem}#tabs-{{ section.id }} .tabs__nav{flex-direction:column;margin:0}}{% endif %}
+  #tabs-{{ section.id }} .tabs__btn{font-size:{{ s.font_size_m }}px;font-weight:600;padding:1rem 1.8rem;border-radius:{{ s.button_radius }}px;cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;transition:background .2s,color .2s;
+    --tab-bg:{% if s.custom_buttons %}{{ s.button_color }}{% else %}rgb(var(--color-button)){% endif %};--tab-fg:{% if s.custom_buttons %}{{ s.button_active_text }}{% else %}rgb(var(--color-button-text)){% endif %};
+    {%- if s.nav_style == 'solid' -%}background:var(--tab-bg);color:var(--tab-fg);border:2px solid var(--tab-bg);opacity:.75{%- else -%}background:transparent;color:var(--tab-bg);border:2px solid var(--tab-bg){%- endif -%}}
+  #tabs-{{ section.id }} .tabs__btn.is-active{background:var(--tab-bg);color:var(--tab-fg);opacity:1}
+  #tabs-{{ section.id }} .tabs__btn .gad-icon{font-size:20px}
+  {% if s.stretch_m %}@media(max-width:749px){#tabs-{{ section.id }} .tabs__btn{flex:1 1 100%;justify-content:center}}{% endif %}
+  @media(min-width:750px){#tabs-{{ section.id }} .tabs__btn{font-size:{{ s.font_size_d }}px}{% if s.stretch_d %}#tabs-{{ section.id }} .tabs__btn{flex:1}{% endif %}}
+  #tabs-{{ section.id }} .tabs__panel{display:none}
+  #tabs-{{ section.id }} .tabs__panel.is-active{display:grid;gap:2.4rem;align-items:center}
+  #tabs-{{ section.id }} .tabs__panel.has-media{grid-template-columns:1fr}
+  @media(min-width:990px){#tabs-{{ section.id }} .tabs__panel.has-media.w-half{grid-template-columns:1fr 1fr}#tabs-{{ section.id }} .tabs__panel.has-media.w-half.media-second .tabs__media{order:2}}
+  #tabs-{{ section.id }} .tabs__media img,#tabs-{{ section.id }} .tabs__media video{width:100%;height:auto;border-radius:var(--media-radius);display:block}
+  #tabs-{{ section.id }} .tabs__body{text-align:center}
+  #tabs-{{ section.id }} .tabs__body.left{text-align:left}#tabs-{{ section.id }} .tabs__body.right{text-align:right}
+  @media(max-width:989px){#tabs-{{ section.id }} .tabs__body.mobile-left{text-align:left}#tabs-{{ section.id }} .tabs__body.mobile-center{text-align:center}#tabs-{{ section.id }} .tabs__body.mobile-right{text-align:right}#tabs-{{ section.id }} .tabs__panel.m-media-second .tabs__media{order:2}}
+  #tabs-{{ section.id }} .tabs__title{margin:0 0 1.2rem}
+  #tabs-{{ section.id }} .tabs__title strong{color:var(--tab-hl)}
+  #tabs-{{ section.id }} .tabs__cta{margin-top:1.6rem}
+</style>
+<div id="GadTabs-{{ section.id }}" class="{% render 'gad-scheme', s: s, key: section.id %}" {% render 'gad-section-attrs', s: s %}>
+  <div class="page-width gad-tabs-pad">
+    {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: s.heading_align, align_m: s.heading_align_m -%}
+    <div id="tabs-{{ section.id }}" class="tabs">
+      <div class="tabs__nav" role="tablist">
+        {%- for block in section.blocks -%}
+          <button type="button" role="tab" class="tabs__btn{% if forloop.first %} is-active{% endif %}" aria-selected="{{ forloop.first }}" aria-controls="panel-{{ block.id }}" data-tab="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != blank -%}{%- render 'gad-icon', name: block.settings.icon, filled: block.settings.icon_filled -%}{%- endif -%}
+            {{ block.settings.label }}
+          </button>
+        {%- endfor -%}
+      </div>
+      <div class="tabs__panels">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign b = block.settings
+            assign has_media = false
+            if b.image != blank or b.video != blank
+              assign has_media = true
+            endif
+          -%}
+          <div id="panel-{{ block.id }}" role="tabpanel" class="tabs__panel{% if forloop.first %} is-active{% endif %}{% if has_media %} has-media{% endif %}{% if b.media_width == 'half' %} w-half{% endif %}{% if b.media_position == 'second' %} media-second{% endif %}{% if b.m_media_position == 'second' %} m-media-second{% endif %}" style="--tab-hl:{{ b.title_accent | default: 'inherit' }}">
+            {%- if has_media -%}
+              <div class="tabs__media">
+                {%- if b.video != blank -%}
+                  {{ b.video | video_tag: image_size: '1100x', loop: b.loop, muted: b.autoplay, autoplay: b.autoplay, playsinline: true, controls: true }}
+                {%- else -%}
+                  {{ b.image | image_url: width: 1500 | image_tag: loading: 'lazy', sizes: '(min-width: 990px) 50vw, 100vw' }}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <div class="tabs__body {{ b.align | default: 'center' }} mobile-{{ b.m_align | default: 'center' }}">
+              {%- if b.title != blank -%}<h3 class="tabs__title {{ b.title_size | default: 'h1' }}">{{ b.title }}</h3>{%- endif -%}
+              {%- if b.text != blank -%}<div class="rte">{{ b.text }}</div>{%- endif -%}
+              {%- if b.button_label != blank -%}<div class="tabs__cta"><a {% if b.button_link == blank %}role="link" aria-disabled="true"{% else %}href="{{ b.button_link }}"{% endif %} class="button{% if b.button_outline %} button--secondary{% endif %}">{{ b.button_label | escape }}</a></div>{%- endif -%}
+              {%- if b.atc_label != blank and b.atc_product != blank -%}<div class="tabs__cta">{%- render 'gad-atc-button', label: b.atc_label, product: b.atc_product, skip_cart: b.atc_skip_cart -%}</div>{%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var root = document.getElementById('tabs-{{ section.id }}');
+    if (!root) return;
+    root.addEventListener('click', function (e) {
+      var btn = e.target.closest('.tabs__btn');
+      if (!btn) return;
+      var i = btn.dataset.tab;
+      root.querySelectorAll('.tabs__btn').forEach(function (b, j) { var on = String(j) === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); });
+      root.querySelectorAll('.tabs__panel').forEach(function (p, j) { p.classList.toggle('is-active', String(j) === i); });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Pestañas de contenido",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alineación del encabezado",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "info": "Volanta, título y texto de arriba."
+    },
+    {
+      "type": "select",
+      "id": "heading_align_m",
+      "label": "Alineación del encabezado en mobile",
+      "default": "same",
+      "options": [
+        {
+          "value": "same",
+          "label": "Igual que en desktop"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Pestañas"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Ancho del contenedor",
+      "options": [
+        {
+          "value": "xs",
+          "label": "Extra chico"
+        },
+        {
+          "value": "s",
+          "label": "Chico"
+        },
+        {
+          "value": "m",
+          "label": "Mediano"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_buttons",
+      "label": "Colores propios para los botones",
+      "default": false,
+      "info": "Si no, usan el color de los botones de la combinación."
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Color de los botones y del borde",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_active_text",
+      "label": "Texto del botón activo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Redondeo de los botones",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "nav_style",
+      "label": "Estilo del contenedor",
+      "options": [
+        {
+          "value": "border",
+          "label": "Con borde"
+        },
+        {
+          "value": "shadow",
+          "label": "Con sombra"
+        },
+        {
+          "value": "solid",
+          "label": "Botones llenos"
+        }
+      ],
+      "default": "border"
+    },
+    {
+      "type": "select",
+      "id": "active_style",
+      "label": "Botón activo",
+      "options": [
+        {
+          "value": "slide",
+          "label": "Fondo que se desliza"
+        },
+        {
+          "value": "fade",
+          "label": "Cambio de opacidad"
+        }
+      ],
+      "default": "slide",
+      "info": "El fondo que se desliza queda mejor cuando todos los botones entran en una fila."
+    },
+    {
+      "type": "header",
+      "content": "Desktop"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Disposición de los botones",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "En fila arriba"
+        },
+        {
+          "value": "vertical",
+          "label": "En columna a la izquierda"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "range",
+      "id": "font_size_d",
+      "min": 14,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño de letra de los botones",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "stretch_d",
+      "label": "Estirar los botones a todo el ancho",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "font_size_m",
+      "min": 8,
+      "max": 25,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño de letra de los botones",
+      "default": 14
+    },
+    {
+      "type": "checkbox",
+      "id": "stretch_m",
+      "label": "Estirar los botones a todo el ancho",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Pestaña",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Botón"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "label",
+          "label": "Texto del botón",
+          "default": "Pestaña"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Ícono",
+          "info": "Opcional. Nombre en inglés de Material Symbols."
+        },
+        {
+          "type": "checkbox",
+          "id": "icon_filled",
+          "label": "Ícono relleno",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Imagen o video"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen",
+          "info": "Si cargás un video, la imagen queda como miniatura. Sin imagen ni video, el texto usa todo el ancho."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "checkbox",
+          "id": "loop",
+          "label": "Repetir el video",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "autoplay",
+          "label": "Reproducción automática sin sonido",
+          "default": false
+        },
+        {
+          "type": "color_scheme",
+          "id": "play_scheme",
+          "label": "Combinación del botón de reproducir",
+          "default": "scheme-1"
+        },
+        {
+          "type": "checkbox",
+          "id": "pulse",
+          "label": "Onda alrededor del botón de reproducir",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Texto"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "Título",
+          "default": "Título de la pestaña",
+          "info": "Marcá en negrita las palabras que querés resaltar."
+        },
+        {
+          "type": "select",
+          "id": "title_size",
+          "label": "Tamaño del título",
+          "options": [
+            {
+              "value": "h3",
+              "label": "Chico"
+            },
+            {
+              "value": "h2",
+              "label": "Mediano"
+            },
+            {
+              "value": "h1",
+              "label": "Grande"
+            },
+            {
+              "value": "h0",
+              "label": "Extra grande"
+            }
+          ],
+          "default": "h2"
+        },
+        {
+          "type": "color",
+          "id": "title_accent",
+          "label": "Color de las palabras resaltadas"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Contá acá lo que va en esta pestaña.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "info": "Sin texto, el botón no aparece."
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Enlace del botón"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_outline",
+          "label": "Botón con contorno",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "atc_label",
+          "label": "Texto del botón de agregar al carrito",
+          "info": "Sin texto, el botón no aparece. En una ficha agrega ese producto con la variante y la cantidad elegidas."
+        },
+        {
+          "type": "product",
+          "id": "atc_product",
+          "label": "Producto",
+          "info": "Opcional. Si elegís uno, el botón agrega ése. Fuera de una ficha hace falta elegirlo."
+        },
+        {
+          "type": "checkbox",
+          "id": "atc_skip_cart",
+          "label": "Ir directo al pago",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "Desktop"
+        },
+        {
+          "type": "select",
+          "id": "media_width",
+          "label": "Ancho de la imagen o video",
+          "options": [
+            {
+              "value": "half",
+              "label": "La mitad"
+            },
+            {
+              "value": "full",
+              "label": "Completo"
+            }
+          ],
+          "default": "half"
+        },
+        {
+          "type": "select",
+          "id": "media_position",
+          "label": "Posición de la imagen o video",
+          "options": [
+            {
+              "value": "first",
+              "label": "Primero"
+            },
+            {
+              "value": "second",
+              "label": "Segundo"
+            }
+          ],
+          "default": "first"
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Alineación del texto",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "header",
+          "content": "Mobile"
+        },
+        {
+          "type": "select",
+          "id": "m_media_position",
+          "label": "Imagen o video",
+          "options": [
+            {
+              "value": "first",
+              "label": "Arriba del texto"
+            },
+            {
+              "value": "second",
+              "label": "Abajo del texto"
+            }
+          ],
+          "default": "first"
+        },
+        {
+          "type": "select",
+          "id": "m_align",
+          "label": "Alineación del texto",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "left"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pestañas de contenido",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Pestaña 1"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Pestaña 2"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Pestaña 3"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

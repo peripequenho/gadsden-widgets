@@ -1,0 +1,19 @@
+
+{%- if title != blank or text != blank or caption != blank -%}
+  {%- assign heading_tag = tag | default: 'h2' -%}
+  <div class="gad-heading{% if align %} gad-heading--{{ align }}{% endif %}{% if align_m != blank and align_m != 'same' %} gad-heading--m-{{ align_m }}{% endif %}{% if class %} {{ class }}{% endif %}">
+    {%- if caption != blank -%}
+      <p class="gad-heading__caption caption-with-letter-spacing caption-with-letter-spacing--medium"{% if caption_color != blank %} style="color: {{ caption_color }};"{% endif %}>
+        {{- caption | escape -}}
+      </p>
+    {%- endif -%}
+    {%- if title != blank -%}
+      <{{ heading_tag }} class="gad-heading__title gad-hl inline-richtext {{ size | default: 'h1' }}"{% if accent != blank %} style="--gad-hl: {{ accent }};"{% endif %}>
+        {{- title -}}
+      </{{ heading_tag }}>
+    {%- endif -%}
+    {%- if text != blank -%}
+      <div class="gad-heading__text rte">{{ text }}</div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

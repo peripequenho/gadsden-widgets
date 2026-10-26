@@ -1,0 +1,3071 @@
+/* Gadsden: estilos globales compartidos por las secciones y los bloques propios. */
+
+/* ---------- D01: íconos por nombre ---------- */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 2.4rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 0;
+}
+
+.gad-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  font-size: inherit;
+  line-height: 1;
+  color: var(--gad-icon-color, currentColor);
+  vertical-align: middle;
+}
+
+.gad-icon.material-symbols-outlined {
+  font-size: inherit;
+}
+
+.gad-icon--filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+.gad-icon--missing {
+  visibility: hidden;
+}
+
+.gad-icon--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------- T03: encabezados con palabras resaltadas ---------- */
+.gad-heading {
+  margin-bottom: 3rem;
+}
+
+.gad-heading--left {
+  text-align: left;
+}
+
+.gad-heading--center {
+  text-align: center;
+}
+
+.gad-heading--right {
+  text-align: right;
+}
+
+.gad-heading__title {
+  margin: 0;
+}
+
+.gad-heading__caption {
+  margin: 0 0 1rem;
+}
+
+/* Texto con la letra de los títulos (frases de tarjetas, palabras de sellos, ítems en caja). */
+.gad-title-font {
+  font-family: var(--font-heading-family);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+}
+
+.gad-heading__text {
+  margin-top: 1.2rem;
+}
+
+.gad-heading--center .gad-heading__text {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 70rem;
+}
+
+.gad-heading--left .gad-heading__text {
+  max-width: 70rem;
+}
+
+@media screen and (max-width: 749px) {
+  .gad-heading.gad-heading--m-left {
+    text-align: left;
+  }
+
+  .gad-heading.gad-heading--m-left .gad-heading__text {
+    margin-left: 0;
+  }
+
+  .gad-heading.gad-heading--m-center {
+    text-align: center;
+  }
+
+  .gad-heading.gad-heading--m-center .gad-heading__text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.gad-hl strong,
+.gad-hl b {
+  color: var(--gad-hl, rgb(var(--color-accent, var(--color-button))));
+  font-weight: inherit;
+}
+
+/* ---------- T09: mostrar sólo en mobile o sólo en desktop ---------- */
+@media screen and (max-width: 989px) {
+  [data-gad-visibility='desktop'],
+  .shopify-section:has(> [data-gad-visibility='desktop']),
+  .shopify-section:has(> * > [data-gad-visibility='desktop']:only-child) {
+    display: none !important;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  [data-gad-visibility='mobile'],
+  .shopify-section:has(> [data-gad-visibility='mobile']),
+  .shopify-section:has(> * > [data-gad-visibility='mobile']:only-child) {
+    display: none !important;
+  }
+}
+
+/* ---------- T10: anclas ---------- */
+[data-gad-anchor] {
+  scroll-margin-top: calc(var(--header-height, 0px) + 0.8rem);
+}
+
+/* ---------- A01: velo claro para tarjetas ---------- */
+.gad-tint {
+  background-color: rgba(var(--color-foreground), 0.05);
+}
+
+/* ---------- T06: protección de contenido ---------- */
+html.gad-protect body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html.gad-protect img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+html.gad-protect input,
+html.gad-protect textarea,
+html.gad-protect select,
+html.gad-protect [contenteditable],
+html.gad-protect .gad-selectable {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* ---------- T05: efectos de los botones al pasar el mouse ---------- */
+.button,
+.shopify-payment-button__button--unbranded {
+  background-repeat: no-repeat;
+}
+
+.gad-btn-arrow {
+  display: inline-flex;
+  align-items: center;
+  width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-0.6rem);
+  transition: width var(--duration-default) ease, margin var(--duration-default) ease,
+    opacity var(--duration-default) ease, transform var(--duration-default) ease;
+}
+
+.gad-btn-arrow svg {
+  width: 1.4rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) {
+  .gad-fx-link-glow a.button:not([aria-disabled='true']):hover,
+  .gad-fx-action-glow button.button:not([disabled]):hover,
+  .gad-fx-action-glow input.button:not([disabled]):hover,
+  .gad-fx-action-glow .shopify-payment-button__button:not([disabled]):hover {
+    box-shadow: 0 0 1.6rem 0.2rem rgba(var(--color-button), 0.5);
+    transition: box-shadow var(--duration-medium) ease;
+  }
+
+  .gad-fx-link-glow a.button.button--secondary:hover,
+  .gad-fx-action-glow button.button.button--secondary:not([disabled]):hover {
+    box-shadow: 0 0 1.6rem 0.2rem rgba(var(--color-secondary-button-text), 0.35);
+  }
+
+  .gad-fx-link-fill-center a.button,
+  .gad-fx-link-fill-left a.button,
+  .gad-fx-action-fill-center button.button,
+  .gad-fx-action-fill-left button.button,
+  .gad-fx-action-fill-center .shopify-payment-button__button--unbranded,
+  .gad-fx-action-fill-left .shopify-payment-button__button--unbranded {
+    --gad-fill: rgba(var(--color-button-text), 0.2);
+    background-image: linear-gradient(var(--gad-fill), var(--gad-fill));
+    background-size: 0% 100%;
+    transition: background-size var(--duration-long) var(--ease-out-slow), color var(--duration-medium) ease;
+  }
+
+  .gad-fx-link-fill-center a.button,
+  .gad-fx-action-fill-center button.button,
+  .gad-fx-action-fill-center .shopify-payment-button__button--unbranded {
+    background-position: center;
+  }
+
+  .gad-fx-link-fill-left a.button,
+  .gad-fx-action-fill-left button.button,
+  .gad-fx-action-fill-left .shopify-payment-button__button--unbranded {
+    background-position: left center;
+  }
+
+  .gad-fx-link-fill-center a.button--secondary,
+  .gad-fx-link-fill-left a.button--secondary,
+  .gad-fx-action-fill-center button.button--secondary,
+  .gad-fx-action-fill-left button.button--secondary {
+    --gad-fill: rgb(var(--color-secondary-button-text));
+  }
+
+  .gad-fx-link-fill-center a.button:not([aria-disabled='true']):hover,
+  .gad-fx-link-fill-left a.button:not([aria-disabled='true']):hover,
+  .gad-fx-action-fill-center button.button:not([disabled]):hover,
+  .gad-fx-action-fill-left button.button:not([disabled]):hover,
+  .gad-fx-action-fill-center .shopify-payment-button__button--unbranded:not([disabled]):hover,
+  .gad-fx-action-fill-left .shopify-payment-button__button--unbranded:not([disabled]):hover {
+    background-size: 100% 100%;
+  }
+
+  .gad-fx-link-fill-center a.button--secondary:hover,
+  .gad-fx-link-fill-left a.button--secondary:hover,
+  .gad-fx-action-fill-center button.button--secondary:not([disabled]):hover,
+  .gad-fx-action-fill-left button.button--secondary:not([disabled]):hover {
+    color: rgb(var(--color-secondary-button));
+  }
+
+  .gad-fx-link-arrow a.button:hover .gad-btn-arrow,
+  .gad-fx-action-arrow button.button:not([disabled]):hover .gad-btn-arrow,
+  .gad-fx-action-arrow .shopify-payment-button__button:not([disabled]):hover .gad-btn-arrow {
+    width: 1.4rem;
+    margin-left: 0.8rem;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- T04: carrusel compartido ---------- */
+gad-carousel {
+  --pv: var(--m-pv, 1);
+  --gap: var(--m-gap, 12px);
+  --peek: var(--m-peek, 0px);
+  --gad-dot-color: var(--color-foreground);
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  grid-template-areas:
+    'stage stage stage stage stage'
+    '. prev dots next .';
+  position: relative;
+  min-width: 0;
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) gad-carousel {
+    --pv: var(--d-pv, 3);
+    --gap: var(--d-gap, 24px);
+    --peek: var(--d-peek, 0px);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel {
+    --pv: var(--d-pv, 3);
+    --gap: var(--d-gap, 24px);
+    --peek: var(--d-peek, 0px);
+  }
+}
+
+.gad-carousel__viewport {
+  grid-area: stage;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  transition: height var(--duration-medium) ease;
+}
+
+.gad-carousel__track {
+  display: flex;
+  column-gap: var(--gap);
+  will-change: transform;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.3, 1);
+}
+
+.gad-carousel__track > * {
+  flex: 0 0 calc((100% - var(--peek) * 2 - var(--gap) * (var(--pv) - 1)) / var(--pv));
+  min-width: 0;
+}
+
+gad-carousel:not(.is-active) .gad-carousel__track {
+  transform: translate3d(calc(var(--peek) * -1), 0, 0);
+}
+
+/* sin carrusel en este dispositivo (o con menos ítems que columnas): grilla con la última fila centrada */
+@media screen and (max-width: 749px) {
+  gad-carousel:not(.gad-carousel--m-on) .gad-carousel__track,
+  gad-carousel.is-static .gad-carousel__track {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--gap);
+    transform: none !important;
+  }
+
+  gad-carousel:not(.gad-carousel--m-on) .gad-carousel__track > *,
+  gad-carousel.is-static .gad-carousel__track > * {
+    flex-basis: calc((100% - var(--gap) * (var(--pv) - 1)) / var(--pv));
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel:not(.gad-carousel--m-on) .gad-carousel__track,
+  :where(html:not([data-gad-bp='750'])) gad-carousel.is-static .gad-carousel__track {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--gap);
+    transform: none !important;
+  }
+
+  :where(html:not([data-gad-bp='750'])) gad-carousel:not(.gad-carousel--m-on) .gad-carousel__track > *,
+  :where(html:not([data-gad-bp='750'])) gad-carousel.is-static .gad-carousel__track > * {
+    flex-basis: calc((100% - var(--gap) * (var(--pv) - 1)) / var(--pv));
+  }
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) gad-carousel:not(.gad-carousel--d-on) .gad-carousel__track,
+  :where(html[data-gad-bp='750']) gad-carousel.is-static .gad-carousel__track {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--gap);
+    transform: none !important;
+  }
+
+  :where(html[data-gad-bp='750']) gad-carousel:not(.gad-carousel--d-on) .gad-carousel__track > *,
+  :where(html[data-gad-bp='750']) gad-carousel.is-static .gad-carousel__track > * {
+    flex-basis: calc((100% - var(--gap) * (var(--pv) - 1)) / var(--pv));
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel:not(.gad-carousel--d-on) .gad-carousel__track,
+  :where(html:not([data-gad-bp='750'])) gad-carousel.is-static .gad-carousel__track {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--gap);
+    transform: none !important;
+  }
+
+  :where(html:not([data-gad-bp='750'])) gad-carousel:not(.gad-carousel--d-on) .gad-carousel__track > *,
+  :where(html:not([data-gad-bp='750'])) gad-carousel.is-static .gad-carousel__track > * {
+    flex-basis: calc((100% - var(--gap) * (var(--pv) - 1)) / var(--pv));
+  }
+}
+
+gad-carousel.is-draggable .gad-carousel__viewport {
+  touch-action: pan-y pinch-zoom;
+  cursor: grab;
+}
+
+gad-carousel.is-dragging .gad-carousel__viewport {
+  cursor: grabbing;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+gad-carousel.is-dragging .gad-carousel__track a {
+  pointer-events: none;
+}
+
+@media screen and (max-width: 749px) {
+  gad-carousel.gad-carousel--m-auto-height .gad-carousel__track {
+    align-items: flex-start;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel.gad-carousel--m-auto-height .gad-carousel__track {
+    align-items: flex-start;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) gad-carousel.gad-carousel--d-auto-height .gad-carousel__track {
+    align-items: flex-start;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel.gad-carousel--d-auto-height .gad-carousel__track {
+    align-items: flex-start;
+  }
+}
+
+/* fundido */
+gad-carousel.gad-carousel--fade.is-active .gad-carousel__track {
+  display: grid;
+  transform: none;
+  transition: none;
+}
+
+gad-carousel.gad-carousel--fade.is-active .gad-carousel__track > * {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+}
+
+gad-carousel.gad-carousel--fade.is-active .gad-carousel__track > .is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease, visibility 0s linear 0s;
+}
+
+/* flechas */
+.gad-carousel__arrow {
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  width: var(--gad-arrow-size, 4rem);
+  height: var(--gad-arrow-size, 4rem);
+  margin: 1.2rem 0.6rem 0;
+  padding: 0;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  border-radius: var(--gad-arrow-radius, 50%);
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+  transition: opacity var(--duration-default) ease, transform var(--duration-default) ease;
+}
+
+.gad-carousel__arrow--prev {
+  grid-area: prev;
+}
+
+.gad-carousel__arrow--next {
+  grid-area: next;
+}
+
+.gad-carousel__arrow .gad-arrow {
+  width: var(--gad-arrow-icon, 50%);
+  height: var(--gad-arrow-icon, 50%);
+}
+
+.gad-carousel__arrow[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.gad-carousel__arrow[hidden] {
+  display: none;
+}
+
+.gad-carousel--bare-arrows .gad-carousel__arrow {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .gad-carousel__arrow:not([disabled]):hover {
+    transform: scale(1.06);
+  }
+}
+
+/* puntos */
+.gad-carousel__dots {
+  grid-area: dots;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gad-dot-gap, 0.8rem);
+  margin: 1.2rem 0.6rem 0;
+  min-height: var(--gad-arrow-size, 4rem);
+}
+
+.gad-carousel__dots[hidden] {
+  display: none;
+}
+
+.gad-carousel__dot {
+  width: var(--gad-dot-w, 0.8rem);
+  height: var(--gad-dot-h, 0.8rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--gad-dot-radius, 0.8rem);
+  background: rgba(var(--gad-dot-color), 0.3);
+  cursor: pointer;
+  transition: transform var(--duration-default) ease, background-color var(--duration-default) ease;
+}
+
+.gad-carousel__dot.is-active {
+  background: rgb(var(--gad-dot-color));
+  transform: scale(var(--gad-dot-scale, 1.3));
+}
+
+/* posiciones de flechas y puntos por dispositivo */
+@media screen and (max-width: 749px) {
+  .gad-carousel--m-arrows-hidden .gad-carousel__arrow,
+  .gad-carousel--m-dots-hidden .gad-carousel__dots {
+    display: none;
+  }
+
+  .gad-carousel--m-arrows-sides .gad-carousel__arrow {
+    grid-area: stage;
+    align-self: center;
+    margin: 0 0.8rem;
+  }
+
+  .gad-carousel--m-arrows-sides .gad-carousel__arrow--prev {
+    justify-self: start;
+  }
+
+  .gad-carousel--m-arrows-sides .gad-carousel__arrow--next {
+    justify-self: end;
+  }
+
+  .gad-carousel--m-dots-over .gad-carousel__dots {
+    grid-area: stage;
+    align-self: end;
+    justify-self: center;
+    min-height: 0;
+    margin: 0 0 1.2rem;
+  }
+
+  .gad-carousel--m-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.45);
+  }
+
+  .gad-carousel--m-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot.is-active {
+    background: #fff;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-arrows-hidden .gad-carousel__arrow,
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-dots-hidden .gad-carousel__dots {
+    display: none;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-arrows-sides .gad-carousel__arrow {
+    grid-area: stage;
+    align-self: center;
+    margin: 0 0.8rem;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-arrows-sides .gad-carousel__arrow--prev {
+    justify-self: start;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-arrows-sides .gad-carousel__arrow--next {
+    justify-self: end;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-dots-over .gad-carousel__dots {
+    grid-area: stage;
+    align-self: end;
+    justify-self: center;
+    min-height: 0;
+    margin: 0 0 1.2rem;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.45);
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--m-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot.is-active {
+    background: #fff;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) .gad-carousel--d-arrows-hidden .gad-carousel__arrow,
+  :where(html[data-gad-bp='750']) .gad-carousel--d-dots-hidden .gad-carousel__dots {
+    display: none;
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-arrows-sides .gad-carousel__arrow {
+    grid-area: stage;
+    align-self: center;
+    margin: 0 1.2rem;
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-arrows-sides .gad-carousel__arrow--prev {
+    justify-self: start;
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-arrows-sides .gad-carousel__arrow--next {
+    justify-self: end;
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-dots-over .gad-carousel__dots {
+    grid-area: stage;
+    align-self: end;
+    justify-self: center;
+    min-height: 0;
+    margin: 0 0 1.6rem;
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.45);
+  }
+
+  :where(html[data-gad-bp='750']) .gad-carousel--d-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot.is-active {
+    background: #fff;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-arrows-hidden .gad-carousel__arrow,
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-dots-hidden .gad-carousel__dots {
+    display: none;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-arrows-sides .gad-carousel__arrow {
+    grid-area: stage;
+    align-self: center;
+    margin: 0 1.2rem;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-arrows-sides .gad-carousel__arrow--prev {
+    justify-self: start;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-arrows-sides .gad-carousel__arrow--next {
+    justify-self: end;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-dots-over .gad-carousel__dots {
+    grid-area: stage;
+    align-self: end;
+    justify-self: center;
+    min-height: 0;
+    margin: 0 0 1.6rem;
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.45);
+  }
+
+  :where(html:not([data-gad-bp='750'])) .gad-carousel--d-dots-over:not(.gad-carousel--dot-color) .gad-carousel__dot.is-active {
+    background: #fff;
+  }
+}
+
+gad-carousel.is-static .gad-carousel__arrow,
+gad-carousel.is-static .gad-carousel__dots {
+  display: none;
+}
+
+/* ---------- T01: aparición animada (ajustes en Gadsden · Animaciones) ---------- */
+html.gad-motion .scroll-trigger.animate--slide-in,
+html.gad-motion .scroll-trigger.animate--fade-in {
+  opacity: var(--gad-reveal-opacity, 0.01);
+}
+
+html.gad-motion .scroll-trigger.animate--slide-in {
+  transform: translate(var(--gad-reveal-x, 0%), var(--gad-reveal-y, 0%)) scale(var(--gad-reveal-scale, 1));
+  filter: blur(var(--gad-reveal-blur, 0.3rem));
+}
+
+html.gad-motion .scroll-trigger:not(.scroll-trigger--offscreen).animate--fade-in {
+  opacity: 1;
+  animation: gadRevealFade var(--gad-reveal-duration, 650ms) var(--ease-out-slow) both;
+  animation-delay: var(--gad-reveal-delay, 0ms);
+}
+
+html.gad-motion .scroll-trigger:not(.scroll-trigger--offscreen).animate--slide-in {
+  animation: gadReveal var(--gad-reveal-duration, 650ms) var(--ease-out-slow) both;
+  animation-delay: calc(var(--gad-reveal-delay, 0ms) + var(--animation-order, 0) * var(--gad-reveal-stagger, 75ms));
+}
+
+html.gad-motion .scroll-trigger.scroll-trigger--design-mode.animate--fade-in,
+html.gad-motion .scroll-trigger.scroll-trigger--design-mode.animate--slide-in,
+html.gad-motion .scroll-trigger:not(.scroll-trigger--offscreen).scroll-trigger--cancel {
+  opacity: 1;
+  animation: none;
+  transition: none;
+  transform: none;
+  filter: none;
+}
+
+html.gad-reduce .scroll-trigger.animate--slide-in,
+html.gad-reduce .scroll-trigger.animate--fade-in {
+  opacity: 1;
+  animation: none;
+  transform: none;
+  filter: none;
+}
+
+@keyframes gadReveal {
+  from {
+    opacity: var(--gad-reveal-opacity, 0.01);
+    transform: translate(var(--gad-reveal-x, 0%), var(--gad-reveal-y, 0%)) scale(var(--gad-reveal-scale, 1));
+    filter: blur(var(--gad-reveal-blur, 0.3rem));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes gadRevealFade {
+  from {
+    opacity: var(--gad-reveal-opacity, 0.01);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- A03 y A11: etiquetas de oferta y por tag ---------- */
+.gad-sale-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gad-sale-badge .gad-icon {
+  font-size: 1em;
+}
+
+/* en el precio de Dawn la etiqueta es inline-block: el ícono se alinea con el texto */
+.price__badge-sale.gad-sale-badge .gad-icon {
+  margin-right: 0.3rem;
+  vertical-align: -0.25em;
+}
+
+.card__badge .badge + .badge {
+  margin-left: 0.4rem;
+}
+
+/* ---------- multicolumna en carrusel ---------- */
+@media screen and (max-width: 749px) {
+  .gad-multicolumn-carousel {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) .gad-multicolumn-carousel {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.gad-multicolumn-carousel .multicolumn-list__item {
+  list-style: none;
+}
+
+/* ---------- video (gad-video) ---------- */
+gad-video {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.gad-video__el {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gad-video--cover,
+.gad-video--cover .gad-video__el {
+  width: 100%;
+  height: 100%;
+}
+
+.gad-video--cover .gad-video__el {
+  object-fit: cover;
+}
+
+.gad-video--tap .gad-video__el {
+  cursor: pointer;
+}
+
+.gad-video__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 5.6rem;
+  height: 5.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+  font-size: 3rem;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: opacity var(--duration-default) ease, transform var(--duration-default) ease;
+}
+
+.gad-video__play--pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 0.2rem solid rgb(var(--color-button));
+  animation: gadPulse 1.6s ease-out infinite;
+  pointer-events: none;
+}
+
+html.gad-reduce .gad-video__play--pulse::after {
+  animation: none;
+}
+
+@keyframes gadPulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.gad-video__icon-pause,
+gad-video.is-playing .gad-video__icon-play {
+  display: none;
+}
+
+gad-video.is-playing .gad-video__icon-pause {
+  display: inline-flex;
+}
+
+gad-video.is-playing .gad-video__play {
+  opacity: 0;
+  pointer-events: none;
+}
+
+gad-video.is-playing .gad-video__play--pulse::after {
+  animation: none;
+}
+
+@media (hover: hover) {
+  gad-video.is-playing:hover .gad-video__play {
+    opacity: 0.85;
+    pointer-events: auto;
+  }
+}
+
+.gad-video__sound {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.gad-video__icon-sound,
+gad-video:not(.is-muted) .gad-video__icon-muted {
+  display: none;
+}
+
+gad-video:not(.is-muted) .gad-video__icon-sound {
+  display: inline-flex;
+}
+
+.gad-video__timeline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 0.4rem;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.gad-video__timeline span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: rgb(var(--gad-timeline, var(--color-button)));
+}
+
+/* ---------- T11: botón de agregar al carrito en secciones ---------- */
+.gad-atc__btn {
+  position: relative;
+}
+
+.gad-atc__error {
+  margin: 0.8rem 0 0;
+  font-size: 1.3rem;
+  color: rgb(var(--color-foreground));
+}
+
+/* ---------- secciones: relleno común (75 % en mobile) ---------- */
+.gad-pad {
+  padding-top: calc(var(--pt, 0px) * 0.75);
+  padding-bottom: calc(var(--pb, 0px) * 0.75);
+}
+
+@media screen and (min-width: 750px) {
+  .gad-pad {
+    padding-top: var(--pt, 0px);
+    padding-bottom: var(--pb, 0px);
+  }
+}
+
+/* Secciones que son elementos propios: como bloque, para que su fondo (colores propios) pinte detrás del contenido. */
+gad-article,
+gad-contact-form,
+gad-merge,
+gad-qty-gifts,
+gad-quantity-offers,
+gad-quiz,
+gad-reveal-cards,
+gad-reviews-wall,
+gad-stories,
+gad-timed-steps,
+gad-track-order {
+  display: block;
+}
+
+.gad-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.gad-buttons:empty {
+  display: none;
+}
+
+/* ---------- S11: volver arriba ---------- */
+.gad-top {
+  position: fixed;
+  bottom: calc(var(--top-y, 20px) + var(--gad-sticky-bar-h, 0px));
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+  font-size: 2.4rem;
+  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(1rem);
+  pointer-events: none;
+  transition: opacity var(--duration-medium) ease, transform var(--duration-medium) ease, bottom var(--duration-medium) ease;
+}
+
+.gad-top[hidden] {
+  display: none;
+}
+
+.gad-top.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.gad-top--right {
+  right: var(--top-x, 20px);
+}
+
+.gad-top--left {
+  left: var(--top-x, 20px);
+}
+
+.gad-top--center {
+  left: 50%;
+  margin-left: -2.2rem;
+}
+
+@media screen and (max-width: 749px) {
+  .gad-top {
+    width: 4rem;
+    height: 4rem;
+    font-size: 2.2rem;
+  }
+
+  .gad-top--center {
+    margin-left: -2rem;
+  }
+}
+
+/* ---------- renglones con ícono (gad-text-icons) ---------- */
+.gad-ti {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ti-gap, 8px);
+  font-size: var(--ti-size-m, 14px);
+  line-height: 1.35;
+  color: var(--ti-color, inherit);
+}
+
+.gad-ti--fit {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.gad-ti--full {
+  width: 100%;
+}
+
+.gad-ti--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: calc(var(--ti-gap, 8px) * 2);
+}
+
+.gad-ti--bg {
+  padding: var(--ti-pad-y, var(--ti-pad, 12px)) var(--ti-pad-x, var(--ti-pad, 12px));
+  border: var(--ti-border, 0);
+  border-radius: var(--ti-radius, 0);
+  background: var(--ti-bg, transparent);
+}
+
+.gad-ti--align-center {
+  text-align: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gad-ti--align-right {
+  text-align: right;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.gad-ti--horizontal.gad-ti--align-center {
+  justify-content: center;
+}
+
+.gad-ti--horizontal.gad-ti--align-right {
+  justify-content: flex-end;
+}
+
+.gad-ti__row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.gad-ti--align-center .gad-ti__row {
+  justify-content: center;
+}
+
+.gad-ti--align-right .gad-ti__row {
+  justify-content: flex-end;
+}
+
+.gad-ti__icon {
+  font-size: var(--ti-icon, 20px);
+}
+
+.gad-ti__text p {
+  margin: 0;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-ti {
+    font-size: var(--ti-size-d, 16px);
+  }
+}
+
+/* ---------- estrellas y tarjeta de reseña ---------- */
+.gad-stars {
+  display: inline-flex;
+  gap: 0.1rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  vertical-align: middle;
+  transform: translateY(var(--star-shift, 0%));
+}
+
+.gad-stars__star {
+  display: inline-flex;
+  color: var(--star-off, rgba(var(--color-foreground), 0.2));
+}
+
+.gad-stars__star.is-on {
+  color: var(--star, #f5b301);
+}
+
+.gad-stars--outline .gad-stars__star:not(.is-on) .gad-icon {
+  font-variation-settings: 'FILL' 0;
+  color: var(--star, #f5b301);
+}
+
+.gad-stars--hide-empty .gad-stars__star:not(.is-on) {
+  display: none;
+}
+
+.gad-review {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1.4rem 1.6rem;
+  border: var(--rv-border, 0);
+  border-radius: var(--rv-radius, 12px);
+  background: var(--rv-bg, rgb(var(--color-background)));
+  color: rgb(var(--color-foreground));
+  text-align: left;
+  white-space: normal;
+}
+
+.gad-review--middle {
+  align-items: center;
+}
+
+.gad-review__avatar {
+  flex: 0 0 auto;
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: var(--rv-avatar-radius, 40px);
+  object-fit: cover;
+}
+
+.gad-review__avatar--initial {
+  display: grid;
+  place-items: center;
+  background: rgba(var(--color-foreground), 0.08);
+  font-weight: 700;
+}
+
+.gad-review__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.gad-review__author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.gad-review__check {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--check-bg);
+  color: var(--check-fg);
+  font-size: 1.2rem;
+}
+
+.gad-review__check-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 700;
+}
+
+.gad-review__text {
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.gad-review__text p {
+  margin: 0;
+}
+
+.gad-review--clamp .gad-review__text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--rv-lines, 2);
+}
+
+/* modo centrado: como el código propio, sólo centra la diapositiva activa (sin achicar ni apagar las demás) */
+
+/* ---------- color de los íconos por nombre (barra de íconos, cinta, íconos con texto) ---------- */
+.gad-accent-accent {
+  --gad-icon-color: rgb(var(--color-accent, var(--color-button)));
+}
+
+.gad-accent-text {
+  --gad-icon-color: rgb(var(--color-foreground));
+}
+
+.gad-accent-button {
+  --gad-icon-color: rgb(var(--color-button));
+}
+
+/* ---------- íconos con texto (P06 en la ficha, C14 en el carrito) ---------- */
+.gad-p-icons {
+  display: flex;
+  gap: 1.6rem;
+}
+
+.gad-p-icons--row {
+  flex-direction: row;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.gad-p-icons--column {
+  flex-direction: column;
+}
+
+.gad-p-icons__item {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-m, 6px);
+  min-width: 0;
+}
+
+.gad-p-icons--column .gad-p-icons__item {
+  flex-direction: row;
+}
+
+.gad-p-icons__icon {
+  font-size: var(--ic-m, 28px);
+}
+
+.gad-p-icons__title {
+  font-size: var(--tx-m, 12px);
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-p-icons__item {
+    gap: var(--gap-d, 8px);
+  }
+
+  .gad-p-icons__icon {
+    font-size: var(--ic-d, 32px);
+  }
+
+  .gad-p-icons__title {
+    font-size: var(--tx-d, 13px);
+  }
+}
+
+/* ---------- H01 cabecera: buscador, link activo, título y menú secundario del menú mobile ---------- */
+.gad-header--no-search .header__search {
+  display: none !important;
+}
+
+.gad-header--active-pill .header__inline-menu .header__active-menu-item.gad-active {
+  display: inline-block;
+  margin: -0.5rem 0;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10rem;
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+}
+
+.gad-header--active-underline .header__inline-menu .header__active-menu-item {
+  text-decoration-color: rgb(var(--color-accent, var(--color-button)));
+  text-decoration-thickness: 0.2rem;
+  text-underline-offset: 0.5rem;
+}
+
+.gad-menu-drawer__title {
+  margin: 0;
+  padding: 0 3rem 1.2rem;
+  color: rgba(var(--color-foreground), 0.65);
+}
+
+.gad-menu-drawer__secondary {
+  margin: 1.2rem 0 0;
+  padding: 1.2rem 0 0;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.1);
+  list-style: none;
+}
+
+.gad-menu-drawer__secondary a {
+  display: block;
+  padding: 0.8rem 3rem;
+  font-size: 1.4rem;
+  text-decoration: none;
+}
+
+/* ---------- H03 y H04 barra de anuncios ---------- */
+.gad-ann-bar .announcement-bar.gad-ann {
+  display: block;
+  min-width: 0;
+  padding: var(--pt, 10px) 0 var(--pb, 10px);
+}
+
+.gad-ann-bar--hidden-here {
+  opacity: 0.4;
+}
+
+.gad-ann__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.gad-ann__item--am-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.gad-ann__item--am-right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.gad-ann__inner {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: inherit;
+  gap: 0.4rem 0.6rem;
+  margin: 0;
+  color: rgb(var(--color-foreground));
+  font-size: var(--fs-m, 12px);
+  line-height: 1.35;
+  letter-spacing: 0.04rem;
+  text-decoration: none;
+}
+
+.gad-ann__link:hover .gad-ann__text {
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+}
+
+.gad-ann__item--m-stack .gad-ann__inner {
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.gad-ann__icon {
+  flex: none;
+  font-size: var(--ic-m, 16px);
+}
+
+.gad-ann__icon.gad-icon--image img {
+  display: block;
+  width: var(--ic-m, 16px);
+  height: auto;
+}
+
+@media screen and (max-width: 749px) {
+  .gad-ann-bar--sep gad-carousel:is(:not(.gad-carousel--m-on), .is-static) .gad-carousel__track > .gad-ann__item + .gad-ann__item {
+    border-inline-start: 0.1rem solid rgba(var(--color-foreground), 0.3);
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) .gad-ann-bar--sep gad-carousel:is(:not(.gad-carousel--m-on), .is-static) .gad-carousel__track > .gad-ann__item + .gad-ann__item {
+    border-inline-start: 0.1rem solid rgba(var(--color-foreground), 0.3);
+  }
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) .gad-ann-bar--sep gad-carousel:is(:not(.gad-carousel--d-on), .is-static) .gad-carousel__track > .gad-ann__item + .gad-ann__item {
+    border-inline-start: 0.1rem solid rgba(var(--color-foreground), 0.3);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) .gad-ann-bar--sep gad-carousel:is(:not(.gad-carousel--d-on), .is-static) .gad-carousel__track > .gad-ann__item + .gad-ann__item {
+    border-inline-start: 0.1rem solid rgba(var(--color-foreground), 0.3);
+  }
+}
+
+.gad-ann__coupon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.2rem 0.2rem 0.2rem 1rem;
+  border: 0.1rem dashed currentColor;
+  border-radius: 10rem;
+}
+
+.gad-ann__code {
+  font-weight: var(--font-body-weight-bold, 700);
+  letter-spacing: 0.08em;
+}
+
+.gad-ann__copy {
+  padding: 0.2rem 0.9rem;
+  border: 0;
+  border-radius: 10rem;
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  font: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.gad-ann__coupon.is-copied .gad-ann__copy {
+  background: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+}
+
+.utility-bar__grid .gad-ann__social .list-social {
+  display: flex;
+  justify-content: inherit;
+  margin: 0;
+  grid-area: auto;
+}
+
+.gad-ann__social .list-social__link {
+  padding: 0.2rem 0.6rem;
+}
+
+.gad-ann__social .list-social__item .icon,
+.gad-ann__social .svg-wrapper {
+  width: var(--ic-m, 16px);
+  height: var(--ic-m, 16px);
+  scale: 1;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-ann__item--ad-center {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .gad-ann__item--ad-left {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .gad-ann__item--ad-right {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .gad-ann__inner {
+    font-size: var(--fs-d, 13px);
+  }
+
+  .gad-ann__item--d-row .gad-ann__inner {
+    flex-direction: row;
+    gap: 0.4rem 0.6rem;
+  }
+
+  .gad-ann__item--d-stack .gad-ann__inner {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .gad-ann__icon {
+    font-size: var(--ic-d, 18px);
+  }
+
+  .gad-ann__icon.gad-icon--image img,
+  .gad-ann__social .list-social__item .icon,
+  .gad-ann__social .svg-wrapper {
+    width: var(--ic-d, 18px);
+    height: var(--ic-d, 18px);
+  }
+}
+
+/* ---------- H05 y H06 pie ---------- */
+.footer__blocks-wrapper.gad-foot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem var(--grid-mobile-horizontal-spacing, 1rem);
+}
+
+.footer__blocks-wrapper.gad-foot-grid > .footer-block.grid__item {
+  grid-column: span var(--w-m, 2);
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media screen and (min-width: 750px) {
+  .footer__blocks-wrapper.gad-foot-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--grid-desktop-horizontal-spacing, 2rem);
+  }
+
+  .footer__blocks-wrapper.gad-foot-grid > .footer-block.grid__item {
+    grid-column: span var(--w-d, 3);
+  }
+}
+
+.gad-foot-image-link {
+  display: block;
+}
+
+.gad-foot-news__text {
+  margin-bottom: 1.2rem;
+}
+
+.gad-foot-news .newsletter-form {
+  align-items: stretch;
+  max-width: none;
+  margin: 0;
+}
+
+.gad-foot-news .newsletter-form__field-wrapper {
+  width: 100%;
+  max-width: 44rem;
+}
+
+.gad-foot-news--filled .newsletter-form__field-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.gad-foot-news--filled .field {
+  flex: 1 1 20rem;
+}
+
+.gad-foot-news__button {
+  flex: none;
+}
+
+.gad-foot-card {
+  max-width: 30rem;
+}
+
+.gad-copyright a {
+  color: inherit;
+}
+
+/* ---------- bloques de contenido compartidos (ficha, imagen con texto, texto enriquecido) ---------- */
+.gad-pblock {
+  margin-top: var(--mt, 0);
+  margin-bottom: var(--mb, 0);
+}
+
+.gad-p-align--left {
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.gad-p-align--center {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.gad-p-align--right {
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+@media screen and (max-width: 749px) {
+  .gad-p-bleed {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+
+  .gad-p-bleed img,
+  .gad-p-bleed .gad-p-divider__line {
+    border-radius: 0 !important;
+  }
+}
+
+/* imagen (P07, E03) */
+.gad-p-image img,
+.gad-p-image svg {
+  display: block;
+  width: var(--img-w, 100%);
+  height: auto;
+  border-radius: var(--img-r, 0);
+}
+
+/* estrellas (P10, E03, E07) */
+.gad-p-stars-wrap,
+.gad-p-stars-link {
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.gad-p-stars-wrap {
+  display: flex;
+}
+
+.gad-p-stars-link {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gad-p-stars {
+  position: relative;
+  display: inline-flex;
+  font-size: var(--star-size, 18px);
+  line-height: 1;
+}
+
+.gad-p-stars__base {
+  display: inline-flex;
+  color: var(--star-off, #e1e1e1);
+}
+
+.gad-p-stars--outline .gad-p-stars__base {
+  color: var(--star, #f5b301);
+}
+
+.gad-p-stars--outline .gad-p-stars__base .gad-icon {
+  font-variation-settings: 'FILL' 0;
+}
+
+.gad-p-stars__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  overflow: hidden;
+  color: var(--star, #f5b301);
+  white-space: nowrap;
+}
+
+.gad-p-stars__text {
+  font-size: 1.4rem;
+}
+
+/* estrellas estilo Trustpilot (P11, E03, E07) */
+.gad-tp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.gad-tp__stars {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.gad-tp__star {
+  display: grid;
+  place-items: center;
+  width: var(--tp-size, 22px);
+  height: var(--tp-size, 22px);
+  background: linear-gradient(90deg, var(--tp, #00b67a) var(--f, 100%), var(--tp-off, #dcdce6) var(--f, 100%));
+  color: #fff;
+  font-size: calc(var(--tp-size, 22px) * 0.75);
+  --gad-icon-color: #fff;
+}
+
+.gad-tp__text {
+  font-size: 1.4rem;
+}
+
+/* botón de agregar al carrito como bloque (T11) */
+.gad-pblock.gad-atc-block .button {
+  min-width: min(100%, 24rem);
+}
+
+/* ---------- ancho completo de página (secciones de Dawn ampliadas) ---------- */
+.gad-full-width {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-full-width {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* ---------- E01 multicolumna ---------- */
+.gad-mc .multicolumn-card__info h3 {
+  margin-top: 0;
+  font-size: var(--mc-t-m);
+}
+
+.gad-mc .multicolumn-card__info > :nth-child(2) {
+  margin-top: var(--mc-gap);
+}
+
+.gad-mc .multicolumn-card__info .rte {
+  font-size: var(--mc-x-m);
+}
+
+.gad-mc--cards .multicolumn-card {
+  overflow: hidden;
+  border-radius: var(--mc-r);
+}
+
+.gad-mc--cards .multicolumn-card.gad-tint {
+  background: rgba(var(--color-foreground), 0.05);
+}
+
+.gad-mc--cards .multicolumn-card__info {
+  padding: var(--mc-pad-m);
+}
+
+.gad-mc--equal .multicolumn-card {
+  height: 100%;
+}
+
+.gad-mc .multicolumn-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.gad-mc--media-bottom .multicolumn-card {
+  flex-direction: column-reverse;
+}
+
+.gad-mc--media-bottom .multicolumn-card-spacing {
+  padding-top: 0;
+  padding-bottom: 2.5rem;
+}
+
+.gad-mc .multicolumn-card__info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.gad-mc--valign-center .multicolumn-card__info {
+  justify-content: center;
+}
+
+.gad-mc--valign-bottom .multicolumn-card__info {
+  justify-content: flex-end;
+}
+
+.gad-mc--valign-spread .multicolumn-card__info {
+  justify-content: space-between;
+}
+
+.gad-mc__video gad-video,
+.gad-mc__video .gad-video {
+  display: block;
+}
+
+.gad-mc__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.gad-mc__buttons:empty {
+  display: none;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-mc .multicolumn-card__info h3 {
+    font-size: var(--mc-t-d);
+  }
+
+  .gad-mc .multicolumn-card__info .rte {
+    font-size: var(--mc-x-d);
+  }
+
+  .gad-mc--cards .multicolumn-card__info {
+    padding: var(--mc-pad-d);
+  }
+}
+
+/* ---------- E02 y E03 imagen con texto y multifila: medio en mobile y ancho del medio ---------- */
+@media screen and (max-width: 749px) {
+  .gad-iwt--m-second .image-with-text__media-item {
+    order: 2;
+  }
+
+  .page-width .gad-iwt--m-full .image-with-text__media-item {
+    width: calc(100% + 3rem);
+    max-width: none;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+
+  .gad-iwt--m-full .image-with-text__media {
+    border-radius: 0;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .gad-iwt-w .image-with-text__grid > .image-with-text__media-item.grid__item {
+    width: var(--media-w, 50%);
+    max-width: var(--media-w, 50%);
+    flex-grow: 0;
+  }
+
+  .gad-iwt-w .image-with-text__grid > .image-with-text__text-item.grid__item {
+    width: calc(100% - var(--media-w, 50%));
+    max-width: calc(100% - var(--media-w, 50%));
+    flex-grow: 1;
+  }
+}
+
+.gad-iwt-full .image-with-text__media {
+  border-radius: 0;
+}
+
+/* ---------- pestañas desplegables (PX7 en la ficha, E04) ---------- */
+.gad-acc--sm .accordion__title {
+  font-size: 1.4rem;
+}
+
+.gad-acc--md .accordion__title {
+  font-size: 1.6rem;
+}
+
+.gad-acc--lg .accordion__title {
+  font-size: 1.9rem;
+}
+
+.gad-acc.gad-acc--no-border {
+  border-top: 0;
+}
+
+.gad-acc.gad-acc--box {
+  margin-top: 0;
+  border: var(--acc-bw, 2px) solid rgb(var(--color-foreground));
+  background: var(--acc-bg, transparent);
+}
+
+.gad-acc.gad-acc--box + .gad-acc--box {
+  border-top: 0;
+}
+
+.gad-acc.gad-acc--box summary {
+  padding: 1.6rem 2rem;
+}
+
+.gad-acc--box details[open] > summary {
+  background: var(--acc-open-bg, transparent);
+  color: var(--acc-open-text, rgb(var(--color-foreground)));
+}
+
+.gad-acc--box details[open] > summary .accordion__title {
+  color: inherit;
+}
+
+.gad-acc.gad-acc--box .accordion__content {
+  margin: 1.6rem 0;
+  padding: 0 2rem;
+}
+
+.gad-acc__footer {
+  margin-top: 2rem;
+}
+
+.gad-acc__footer > :first-child {
+  margin-top: 0;
+}
+
+.gad-acc__plus {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-left: 1rem;
+}
+
+.gad-acc__plus::before,
+.gad-acc__plus::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.gad-acc__plus::before {
+  width: 1.4rem;
+  height: 0.2rem;
+}
+
+.gad-acc__plus::after {
+  width: 0.2rem;
+  height: 1.4rem;
+  transition: transform var(--duration-default) ease;
+}
+
+details[open] > summary .gad-acc__plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.gad-acc-icon {
+  display: inline-grid;
+  place-items: center;
+  font-size: 2rem;
+}
+
+/* ---------- E05 formulario de contacto ---------- */
+.contact .gad-cf__button--full .button {
+  width: 100%;
+}
+
+.gad-cf__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-cf__row--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.contact .gad-cf__cell {
+  margin-bottom: 1.5rem;
+}
+
+.contact .gad-cf__cell .field {
+  margin-bottom: 0;
+}
+
+@media screen and (min-width: 750px) {
+  .contact .gad-cf__cell {
+    margin-bottom: 2rem;
+  }
+}
+
+.gad-cf__error {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--err-fg, #b42318);
+  font-size: 1.3rem;
+  line-height: 1.3;
+}
+
+.gad-cf__error[hidden] {
+  display: none;
+}
+
+.gad-form-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2.4rem;
+  padding: 1.4rem 1.6rem;
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+
+.gad-form-msg--ok {
+  border: var(--ok-bw, 1px) solid var(--ok-bc, #1e7a33);
+  border-radius: var(--ok-r, 8px);
+  background: var(--ok-bg, #e9f7ec);
+  color: var(--ok-fg, #1e7a33);
+  --gad-icon-color: var(--ok-fg, #1e7a33);
+}
+
+.gad-form-msg--err {
+  border: var(--err-bw, 1px) solid var(--err-bc, #b42318);
+  border-radius: var(--err-r, 8px);
+  background: var(--err-bg, #fdecea);
+  color: var(--err-fg, #b42318);
+  --gad-icon-color: var(--err-fg, #b42318);
+}
+
+.gad-form-msg__icon {
+  flex: none;
+  font-size: 2.2rem;
+}
+
+.gad-form-msg__icon.gad-icon--image img {
+  width: 2.2rem;
+  height: auto;
+}
+
+.gad-form-msg__text p,
+.gad-form-msg__text ul {
+  margin: 0;
+}
+
+/* ---------- E08 presentación de diapositivas ---------- */
+.gad-ss__pic img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gad-ss__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: inherit;
+  gap: 1rem;
+}
+
+/* paginación arriba de la sección: los controles pasan primero en la columna */
+@media screen and (max-width: 749px) {
+  .gad-ss--pag-m-over .slideshow__controls {
+    order: -1;
+    border-top: 0;
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .gad-ss--pag-d-over .slideshow__controls {
+    order: -1;
+    border-top: 0;
+    border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  }
+
+  .banner--desktop-transparent.gad-ss__tx--light .banner__box {
+    --color-foreground: 255, 255, 255;
+    color: rgb(255, 255, 255);
+  }
+
+  .banner--desktop-transparent.gad-ss__tx--dark .banner__box {
+    --color-foreground: 18, 18, 18;
+    color: rgb(18, 18, 18);
+  }
+}
+
+/* ---------- E09 y E10 tarjetas: muestras y altura pareja ---------- */
+.gad-card-sw {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.8rem 0;
+}
+
+.gad-card-sw__item {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gad-card-sw__item .swatch {
+  --swatch--size: var(--sw-m, 16px);
+}
+
+.gad-card-sw__item--text {
+  padding: 0.1rem 0.7rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.25);
+  border-radius: 10rem;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.gad-card-sw__item:hover .swatch,
+.gad-card-sw__item:focus-visible .swatch {
+  outline: 0.1rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+}
+
+.gad-card-sw__more {
+  color: inherit;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+@media screen and (min-width: 750px) {
+  .gad-card-sw__item .swatch {
+    --swatch--size: var(--sw-d, 20px);
+  }
+}
+
+.gad-cards--equal product-component {
+  display: block;
+  height: 100%;
+}
+
+.gad-cards--equal .card-wrapper,
+.gad-cards--equal .card-wrapper > .card {
+  height: 100%;
+}
+
+.gad-cards--equal .card__content {
+  flex-grow: 1;
+}
+
+/* ---------- E11 lista de colecciones ---------- */
+@media screen and (max-width: 749px) {
+  .gad-lc-title-m .card__heading {
+    font-size: var(--lc-t-m, 16px);
+  }
+}
+
+/* el más de las filas desplegables va a la derecha, donde Dawn pone la flecha */
+summary .gad-acc__plus {
+  position: absolute;
+  top: calc(50% - 0.7rem);
+  right: 1.5rem;
+  margin: 0;
+}
+
+/* velo claro en las tarjetas de la multicolumna (section-multicolumn.css se carga después) */
+.multicolumn.gad-mc--cards .multicolumn-card.gad-tint {
+  background: rgba(var(--color-foreground), 0.05);
+}
+
+/* altura pareja: el contenido de la tarjeta crece y el agregado rápido queda abajo */
+.gad-cards--equal .card > .card__content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.gad-cards--equal .card > .card__content .card__information {
+  flex-grow: 1;
+}
+
+.gad-cards--equal .card > .card__content .quick-add {
+  margin-top: auto;
+}
+
+/* con la columna flexible la etiqueta "arriba" perdía su fila de la grilla de Dawn y caía debajo del botón */
+.gad-cards--equal .card > .card__content .card__badge.top {
+  order: -1;
+}
+
+/* ---------- A09 color de los íconos decorativos ---------- */
+html.gad-icons-accent .gad-icon {
+  color: var(--gad-icon-color, rgb(var(--color-accent, var(--color-button))));
+}
+
+html.gad-icons-button .gad-icon {
+  color: var(--gad-icon-color, rgb(var(--color-button)));
+}
+
+/* ---------- tarjetas: etiqueta al centro, pegada al costado, renglones del título ---------- */
+.card__badge.center {
+  justify-self: center;
+}
+
+html.gad-badge-flush .card:not(.card--horizontal) > .card__content > .card__badge {
+  margin: 0;
+}
+
+html.gad-ct-1 .card__heading a,
+html.gad-ct-2 .card__heading a,
+html.gad-ct-3 .card__heading a {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+html.gad-ct-1 .card__heading a {
+  -webkit-line-clamp: 1;
+}
+
+html.gad-ct-2 .card__heading a {
+  -webkit-line-clamp: 2;
+}
+
+html.gad-ct-3 .card__heading a {
+  -webkit-line-clamp: 3;
+}
+
+/* en tarjetas con foto, el contenido interno sólo lleva la etiqueta: sin relleno queda pegada al borde */
+html.gad-badge-flush .card--media .card__inner .card__content {
+  padding: var(--image-padding, 0);
+}
+
+/* marcador de visibilidad y ancla (T09, T10) en secciones de Dawn */
+.gad-sec-marker {
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ---------- T13 ventana de idioma ---------- */
+.gad-lang {
+  width: min(42rem, calc(100vw - 3rem));
+  padding: 2.4rem;
+  border: 0;
+  border-radius: var(--popup-corner-radius, 0);
+  box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.2);
+}
+
+.gad-lang::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.gad-lang__title {
+  margin: 0 0 1rem;
+}
+
+.gad-lang__text {
+  margin-bottom: 1.6rem;
+}
+
+.gad-lang__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.gad-lang__actions .button {
+  flex: 1 1 14rem;
+}
+
+/* T14: en derecha a izquierda el carrusel calcula sus desplazamientos de izquierda a derecha;
+   el riel se queda en ltr y cada ítem vuelve al sentido de lectura de la página */
+[dir='rtl'] .gad-carousel__viewport,
+[dir='rtl'] .gad-carousel__track {
+  direction: ltr;
+}
+
+[dir='rtl'] .gad-carousel__track > * {
+  direction: rtl;
+}
+
+/* ---------- S15/S16 reproductor de música ---------- */
+.gad-music {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.gad-music__toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 4.8rem;
+  height: 4.8rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+  font-size: 2.4rem;
+  cursor: pointer;
+  --gad-icon-color: rgb(var(--color-button-text));
+}
+
+.gad-music__on,
+.gad-music.is-playing .gad-music__off {
+  display: none;
+}
+
+.gad-music.is-playing .gad-music__on {
+  display: inline;
+}
+
+.gad-music--pulse.is-playing .gad-music__toggle {
+  animation: gad-music-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes gad-music-pulse {
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.gad-music-float {
+  position: fixed;
+  bottom: var(--my, 20px);
+  z-index: 40;
+  background: transparent;
+}
+
+.gad-music-float[data-side='bottom-left'] {
+  left: var(--mx, 20px);
+}
+
+.gad-music-float[data-side='bottom-right'] {
+  right: var(--mx, 20px);
+}
+
+.gad-music-float .gad-music__toggle {
+  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.gad-music-section .gad-music {
+  padding: 1.6rem;
+  border-radius: 1.2rem;
+  background: rgba(var(--color-foreground), 0.05);
+}
+
+.gad-music__cover img {
+  display: block;
+  width: 8rem;
+  height: 8rem;
+  object-fit: cover;
+  border-radius: 0.8rem;
+}
+
+.gad-music__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gad-music__title,
+.gad-music__artist {
+  margin: 0;
+}
+
+.gad-music__artist {
+  opacity: 0.7;
+  font-size: 1.4rem;
+}
+
+.gad-music__bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.gad-music__seek {
+  flex: 1;
+  accent-color: rgb(var(--color-button));
+}
+
+.gad-music__time {
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gad-music--pulse.is-playing .gad-music__toggle {
+    animation: none;
+  }
+}
+
+html.gad-modal-open {
+  overflow: hidden;
+}
+
+/* ---------- A12 logo secundario y cabecera transparente (S01) ---------- */
+.gad-logo-2 {
+  display: none;
+}
+
+body:has(.gad-th-flag) .section-header {
+  margin-bottom: calc(-1 * var(--header-height, 0px));
+}
+
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) .header-wrapper {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) :is(.header__menu-item, .header__icon, .header__heading-link, .header__heading-link .h2) {
+  color: var(--gad-th-link, #fff);
+}
+
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) .header__active-menu-item {
+  color: var(--gad-th-active, #fff);
+}
+
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) :is(.header__menu-item, .header__icon):hover,
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) .header__menu-item:hover .header__active-menu-item {
+  color: var(--gad-th-hover, #ddd);
+}
+
+body:has(.gad-th-flag) .section-header:not(.scrolled-past-header) .header__menu-item span {
+  text-decoration-color: currentColor;
+}
+
+body:has(.gad-th-flag--logo2) .section-header:not(.scrolled-past-header) .header__heading-logo-wrapper:has(.gad-logo-2) .header__heading-logo:not(.gad-logo-2) {
+  display: none;
+}
+
+body:has(.gad-th-flag--logo2) .section-header:not(.scrolled-past-header) .gad-logo-2 {
+  display: block;
+}
+
+body:has(.gad-th-flag--hide-bars) .shopify-section-group-header-group:not(.section-header) {
+  display: none;
+}
+
+/* ---------- Estilo base "Ecom" (ajuste global base_style): tipografía, botones, precios y etiquetas ---------- */
+:where(html[data-gad-style='ecom']) body {
+  letter-spacing: 0.01rem;
+}
+
+:where(html[data-gad-style='ecom']) h1,
+:where(html[data-gad-style='ecom']) h2,
+:where(html[data-gad-style='ecom']) h3,
+:where(html[data-gad-style='ecom']) h4,
+:where(html[data-gad-style='ecom']) h5,
+:where(html[data-gad-style='ecom']) .h0,
+:where(html[data-gad-style='ecom']) .h1,
+:where(html[data-gad-style='ecom']) .h2,
+:where(html[data-gad-style='ecom']) .h3,
+:where(html[data-gad-style='ecom']) .h4,
+:where(html[data-gad-style='ecom']) .h5,
+:where(html[data-gad-style='ecom']) .hxl {
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+:where(html[data-gad-style='ecom']) .button,
+:where(html[data-gad-style='ecom']) .shopify-payment-button__button--unbranded,
+:where(html[data-gad-style='ecom']) .customer button {
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+:where(html[data-gad-style='ecom']) .button--primary,
+:where(html[data-gad-style='ecom']) .product-form__submit {
+  font-size: 1.6rem;
+}
+
+:where(html[data-gad-style='ecom']) .price .price-item {
+  font-weight: 700;
+}
+
+:where(html[data-gad-style='ecom']) .price .price__sale s.price-item,
+:where(html[data-gad-style='ecom']) .price--on-sale .price-item--regular {
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+:where(html[data-gad-style='ecom']) .product .price .price-item--sale,
+:where(html[data-gad-style='ecom']) .product .price__regular .price-item--regular {
+  font-size: 2.4rem;
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-style='ecom']) .product .price .price-item--sale,
+  :where(html[data-gad-style='ecom']) .product .price__regular .price-item--regular {
+    font-size: 2.8rem;
+  }
+}
+
+:where(html[data-gad-style='ecom']) .badge {
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.card__heading,
+:where(html[data-gad-style='ecom']) .card-information > .price {
+  font-weight: 600;
+}
+
+:where(html[data-gad-style='ecom']) .header__menu-item {
+  font-weight: 500;
+}
+
+:where(html[data-gad-style='ecom']) .field__input:focus,
+:where(html[data-gad-style='ecom']) .select__select:focus,
+:where(html[data-gad-style='ecom']) .customer .field input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-button), 0.35);
+}
+
+:where(html[data-gad-style='ecom']) .announcement-bar__message {
+  font-weight: 600;
+  letter-spacing: 0.02rem;
+}
+
+:where(html[data-gad-style='ecom']) .product-form .shopify-payment-button__button--unbranded,
+:where(html[data-gad-style='ecom']) .product-form .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  border-radius: var(--buttons-radius-outset, var(--buttons-radius));
+  background-color: transparent;
+  color: rgb(var(--color-foreground));
+  box-shadow: inset 0 0 0 0.2rem rgb(var(--color-foreground));
+}
+
+:where(html[data-gad-style='ecom']) .product-form .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  background-color: rgba(var(--color-foreground), 0.05);
+}
+
+:where(html[data-gad-style='ecom']) .product-form .shopify-payment-button__button--unbranded::after,
+:where(html[data-gad-style='ecom']) .product-form .shopify-payment-button__button--unbranded::before {
+  box-shadow: none;
+}
+
+:where(html[data-gad-style='ecom']) .quantity,
+:where(html[data-gad-style='ecom']) .quantity::before,
+:where(html[data-gad-style='ecom']) .quantity::after {
+  border-radius: var(--inputs-radius);
+}
+
+:where(html[data-gad-style='ecom']) .quantity__input {
+  font-weight: 600;
+}
+
+:where(html[data-gad-style='ecom']) .gad-offer__tick,
+:where(html[data-gad-style='ecom']) .gad-cl__items .gad-icon,
+:where(html[data-gad-style='ecom']) .gad-gr__points .gad-icon,
+:where(html[data-gad-style='ecom']) .gad-qz__benefits .gad-icon,
+:where(html[data-gad-style='ecom']) .gad-plans__check,
+:where(html[data-gad-style='ecom']) .gad-p-qgifts__item.is-unlocked .gad-icon {
+  --gad-icon-color: rgb(var(--color-accent, var(--color-button)));
+  color: rgb(var(--color-accent, var(--color-button)));
+}
+
+/* ---------- Tarjetas de producto: título legible y botón de agregado rápido compacto ---------- */
+:where(html[data-gad-style='ecom']) .card__heading.h5 {
+  font-size: 1.4rem;
+  line-height: 1.35;
+}
+
+:where(html[data-gad-style='ecom']) .card--text .card__inner .card__heading {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+:where(html[data-gad-style='ecom']) .quick-add__submit.button {
+  min-height: 4rem;
+  padding: 0.6rem 0.4rem;
+  font-size: 1.2rem;
+  letter-spacing: 0;
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-style='ecom']) .card__heading.h5 {
+    font-size: 1.5rem;
+  }
+
+  :where(html[data-gad-style='ecom']) .card--text .card__inner .card__heading {
+    font-size: 2rem;
+  }
+
+  :where(html[data-gad-style='ecom']) .quick-add__submit.button {
+    padding: 0.6rem 1rem;
+    font-size: 1.4rem;
+  }
+}
+
+/* ---------- Campos, filtros y nombre de la tienda: interletrado justo ---------- */
+:where(html[data-gad-style='ecom']) .field__label,
+:where(html[data-gad-style='ecom']) .customer .field label,
+:where(html[data-gad-style='ecom']) .field__input,
+:where(html[data-gad-style='ecom']) .customer .field input,
+:where(html[data-gad-style='ecom']) .select__select,
+:where(html[data-gad-style='ecom']) .mobile-facets__open-label,
+:where(html[data-gad-style='ecom']) .facet-filters__label,
+:where(html[data-gad-style='ecom']) .facets__summary,
+:where(html[data-gad-style='ecom']) .product-count__text {
+  letter-spacing: 0.01rem;
+}
+
+.header__heading-link .h2 {
+  color: rgb(var(--color-foreground));
+}
+
+.card__heading {
+  hyphens: auto;
+}
+
+/* ---------- Menú mobile como panel lateral (cabecera > Menú mobile) ---------- */
+.js .gad-drawer--panel > summary::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  height: auto;
+  background: rgba(var(--color-foreground), 0.5);
+  display: none;
+  z-index: 9;
+  cursor: default;
+}
+
+.js .gad-drawer--panel[open].menu-opening > summary::before {
+  display: block;
+  animation: gad-veil-in var(--duration-default, 0.2s) ease;
+}
+
+@keyframes gad-veil-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Con el panel abierto, la cabecera (y su velo) queda por encima de las secciones con z-index propio. */
+body:has(.gad-drawer--panel[open]) .section-header {
+  z-index: 100;
+}
+
+.js .menu-drawer.gad-menu-drawer--panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100vw - 4rem);
+  height: 100vh;
+  height: var(--viewport-height, 100vh);
+  z-index: 10;
+  overflow-y: auto;
+}
+
+@media screen and (min-width: 750px) {
+  .js .menu-drawer.gad-menu-drawer--panel {
+    width: 40rem;
+  }
+}
+
+.gad-menu-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 6.8rem;
+  padding: 1rem 0.5rem 1rem 2rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.1);
+}
+
+.gad-menu-drawer__head-title {
+  margin: 0;
+  color: rgb(var(--color-foreground));
+}
+
+.gad-menu-drawer__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+.gad-menu-drawer__close .svg-wrapper {
+  width: 2rem;
+  height: 2rem;
+}
+
+.gad-menu-drawer--panel .menu-drawer__inner-container,
+.gad-menu-drawer--panel .menu-drawer__navigation-container {
+  height: auto;
+  display: block;
+}
+
+.gad-menu-drawer--panel .menu-drawer__navigation {
+  padding: 1rem 0;
+}
+
+.gad-menu-drawer--panel .menu-drawer__menu-item {
+  padding: 0.9rem 2rem;
+  font-size: 1.8rem;
+  color: rgb(var(--color-foreground));
+}
+
+.gad-menu-drawer--panel .menu-drawer__utility-links {
+  padding: 1rem 2rem;
+  background: transparent;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.1);
+}
+
+.gad-menu-drawer--panel .list-social {
+  justify-content: center;
+  margin: 0;
+}
+
+.gad-menu-drawer__account {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: -1.2rem;
+  padding: 1.2rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+}
+
+.gad-menu-drawer__account .svg-wrapper {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* ---------- Cabecera en mobile: lupa a la derecha y cuenta oculta (ajustes de la cabecera) ----------
+   La clase repetida iguala la especificidad de las reglas de Dawn que eligen qué lupa mostrar. */
+@media screen and (max-width: 989px) {
+  .header.gad-header--m-search-right.gad-header--m-search-right.gad-header--m-search-right {
+    grid-template-areas: 'left-icons heading icons';
+    grid-template-columns: 1fr 2fr 1fr;
+  }
+
+  .header.gad-header--m-search-right.gad-header--m-search-right.gad-header--m-search-right.gad-header--m-search-right > .header__search {
+    display: none;
+  }
+
+  .header.gad-header--m-search-right.gad-header--m-search-right.gad-header--m-search-right.gad-header--m-search-right .header__icons > .header__search {
+    display: inline-flex;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .gad-header--m-no-account .header__icons .header__icon--account {
+    display: none;
+  }
+}
+
+/* ---------- Link de la página actual en negrita ---------- */
+.gad-header--active-bold .header__inline-menu .header__active-menu-item {
+  font-weight: 700;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+}
+
+/* ---------- Pie: tamaño de los íconos de redes e imagen con el redondeo de los medios ---------- */
+.footer .list-social__item :is(.svg-wrapper, .icon) {
+  width: var(--gad-social-size, 2.2rem);
+  height: var(--gad-social-size, 2.2rem);
+}
+
+.footer-block__image-wrapper {
+  border-radius: var(--media-radius);
+}
+
+/* ---------- Tarjetas con velo (Tarjetas > Estilo: Con velo) ---------- */
+.card--card.gad-card-tint,
+.card--card.gad-card-tint .card__inner {
+  background: linear-gradient(rgba(var(--color-foreground), 0.04), rgba(var(--color-foreground), 0.04)),
+    rgb(var(--color-background));
+}
+
+/* ---------- Precio y título de la tarjeta de producto (ajustes de Tarjetas) ---------- */
+html.gad-cp-sale-first .card-information .price--on-sale .price__sale {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+  align-items: baseline;
+  column-gap: 0.8rem;
+}
+
+html.gad-cp-sale-first .card-information .price--on-sale .price__sale .price-item--regular {
+  margin-right: 0;
+}
+
+html.gad-cp-accent .card-information .price--on-sale .price-item--sale {
+  color: rgb(var(--color-button));
+}
+
+html.gad-cp-compare-bold .card-information .price--on-sale .price-item--regular {
+  font-weight: 700;
+}
+
+html.gad-ctw-400 .card__heading {
+  font-weight: 400;
+}
+
+html.gad-ctw-600 .card__heading {
+  font-weight: 600;
+}
+
+html.gad-ctw-700 .card__heading {
+  font-weight: 700;
+}
+
+@media screen and (max-width: 749px) {
+  html.gad-card-r-half .grid--2-col-tablet-down .card-wrapper .card,
+  html.gad-card-r-half .grid--2-col-tablet-down .card-wrapper .card__inner,
+  html.gad-card-r-half .grid--2-col-tablet-down .card-wrapper .card__media {
+    --border-radius: calc(var(--product-card-corner-radius, 0rem) / 2);
+  }
+}
+
+/* ---------- Etiqueta arriba al centro montada sobre el borde de la imagen ---------- */
+html.gad-badge-edge .card:not(.card--horizontal) .card__badge.top.center {
+  align-self: start;
+  margin-top: 0;
+  transform: translateY(-50%);
+}
+
+/* ---------- Títulos de página centrados (Diseño > Alineación de los títulos de página) ---------- */
+html.gad-pt-center :is(.main-page-title, .title--primary, .collection-hero__title) {
+  text-align: center;
+}
+
+html.gad-pt-center .title-wrapper-with-link:has(> .title--primary) {
+  justify-content: center;
+}
+
+/* ---------- Suscripción con botón debajo del campo ---------- */
+.gad-newsletter__button {
+  width: 100%;
+  margin-top: 1.2rem;
+}
+
+/* ---------- Lista de colecciones: rellenos y título en desktop ---------- */
+.gad-lc {
+  padding-top: calc(var(--lc-pt, 36px) * 0.75);
+  padding-bottom: calc(var(--lc-pb, 36px) * 0.75);
+}
+
+@media screen and (min-width: 750px) {
+  .gad-lc {
+    padding-top: var(--lc-pt, 36px);
+    padding-bottom: var(--lc-pb, 36px);
+  }
+
+  .gad-lc .card__heading {
+    font-size: var(--lc-t-d, 18px);
+  }
+}
+
+/* ---------- Clásico: compra rápida sin aire arriba de la información ---------- */
+:where(html[data-gad-style='clasico']) .quick-add-modal__content-info .product__info-wrapper {
+  padding-top: 0;
+}
+
+/* ---------- Tarjetas con la misma combinación que la sección: sin borde ni sombra ---------- */
+.gad-card--box.gad-card--same {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* ---------- Filas desplegables: el ícono acompaña el tamaño del título ---------- */
+.gad-acc--sm summary .svg-wrapper {
+  width: 2rem;
+  height: 2rem;
+}
+
+.gad-acc--md summary .svg-wrapper {
+  width: 2.24rem;
+  height: 2.24rem;
+}
+
+.gad-acc--lg summary .svg-wrapper {
+  width: 2.66rem;
+  height: 2.66rem;
+}
+
+/* ---------- Carruseles: la sombra de las tarjetas no se recorta abajo (sólo a los costados) ---------- */
+.gad-carousel__viewport {
+  overflow: clip visible;
+}
+
+/* ---------- Flechas a los costados sin puntos: una sola fila (sin la segunda vacía) ---------- */
+@media screen and (max-width: 749px) {
+  gad-carousel.gad-carousel--m-arrows-sides.gad-carousel--m-dots-hidden {
+    grid-template-areas: 'stage stage stage stage stage';
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel.gad-carousel--m-arrows-sides.gad-carousel--m-dots-hidden {
+    grid-template-areas: 'stage stage stage stage stage';
+  }
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-bp='750']) gad-carousel.gad-carousel--d-arrows-sides.gad-carousel--d-dots-hidden {
+    grid-template-areas: 'stage stage stage stage stage';
+  }
+}
+
+@media screen and (min-width: 990px) {
+  :where(html:not([data-gad-bp='750'])) gad-carousel.gad-carousel--d-arrows-sides.gad-carousel--d-dots-hidden {
+    grid-template-areas: 'stage stage stage stage stage';
+  }
+}
+
+/* ---------- Nombre de la tienda sin logo: no se corta a mitad de palabra; en mobile se achica si no entra ---------- */
+.header__heading-link .h2 {
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+@media screen and (max-width: 749px) {
+  .header__heading-link .h2 {
+    font-size: min(calc(var(--font-heading-scale) * 2rem), 4.8vw);
+  }
+}
+
+/* ---------- Estilo base "Clásico" (ajuste global base_style, por defecto) ----------
+   Tipografía y botones de la línea clásica de Dawn: texto al 90 % del color, títulos y botones con su
+   interletrado, márgenes de los textos enriquecidos sólo fuera del primer y último párrafo. */
+:where(html[data-gad-style='clasico']) body,
+:where(html[data-gad-style='clasico']) [class*='color-scheme-'],
+:where(html[data-gad-style='clasico']) .gad-cc {
+  color: rgba(var(--color-foreground), 0.9);
+}
+
+:where(html[data-gad-style='clasico']) body {
+  letter-spacing: 0.02em;
+  line-height: calc(1 + 0.5 / var(--font-body-scale));
+}
+
+:where(html[data-gad-style='clasico']) .hxl {
+  font-size: calc(var(--font-heading-scale) * 4rem);
+}
+
+:where(html[data-gad-style='clasico']) .h0 {
+  font-size: calc(var(--font-heading-scale) * 3.25rem);
+}
+
+:where(html[data-gad-style='clasico']) h1,
+:where(html[data-gad-style='clasico']) .h1 {
+  font-size: calc(var(--font-heading-scale) * 2.25rem);
+}
+
+:where(html[data-gad-style='clasico']) h4,
+:where(html[data-gad-style='clasico']) .h4 {
+  font-size: calc(var(--font-heading-scale) * 1.45rem);
+}
+
+@media screen and (min-width: 750px) {
+  :where(html[data-gad-style='clasico']) .hxl {
+    font-size: calc(var(--font-heading-scale) * 5.5rem);
+  }
+
+  :where(html[data-gad-style='clasico']) .h0 {
+    font-size: calc(var(--font-heading-scale) * 4.25rem);
+  }
+
+  :where(html[data-gad-style='clasico']) h1,
+:where(html[data-gad-style='clasico']) .h1 {
+    font-size: calc(var(--font-heading-scale) * 3rem);
+  }
+}
+
+:where(html[data-gad-style='clasico']) :is(.button, .button-label, .shopify-challenge__button, .customer button) {
+  font-size: 1.6rem;
+  letter-spacing: 0.1rem;
+  font-weight: 700;
+}
+
+:where(html[data-gad-style='clasico']) .rte > :first-child:not(p) {
+  margin-top: revert;
+}
+
+:where(html[data-gad-style='clasico']) .rte > :last-child:not(p) {
+  margin-bottom: revert;
+}
+
+:where(html[data-gad-style='clasico']) :is(.header__menu-item, .footer .list-menu__item--link) {
+  color: rgba(var(--color-foreground), 0.9);
+}
+
+/* Velo de las tarjetas: el fondo de su combinación con un 4 % del color del texto encima. */
+:where(html[data-gad-style='clasico']) .gad-tint {
+  background: linear-gradient(rgba(var(--color-foreground), 0.04), rgba(var(--color-foreground), 0.04)),
+    rgb(var(--color-background));
+}
+
+/* ---------- Imágenes dentro de textos y de bloques de apps: sin el espacio del descendente ---------- */
+.rte :is(img, video),
+.shopify-app-block :is(img, video) {
+  vertical-align: bottom;
+}
+
+/* ---------- Flechas transparentes con el color del fondo de su combinación (ajuste global) ---------- */
+:where(html[data-gad-bare='bg']) :is(.gad-carousel--bare-arrows .gad-carousel__arrow, .gad-gallery--m-bare-arrows .gad-gallery__arrow, .gad-gallery--bare-arrows .gad-gallery__main-arrow) {
+  color: rgb(var(--color-background));
+}
+
+/* ---------- Íconos de trazo fino (ajuste global) ---------- */
+:where(html[data-gad-icons='thin']) .material-symbols-outlined {
+  font-weight: 300;
+}
+
+/* ---------- Tamaño de la letra (títulos y textos por sección, letra por bloque de la ficha) ----------
+   zoom sólo en el elemento de texto más externo, para que no se multiplique en los anidados. */
+:is([data-gad-hs='70'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='70'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='70'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='70'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='70']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='70'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 0.7;
+}
+
+:is([data-gad-hs='80'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='80'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='80'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='80'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='80']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='80'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 0.8;
+}
+
+:is([data-gad-hs='90'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='90'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='90'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='90'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='90']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='90'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 0.9;
+}
+
+:is([data-gad-hs='110'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='110'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='110'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='110'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='110']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='110'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 1.1;
+}
+
+:is([data-gad-hs='125'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='125'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='125'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='125'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='125']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='125'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 1.25;
+}
+
+:is([data-gad-hs='150'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='150'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='150'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='150'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='150']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='150'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 1.5;
+}
+
+:is([data-gad-hs='175'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='175'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='175'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='175'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='175']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='175'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 1.75;
+}
+
+:is([data-gad-hs='200'], .shopify-section:has(> .gad-sec-marker[data-gad-hs='200'])) :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+:is([data-gad-ts='200'], .shopify-section:has(> .gad-sec-marker[data-gad-ts='200'])) :is(p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle) *),
+[data-gad-fs='200']:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button),
+[data-gad-fs='200'] :is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button):not(:is(h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .hxl, .hxxl, p, .rte, blockquote, figcaption, dd, dt, small, .caption, .caption-large, .caption-with-letter-spacing, .subtitle, .price, label, legend, .button, .shopify-payment-button__button) *) {
+  zoom: 2;
+}
+
+/* imagen fija en la ficha: la galería acompaña mientras dura la sección */
+@media screen and (min-width: 750px) {
+  .product--gad-sticky-media > .product__media-wrapper {
+    position: sticky;
+    top: 3rem;
+    align-self: flex-start;
+  }
+}

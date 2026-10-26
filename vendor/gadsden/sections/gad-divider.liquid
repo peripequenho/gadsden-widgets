@@ -1,0 +1,496 @@
+
+{%- liquid
+  assign s = section.settings
+  case s.shape
+    when 'wave'
+      assign path = 'M0,60 C300,130 900,-10 1200,60 L1200,120 L0,120 Z'
+    when 'waves'
+      assign path = 'M0,70 C150,20 250,20 400,70 C550,120 650,120 800,70 C950,20 1050,20 1200,70 L1200,120 L0,120 Z'
+    when 'curve'
+      assign path = 'M0,0 Q600,240 1200,0 L1200,120 L0,120 Z'
+    when 'angle'
+      assign path = 'M0,120 L1200,0 L1200,120 Z'
+    when 'peak'
+      assign path = 'M0,0 L600,120 L1200,0 L1200,120 L0,120 Z'
+    when 'relief'
+      assign path = 'M0,41.6 L1.6,41.9 L3.9,45.5 L4.4,45.8 L107.4,45.8 L119.6,42.8 L125.1,40.4 L156.4,35.2 L171.6,33.2 L181.6,33.2 L198.9,32.5 L234.9,33.0 L250.9,33.7 L259.1,34.5 L275.4,37.1 L283.6,37.8 L299.1,31.7 L309.6,26.7 L320.4,25.3 L362.9,22.2 L370.1,22.6 L393.1,23.1 L402.6,23.6 L420.4,21.4 L431.1,20.4 L442.4,19.7 L461.4,19.3 L470.4,16.4 L481.6,14.0 L494.1,12.4 L507.6,11.6 L514.9,11.4 L538.9,12.4 L563.1,12.6 L575.1,14.0 L599.4,17.6 L608.9,16.2 L620.9,15.2 L634.9,14.6 L649.9,14.3 L676.6,14.6 L699.4,15.5 L701.1,15.7 L704.1,17.0 L708.4,17.2 L714.1,16.9 L719.6,15.6 L722.9,15.2 L728.6,15.2 L732.4,13.9 L737.9,12.8 L754.4,11.5 L779.1,11.2 L821.9,12.4 L826.9,11.5 L828.4,10.6 L828.9,9.5 L832.6,8.9 L868.6,6.4 L892.6,6.9 L933.9,9.0 L938.9,10.4 L950.4,13.0 L954.6,14.5 L971.1,13.2 L991.4,12.8 L1022.4,13.4 L1052.9,15.2 L1058.6,14.8 L1067.4,14.8 L1088.1,16.5 L1102.1,16.6 L1110.6,17.3 L1115.4,18.0 L1120.1,19.1 L1122.4,20.1 L1123.9,21.5 L1144.9,20.9 L1162.9,21.0 L1178.4,21.4 L1197.4,22.7 L1202.9,23.5 L1208.4,24.9 L1223.6,24.2 L1247.1,21.9 L1263.1,21.0 L1307.6,22.2 L1318.1,23.0 L1327.4,24.4 L1334.1,23.9 L1337.4,24.9 L1351.4,27.5 L1356.6,28.9 L1377.9,29.8 L1393.6,31.2 L1397.9,31.9 L1402.9,33.1 L1405.1,34.1 L1406.6,35.4 L1441.4,35.4 L1463.9,36.2 L1477.1,37.7 L1481.6,38.9 L1484.4,40.4 L1493.9,38.8 L1510.6,34.7 L1521.9,33.2 L1541.1,32.3 L1550.4,32.2 L1555.6,32.8 L1560.1,32.8 L1591.6,30.8 L1599.6,30.9 L1611.9,32.0 L1640.4,33.7 L1647.9,34.7 L1648.1,36.1 L1648.4,36.2 L1657.9,36.9 L1697.9,35.6 L1700.9,34.9 L1707.4,34.1 L1722.1,33.2 L1734.4,33.9 L1756.4,34.3 L1770.4,35.2 L1794.4,34.9 L1870.9,35.0 L1899.4,34.7 L1920,34.1 L1920,60 L0,60Z M1743.4,45.5 L1747.9,45.0 L1748.1,44.8 L1750.4,44.8 L1750.6,44.5 L1760.4,44.2 L1760.6,44.0 L1785.1,44.0 L1785.4,44.2 L1802.1,44.2 L1802.4,44.5 L1832.1,44.8 L1832.4,45.0 L1872.6,45.0 L1872.9,44.8 L1889.6,44.8 L1889.9,44.5 L1903.6,44.5 L1903.9,44.2 L1920.0,44.0 L1920.0,45.8 L1743.4,45.8Z'
+    when 'capas'
+      assign path = 'M0,125.4 L8,124.6 L16,123.2 L24,121.9 L32,121.0 L40,120.2 L48,118.8 L56,118.0 L64,116.6 L72,115.8 L80,114.4 L88,113.6 L96,112.7 L104,111.8 L112,110.9 L120,110.0 L128,109.2 L136,108.3 L144,107.4 L152,106.5 L160,106.1 L168,105.6 L176,104.8 L184,104.3 L192,103.9 L200,103.4 L208,103.0 L216,102.6 L224,102.6 L232,102.6 L240,102.6 L248,102.6 L256,103.0 L264,103.4 L272,103.9 L280,104.3 L288,105.2 L296,106.1 L304,107.4 L312,108.7 L320,110.5 L328,112.2 L336,114.0 L344,116.2 L352,118.8 L360,121.5 L368,124.6 L376,127.6 L384,131.2 L392,134.2 L400,138.2 L408,141.7 L416,145.7 L424,149.2 L432,153.2 L440,156.7 L448,160.7 L456,164.6 L464,168.1 L472,171.7 L480,174.7 L488,178.3 L496,180.9 L504,183.5 L512,186.2 L520,188.4 L528,190.1 L536,191.9 L544,192.8 L552,193.7 L560,194.1 L568,194.1 L576,193.7 L584,193.2 L592,192.3 L600,191.0 L608,189.7 L616,188.4 L624,187.1 L632,184.9 L640,183.1 L648,181.3 L656,179.1 L664,176.9 L672,174.7 L680,173.0 L688,170.8 L696,168.6 L704,166.8 L712,165.1 L720,163.3 L728,161.5 L736,160.2 L744,158.5 L752,157.6 L760,156.2 L768,155.4 L776,154.5 L784,153.6 L792,153.2 L800,152.3 L808,151.8 L816,151.4 L824,150.5 L832,150.1 L840,149.6 L848,149.2 L856,148.8 L864,148.3 L872,147.9 L880,147.4 L888,147.0 L896,146.6 L904,146.1 L912,145.7 L920,144.8 L928,143.9 L936,143.5 L944,142.6 L952,141.7 L960,140.8 L968,140.0 L976,139.1 L984,138.2 L992,137.3 L1000,136.0 L1008,135.1 L1016,134.2 L1024,132.9 L1032,132.0 L1040,130.7 L1048,129.8 L1056,128.5 L1064,127.6 L1072,126.3 L1080,125.4 L1088,124.6 L1096,123.2 L1104,122.4 L1112,121.0 L1120,120.2 L1128,118.8 L1136,118.0 L1144,117.1 L1152,116.2 L1160,114.9 L1168,114.4 L1176,113.6 L1184,112.7 L1192,111.8 L1200,111.4 L1208,110.5 L1216,110.0 L1224,109.6 L1232,109.2 L1240,109.2 L1248,108.7 L1256,108.7 L1264,108.7 L1272,108.7 L1280,109.2 L1288,109.2 L1296,109.6 L1304,110.0 L1312,110.9 L1320,111.8 L1328,112.2 L1336,113.1 L1344,114.4 L1352,115.3 L1360,116.6 L1368,118.0 L1376,119.3 L1384,121.0 L1392,122.4 L1400,124.1 L1408,125.9 L1416,127.6 L1424,129.8 L1432,131.6 L1440,133.8 L1440,250 L0,250 Z'
+      assign path_2 = 'M0,112.7 L8,109.2 L16,106.1 L24,102.6 L32,99.0 L40,96.0 L48,92.9 L56,89.8 L64,86.7 L72,84.5 L80,81.9 L88,80.1 L96,78.3 L104,76.6 L112,75.3 L120,74.4 L128,73.9 L136,73.5 L144,73.9 L152,74.4 L160,75.3 L168,76.6 L176,78.3 L184,80.5 L192,83.2 L200,86.3 L208,89.8 L216,93.8 L224,97.7 L232,101.7 L240,104.1 L248,104.1 L256,104.5 L264,104.9 L272,105.4 L280,105.8 L288,106.7 L296,107.6 L304,108.9 L312,110.2 L320,112.0 L328,113.7 L336,115.5 L344,117.7 L352,120.3 L360,123.0 L368,126.1 L376,129.1 L384,132.7 L392,135.7 L400,139.7 L408,143.2 L416,147.2 L424,150.7 L432,154.7 L440,151.8 L448,149.2 L456,146.6 L464,143.9 L472,141.3 L480,138.6 L488,136.0 L496,133.8 L504,131.6 L512,129.4 L520,128.1 L528,126.3 L536,125.4 L544,125.0 L552,124.6 L560,125.0 L568,125.4 L576,126.3 L584,127.6 L592,129.0 L600,130.7 L608,132.5 L616,134.7 L624,136.4 L632,138.6 L640,140.8 L648,143.0 L656,145.2 L664,147.0 L672,148.8 L680,150.5 L688,151.8 L696,152.7 L704,153.6 L712,154.0 L720,154.5 L728,154.5 L736,153.6 L744,152.7 L752,151.4 L760,150.1 L768,148.3 L776,146.1 L784,143.5 L792,141.3 L800,138.6 L808,136.0 L816,132.5 L824,129.8 L832,126.3 L840,123.2 L848,119.7 L856,116.6 L864,113.6 L872,110.5 L880,107.4 L888,104.3 L896,101.2 L904,98.6 L912,96.4 L920,93.8 L928,91.1 L936,89.3 L944,87.1 L952,85.4 L960,84.1 L968,82.3 L976,81.4 L984,80.5 L992,79.7 L1000,79.2 L1008,78.8 L1016,78.8 L1024,78.8 L1032,79.2 L1040,80.1 L1048,81.0 L1056,82.3 L1064,83.6 L1072,85.4 L1080,87.6 L1088,89.8 L1096,92.9 L1104,95.5 L1112,98.6 L1120,102.1 L1128,105.6 L1136,109.2 L1144,113.1 L1152,117.7 L1160,116.4 L1168,115.9 L1176,115.1 L1184,114.2 L1192,113.3 L1200,112.9 L1208,112.0 L1216,111.5 L1224,111.1 L1232,110.7 L1240,110.7 L1248,110.2 L1256,110.2 L1264,110.2 L1272,110.2 L1280,110.7 L1288,110.7 L1296,111.1 L1304,111.5 L1312,112.4 L1320,113.3 L1328,113.7 L1336,114.6 L1344,115.9 L1352,116.8 L1360,118.1 L1368,119.5 L1376,120.8 L1384,122.5 L1392,123.9 L1400,125.6 L1408,127.4 L1416,129.1 L1424,131.3 L1432,133.1 L1440,135.3 L1440,250 L0,250 Z'
+    when 'capas_cortas'
+      assign path = 'M0,74.4 L8,77.9 L16,81.0 L24,84.5 L32,88.0 L40,91.1 L48,94.2 L56,97.7 L64,100.4 L72,103.0 L80,105.6 L88,107.8 L96,110.0 L104,112.2 L112,113.6 L120,114.9 L128,116.2 L136,117.1 L144,117.5 L152,118.0 L160,118.0 L168,117.5 L176,116.6 L184,115.8 L192,114.0 L200,112.2 L208,110.0 L216,107.8 L224,105.2 L232,102.6 L240,99.5 L248,96.4 L256,93.3 L264,90.2 L272,87.1 L280,84.1 L288,81.4 L296,78.8 L304,76.1 L312,73.5 L320,71.7 L328,70.0 L336,68.2 L344,67.3 L352,66.5 L360,66.0 L368,66.5 L376,67.3 L384,68.7 L392,70.0 L400,71.7 L408,73.9 L416,77.0 L424,79.7 L432,82.7 L440,85.8 L448,89.3 L456,93.3 L464,96.8 L472,100.8 L480,104.3 L488,108.7 L496,112.7 L504,116.6 L512,120.2 L520,124.1 L528,128.1 L536,131.2 L544,134.7 L552,137.8 L560,140.8 L568,143.5 L576,145.7 L584,148.3 L592,150.1 L600,152.3 L608,154.0 L616,155.4 L624,156.7 L632,157.6 L640,158.5 L648,159.3 L656,159.8 L664,159.8 L672,159.8 L680,159.3 L688,158.9 L696,158.0 L704,156.7 L712,155.4 L720,154.0 L728,151.8 L736,150.1 L744,147.9 L752,145.7 L760,143.0 L768,140.4 L776,137.8 L784,135.1 L792,132.5 L800,129.8 L808,127.2 L816,124.6 L824,122.4 L832,120.2 L840,118.4 L848,116.2 L856,114.9 L864,113.6 L872,112.7 L880,111.8 L888,111.8 L896,111.8 L904,112.7 L912,113.6 L920,114.9 L928,116.6 L936,118.8 L944,120.6 L952,123.2 L960,125.9 L968,128.5 L976,131.6 L984,134.2 L992,136.9 L1000,139.5 L1008,142.2 L1016,144.4 L1024,147.0 L1032,149.2 L1040,150.5 L1048,152.3 L1056,153.2 L1064,154.0 L1072,154.0 L1080,154.0 L1088,153.2 L1096,151.8 L1104,149.6 L1112,147.9 L1120,145.2 L1128,142.6 L1136,139.1 L1144,136.0 L1152,132.5 L1160,128.5 L1168,125.0 L1176,121.0 L1184,117.5 L1192,113.6 L1200,110.5 L1208,106.5 L1216,103.4 L1224,100.4 L1232,97.7 L1240,95.5 L1248,93.3 L1256,92.0 L1264,90.7 L1272,90.2 L1280,89.8 L1288,90.2 L1296,90.7 L1304,92.0 L1312,93.3 L1320,95.1 L1328,96.8 L1336,99.5 L1344,101.7 L1352,104.3 L1360,107.4 L1368,110.5 L1376,114.0 L1384,117.1 L1392,120.6 L1400,124.1 L1408,127.6 L1416,131.2 L1424,134.7 L1432,138.2 L1440,141.3 L1440,250 L0,250 Z'
+      assign path_2 = 'M0,75.9 L8,79.4 L16,82.5 L24,86.0 L32,83.6 L40,82.7 L48,81.9 L56,80.5 L64,79.7 L72,78.3 L80,76.6 L88,74.8 L96,73.1 L104,70.9 L112,68.7 L120,66.5 L128,63.8 L136,61.2 L144,58.5 L152,55.5 L160,52.8 L168,49.7 L176,47.1 L184,44.5 L192,41.8 L200,39.6 L208,37.4 L216,35.2 L224,33.5 L232,32.1 L240,30.8 L248,29.9 L256,29.5 L264,29.5 L272,29.9 L280,30.8 L288,32.6 L296,34.3 L304,36.5 L312,39.6 L320,43.1 L328,46.7 L336,50.6 L344,55.0 L352,59.4 L360,63.8 L368,68.0 L376,68.8 L384,70.2 L392,71.5 L400,73.2 L408,75.4 L416,78.5 L424,81.2 L432,84.2 L440,87.3 L448,90.8 L456,94.8 L464,98.3 L472,102.3 L480,105.8 L488,110.2 L496,114.2 L504,118.1 L512,121.7 L520,125.6 L528,125.4 L536,125.0 L544,124.6 L552,123.7 L560,122.8 L568,122.4 L576,121.5 L584,120.6 L592,119.7 L600,119.3 L608,118.8 L616,118.4 L624,118.4 L632,118.8 L640,119.3 L648,120.2 L656,121.5 L664,123.2 L672,125.0 L680,127.2 L688,129.8 L696,132.5 L704,135.1 L712,138.2 L720,140.8 L728,143.9 L736,146.6 L744,149.4 L752,147.2 L760,144.5 L768,141.9 L776,139.3 L784,136.6 L792,134.0 L800,131.3 L808,128.7 L816,126.1 L824,123.9 L832,121.7 L840,119.9 L848,117.7 L856,116.4 L864,115.1 L872,114.2 L880,113.3 L888,113.3 L896,113.3 L904,114.2 L912,115.1 L920,116.4 L928,118.1 L936,112.2 L944,107.8 L952,103.4 L960,98.6 L968,94.6 L976,90.7 L984,87.1 L992,83.6 L1000,81.0 L1008,78.3 L1016,76.6 L1024,74.8 L1032,73.9 L1040,73.1 L1048,72.6 L1056,72.6 L1064,73.1 L1072,73.5 L1080,74.4 L1088,75.3 L1096,76.6 L1104,77.9 L1112,79.2 L1120,80.5 L1128,82.3 L1136,83.6 L1144,84.9 L1152,86.3 L1160,87.6 L1168,88.9 L1176,89.8 L1184,90.7 L1192,91.1 L1200,91.1 L1208,91.5 L1216,91.5 L1224,91.1 L1232,91.1 L1240,90.7 L1248,90.2 L1256,89.3 L1264,88.9 L1272,88.5 L1280,88.0 L1288,88.0 L1296,87.6 L1304,87.6 L1312,87.6 L1320,88.0 L1328,88.5 L1336,88.9 L1344,90.2 L1352,91.5 L1360,93.3 L1368,95.1 L1376,97.7 L1384,100.4 L1392,103.4 L1400,107.0 L1408,110.0 L1416,114.0 L1424,118.0 L1432,121.5 L1440,125.0 L1440,250 L0,250 Z'
+    when 'ondas'
+      assign path = 'M0,131.3 L8,130.0 L16,128.7 L24,127.4 L32,126.0 L40,125.2 L48,123.9 L56,122.1 L64,120.8 L72,119.5 L80,118.1 L88,116.4 L96,114.6 L104,113.3 L112,111.6 L120,109.8 L128,107.6 L136,105.4 L144,103.2 L152,101.0 L160,98.8 L168,96.2 L176,94.0 L184,91.4 L192,88.3 L200,85.2 L208,82.1 L216,79.1 L224,75.5 L232,72.5 L240,68.5 L248,65.0 L256,61.5 L264,58.0 L272,54.5 L280,50.9 L288,47.4 L296,44.4 L304,40.8 L312,37.8 L320,34.7 L328,32.1 L336,29.4 L344,27.2 L352,25.0 L360,23.3 L368,21.5 L376,20.2 L384,19.3 L392,18.9 L400,18.9 L408,18.9 L416,19.8 L424,20.6 L432,22.0 L440,23.7 L448,25.9 L456,28.5 L464,31.2 L472,33.8 L480,36.9 L488,40.0 L496,43.0 L504,46.6 L512,49.6 L520,52.7 L528,56.2 L536,59.3 L544,62.4 L552,65.0 L560,68.1 L568,70.3 L576,72.5 L584,74.2 L592,75.5 L600,76.9 L608,77.3 L616,77.7 L624,77.7 L632,76.9 L640,76.0 L648,74.7 L656,72.9 L664,70.7 L672,68.5 L680,65.9 L688,62.8 L696,60.2 L704,56.7 L712,53.6 L720,50.5 L728,47.0 L736,43.9 L744,40.4 L752,37.3 L760,34.3 L768,31.6 L776,29.0 L784,26.4 L792,24.2 L800,22.4 L808,21.1 L816,19.8 L824,19.3 L832,18.9 L840,18.9 L848,19.3 L856,20.2 L864,21.1 L872,22.4 L880,24.2 L888,25.9 L896,27.7 L904,29.9 L912,32.1 L920,34.3 L928,36.5 L936,39.1 L944,41.3 L952,43.5 L960,45.7 L968,47.9 L976,49.6 L984,51.4 L992,52.7 L1000,54.0 L1008,55.3 L1016,55.8 L1024,56.2 L1032,56.2 L1040,55.8 L1048,55.3 L1056,54.0 L1064,52.7 L1072,51.4 L1080,49.6 L1088,47.4 L1096,45.2 L1104,42.6 L1112,40.4 L1120,37.8 L1128,35.1 L1136,32.1 L1144,29.4 L1152,26.4 L1160,23.7 L1168,21.1 L1176,18.0 L1184,15.8 L1192,13.2 L1200,11.0 L1208,8.8 L1216,6.6 L1224,4.8 L1232,3.5 L1240,2.2 L1248,1.3 L1256,0.9 L1264,0.4 L1272,0.0 L1280,0.4 L1288,0.4 L1296,0.9 L1304,1.8 L1312,2.6 L1320,4.0 L1328,5.3 L1336,6.6 L1344,7.9 L1352,10.1 L1360,11.9 L1368,13.6 L1376,15.8 L1384,18.0 L1392,20.2 L1400,22.8 L1408,25.0 L1416,27.7 L1424,30.3 L1432,32.9 L1440,35.1 L1440,195 L0,195 Z'
+    when 'diagonal'
+      assign path = 'M0,30.3 L360,0.1 L360,32 L0,32 Z'
+  endcase
+-%}
+{%- if s.shape == 'zigzag' -%}
+  {%- capture path -%}
+    M0,120 L0,60
+    {%- for i in (1..24) -%}
+      {%- assign zy = i | modulo: 2 | times: 50 | plus: 60 %} L{{ i | times: 50 }},{{ zy }}
+    {%- endfor %} L1200,120 Z
+  {%- endcapture -%}
+{%- endif -%}
+{%- liquid
+  assign fx = 1
+  assign fy = 1
+  assign top_class = 'gad-dvx__bg color-' | append: s.scheme_top
+  assign bottom_class = 'gad-dvx__fill color-' | append: s.scheme_bottom
+  if s.flip
+    assign fx = -1
+  endif
+  if s.invert
+    assign fy = -1
+    assign top_class = 'gad-dvx__fill color-' | append: s.scheme_bottom
+    assign bottom_class = 'gad-dvx__bg color-' | append: s.scheme_top
+  endif
+-%}
+<div
+  class="gad-dvx gad-dvx--{{ s.shape }}"
+  style="--div-m: {{ s.height_m }}px; --div-d: {{ s.height_d }}px; --div-pt: {{ s.padding_top }}px; --div-pb: {{ s.padding_bottom }}px;{% if s.color_top != blank %} --div-bg: {{ s.color_top }};{% endif %}{% if s.color_bottom != blank %} --div-shape: {{ s.color_bottom }};{% endif %}"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="gad-dvx__pad gad-dvx__pad--top {{ top_class }}"></div>
+  <div class="gad-dvx__box gad-dvx__bg color-{{ s.scheme_top }}" style="transform: scale({{ fx }}, {{ fy }});">
+    <div class="gad-dvx__shape color-{{ s.scheme_bottom }}">
+      {%- if s.shape == 'waves_motion' -%}
+        <svg viewBox="0 24 150 28" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <defs>
+            <path
+              id="gad-dvx-ola-{{ section.id }}"
+              d="M-160,44 C-128,44 -104,26 -72,26 C-40,26 -16,44 16,44 C48,44 72,26 104,26 C136,26 160,44 192,44 V88 H-160 Z"
+            />
+          </defs>
+          <g class="gad-dvx__ola gad-dvx__ola--1"><use href="#gad-dvx-ola-{{ section.id }}" x="50" y="3"/></g>
+          <g class="gad-dvx__ola gad-dvx__ola--2"><use href="#gad-dvx-ola-{{ section.id }}" x="50" y="0" opacity=".4"/></g>
+          <g class="gad-dvx__ola gad-dvx__ola--3"><use href="#gad-dvx-ola-{{ section.id }}" x="50" y="9" opacity=".3"/></g>
+          <g class="gad-dvx__ola gad-dvx__ola--4"><use href="#gad-dvx-ola-{{ section.id }}" x="50" y="6" opacity=".2"/></g>
+        </svg>
+      {%- elsif s.shape == 'relief' -%}
+        <svg viewBox="0 0 1920 60" aria-hidden="true" focusable="false">
+          <path fill-rule="evenodd" d="{{ path }}"/>
+        </svg>
+      {%- elsif s.shape == 'capas' or s.shape == 'capas_cortas' -%}
+        <svg viewBox="0 0 1440 250" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="{{ path_2 }}" opacity="{% if s.shape == 'capas' %}.5{% else %}.3{% endif %}"/>
+          <path d="{{ path }}"/>
+        </svg>
+      {%- elsif s.shape == 'ondas' -%}
+        <svg viewBox="0 0 1440 195" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="{{ path }}"/>
+        </svg>
+      {%- elsif s.shape == 'diagonal' -%}
+        <svg viewBox="0 0 360 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="{{ path }}"/>
+        </svg>
+      {%- else -%}
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="{{ path | strip }}"/>
+        </svg>
+      {%- endif -%}
+    </div>
+  </div>
+  <div class="gad-dvx__pad gad-dvx__pad--bottom {{ bottom_class }}"></div>
+</div>
+
+{% stylesheet %}
+  div.gad-dvx {
+    line-height: 0;
+    background: none;
+  }
+
+  .gad-dvx div.gad-dvx__bg {
+    background: var(--div-bg, rgb(var(--color-background)));
+  }
+
+  .gad-dvx div.gad-dvx__fill {
+    background: var(--div-shape, rgb(var(--color-background)));
+  }
+
+  /* Los márgenes son divs vacíos y Dawn oculta los div:empty. */
+  .gad-dvx div.gad-dvx__pad {
+    display: block;
+    height: calc(var(--div-pt) * 0.75);
+  }
+
+  .gad-dvx div.gad-dvx__pad--bottom {
+    height: calc(var(--div-pb) * 0.75);
+  }
+
+  /* Un píxel de solape con la sección vecina para que no quede una línea entre las dos. */
+  .gad-dvx div.gad-dvx__shape {
+    background: none;
+    transform: translateY(1px);
+  }
+
+  .gad-dvx svg {
+    display: block;
+    width: 100%;
+    height: calc(var(--div-m, 40px) * var(--font-body-scale, 1));
+    fill: var(--div-shape, rgb(var(--color-background)));
+  }
+
+  .gad-dvx.gad-dvx--relief svg {
+    height: auto;
+  }
+
+  /* Formas que guardan su proporción hasta 150px de alto; más ancho, se estiran a lo ancho. */
+  .gad-dvx.gad-dvx--capas svg,
+  .gad-dvx.gad-dvx--capas_cortas svg,
+  .gad-dvx.gad-dvx--ondas svg,
+  .gad-dvx.gad-dvx--diagonal svg {
+    height: auto;
+    max-height: 150px;
+  }
+
+  .gad-dvx__ola use {
+    animation: gad-dvx-ola-ida 10s linear infinite;
+  }
+
+  .gad-dvx__ola--2 use {
+    animation: gad-dvx-ola-vuelta 8s linear infinite;
+  }
+
+  .gad-dvx__ola--3 use {
+    animation-duration: 6s;
+  }
+
+  .gad-dvx__ola--4 use {
+    animation: gad-dvx-ola-vuelta 4s linear infinite;
+  }
+
+  @keyframes gad-dvx-ola-ida {
+    from {
+      transform: translateX(85px);
+    }
+
+    to {
+      transform: translateX(-90px);
+    }
+  }
+
+  @keyframes gad-dvx-ola-vuelta {
+    from {
+      transform: translateX(-90px);
+    }
+
+    to {
+      transform: translateX(85px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gad-dvx__ola use {
+      animation: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-dvx div.gad-dvx__pad {
+      height: var(--div-pt);
+    }
+
+    .gad-dvx div.gad-dvx__pad--bottom {
+      height: var(--div-pb);
+    }
+  }
+
+  /* Alto de desktop. */
+  @media screen and (min-width: 750px) {
+    .gad-dvx svg {
+      height: calc(var(--div-d, 80px) * var(--font-body-scale, 1));
+    }
+
+    .gad-dvx.gad-dvx--relief svg {
+      height: auto;
+    }
+  }
+{% endstylesheet %}
+{% schema %}
+{
+  "name": "Separador de secciones",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "shape",
+      "label": "Forma",
+      "options": [
+        {
+          "value": "wave",
+          "label": "Ola"
+        },
+        {
+          "value": "waves",
+          "label": "Olas"
+        },
+        {
+          "value": "curve",
+          "label": "Curva"
+        },
+        {
+          "value": "angle",
+          "label": "Ángulo"
+        },
+        {
+          "value": "peak",
+          "label": "Pico"
+        },
+        {
+          "value": "zigzag",
+          "label": "Zigzag"
+        },
+        {
+          "value": "waves_motion",
+          "label": "Olas en movimiento"
+        },
+        {
+          "value": "relief",
+          "label": "Relieve"
+        },
+        {
+          "value": "capas",
+          "label": "Olas en dos capas"
+        },
+        {
+          "value": "capas_cortas",
+          "label": "Olas en dos capas cortas"
+        },
+        {
+          "value": "ondas",
+          "label": "Ondas"
+        },
+        {
+          "value": "diagonal",
+          "label": "Diagonal"
+        }
+      ],
+      "default": "wave"
+    },
+    {
+      "type": "range",
+      "id": "height_m",
+      "min": 10,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Alto en mobile",
+      "default": 40,
+      "info": "Relieve, Olas en dos capas, Ondas y Diagonal no usan los altos: guardan su proporción."
+    },
+    {
+      "type": "range",
+      "id": "height_d",
+      "min": 10,
+      "max": 240,
+      "step": 5,
+      "unit": "px",
+      "label": "Alto en desktop",
+      "default": 80,
+      "info": "Desde 750 px de ancho. Los dos altos siguen la escala del texto del theme."
+    },
+    {
+      "type": "checkbox",
+      "id": "flip",
+      "label": "Espejar",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "invert",
+      "label": "Dar vuelta (la forma baja desde arriba)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Colores"
+    },
+    {
+      "type": "paragraph",
+      "content": "El fondo es el color de la sección de arriba y la forma, el de la de abajo (al revés si la das vuelta)."
+    },
+    {
+      "type": "color_scheme",
+      "id": "scheme_top",
+      "label": "Combinación del fondo",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "scheme_bottom",
+      "label": "Combinación de la forma",
+      "default": "scheme-2"
+    },
+    {
+      "type": "color",
+      "id": "color_top",
+      "label": "Color propio del fondo",
+      "info": "Pisa a la combinación."
+    },
+    {
+      "type": "color",
+      "id": "color_bottom",
+      "label": "Color propio de la forma"
+    },
+    {
+      "type": "header",
+      "content": "Márgenes"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margen de arriba",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margen de abajo",
+      "default": 0,
+      "info": "Extienden el color vecino. En mobile se usa el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Separador de secciones"
+    }
+  ]
+}
+{% endschema %}

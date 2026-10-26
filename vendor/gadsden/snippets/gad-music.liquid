@@ -1,0 +1,21 @@
+
+<gad-music class="gad-music{% if floating %} gad-music--floating{% endif %}{% if pulse %} gad-music--pulse{% endif %}" data-volume="{{ volume | default: 30 }}">
+  <audio src="{{ src | escape }}" preload="none" loop></audio>
+  {%- unless floating -%}
+    {%- if cover != blank -%}
+      <div class="gad-music__cover">{{ cover | image_url: width: 300 | image_tag: loading: 'lazy', alt: '', width: 150, height: 150 }}</div>
+    {%- endif -%}
+    <div class="gad-music__info">
+      {%- if title != blank -%}<p class="gad-music__title h4">{{ title | escape }}</p>{%- endif -%}
+      {%- if artist != blank -%}<p class="gad-music__artist">{{ artist | escape }}</p>{%- endif -%}
+      <div class="gad-music__bar">
+        <input type="range" class="gad-music__seek" min="0" max="100" step="0.1" value="0" aria-label="{{ 'gadsden.music.seek' | t }}" data-gad-music-seek>
+        <span class="gad-music__time" data-gad-music-time>0:00</span>
+      </div>
+    </div>
+  {%- endunless -%}
+  <button type="button" class="gad-music__toggle" aria-pressed="false" aria-label="{{ 'gadsden.music.play' | t }}" data-label-play="{{ 'gadsden.music.play' | t }}" data-label-pause="{{ 'gadsden.music.pause' | t }}">
+    {%- render 'gad-icon', name: 'music_note', filled: true, class: 'gad-music__off' -%}
+    {%- render 'gad-icon', name: 'pause', filled: true, class: 'gad-music__on' -%}
+  </button>
+</gad-music>

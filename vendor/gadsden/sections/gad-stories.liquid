@@ -1,0 +1,659 @@
+
+{%- assign s = section.settings -%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<div
+  class="gad-st gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --st-size: {{ s.circle_size }}px;{% if s.ring_color != blank %} --st-ring: {{ s.ring_color }};{% endif %}"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width">
+    {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: s.heading_align, align_m: s.heading_align_m -%}
+    <gad-stories class="gad-st__wrap" data-seconds="{{ s.seconds }}">
+      <ul class="gad-st__list list-unstyled" role="list">
+        {%- for block in section.blocks -%}
+          <li {{ block.shopify_attributes }}>
+            <button type="button" class="gad-st__circle" data-gad-story="{{ forloop.index0 }}">
+              <span class="gad-st__ring">
+                {%- if block.settings.cover != blank -%}
+                  {{ block.settings.cover | image_url: width: 200 | image_tag: loading: 'lazy', alt: '', width: 100, height: 100 }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag }}
+                {%- endif -%}
+              </span>
+              <span class="gad-st__label">{{ block.settings.label | escape }}</span>
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <dialog class="gad-st__viewer" aria-label="{{ s.heading | strip_html | escape }}">
+        <div class="gad-st__bars" aria-hidden="true">
+          {%- for block in section.blocks -%}<span class="gad-st__bar"><i></i></span>{%- endfor -%}
+        </div>
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <div class="gad-st__slide" data-index="{{ forloop.index0 }}" hidden>
+            {%- if b.video != blank -%}
+              <video playsinline muted preload="none" poster="{{ b.video.preview_image | image_url: width: 720 }}">
+                {%- for source in b.video.sources -%}
+                  {%- if source.format == 'mp4' -%}<source src="{{ source.url }}" type="video/mp4">{%- endif -%}
+                {%- endfor -%}
+              </video>
+            {%- elsif b.media != blank -%}
+              {{ b.media | image_url: width: 1080 | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 750px) 420px, 100vw', widths: '540, 720, 1080' }}
+            {%- elsif b.cover != blank -%}
+              {{ b.cover | image_url: width: 1080 | image_tag: loading: 'lazy', alt: '', widths: '540, 720, 1080' }}
+            {%- endif -%}
+            <div class="gad-st__caption">
+              <p class="gad-st__name">{{ b.label | escape }}</p>
+              {%- if b.text != blank -%}<p class="gad-st__text">{{ b.text | escape }}</p>{%- endif -%}
+              {%- if b.link_label != blank and b.link != blank -%}
+                <a href="{{ b.link }}" class="button gad-st__link">{{ b.link_label | escape }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+        <button type="button" class="gad-st__prev" data-gad-story-prev aria-label="{{ 'general.slider.previous_slide' | t }}"></button>
+        <button type="button" class="gad-st__next" data-gad-story-next aria-label="{{ 'general.slider.next_slide' | t }}"></button>
+        <button type="button" class="gad-st__close" data-gad-story-close aria-label="{{ 'accessibility.close' | t }}">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </button>
+      </dialog>
+    </gad-stories>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-st__list {
+    display: flex;
+    gap: 1.6rem;
+    margin: 0;
+    padding: 0.4rem 0 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .gad-st__wrap:has(.gad-st__list > li:nth-child(-n + 6):last-child) .gad-st__list {
+    justify-content: center;
+  }
+
+  .gad-st__circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    width: calc(var(--st-size, 80px) + 0.8rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .gad-st__ring {
+    display: block;
+    width: calc(var(--st-size, 80px) + 0.8rem);
+    height: calc(var(--st-size, 80px) + 0.8rem);
+    padding: 0.3rem;
+    border-radius: 50%;
+    background: var(--st-ring, linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7));
+  }
+
+  .gad-st__ring img,
+  .gad-st__ring svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0.3rem solid rgb(var(--color-background));
+    border-radius: 50%;
+    background: rgb(var(--color-background));
+  }
+
+  .gad-st__label {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 1.2rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gad-st__viewer {
+    width: min(42rem, 100vw);
+    height: min(75rem, 100vh);
+    max-width: 100vw;
+    max-height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: #000;
+    color: #fff;
+  }
+
+  @media screen and (max-width: 749px) {
+    .gad-st__viewer {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+  }
+
+  .gad-st__viewer::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .gad-st__slide {
+    position: absolute;
+    inset: 0;
+  }
+
+  .gad-st__slide img,
+  .gad-st__slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gad-st__bars {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    z-index: 3;
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .gad-st__bar {
+    flex: 1;
+    height: 0.3rem;
+    overflow: hidden;
+    border-radius: 0.3rem;
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .gad-st__bar i {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #fff;
+  }
+
+  .gad-st__caption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    padding: 6rem 1.6rem 2rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  }
+
+  .gad-st__name {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .gad-st__text {
+    margin: 0.4rem 0 0;
+    font-size: 1.4rem;
+  }
+
+  .gad-st__link {
+    margin-top: 1rem;
+  }
+
+  .gad-st__prev,
+  .gad-st__next {
+    position: absolute;
+    top: 3rem;
+    bottom: 12rem;
+    z-index: 2;
+    width: 35%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .gad-st__prev {
+    left: 0;
+  }
+
+  .gad-st__next {
+    right: 0;
+  }
+
+  .gad-st__close {
+    position: absolute;
+    top: 2rem;
+    right: 1rem;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .gad-st__close svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Historias",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alineación del encabezado",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "info": "Volanta, título y texto de arriba."
+    },
+    {
+      "type": "select",
+      "id": "heading_align_m",
+      "label": "Alineación del encabezado en mobile",
+      "default": "same",
+      "options": [
+        {
+          "value": "same",
+          "label": "Igual que en desktop"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "min": 48,
+      "max": 120,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño de los círculos",
+      "default": 76
+    },
+    {
+      "type": "color",
+      "id": "ring_color",
+      "label": "Color del aro",
+      "info": "Vacío: el degradé de las historias."
+    },
+    {
+      "type": "range",
+      "id": "seconds",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "label": "Segundos por foto",
+      "default": 5,
+      "info": "Los videos pasan al terminar."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 24,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "story",
+      "name": "Historia",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "cover",
+          "label": "Tapa del círculo"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Nombre",
+          "default": "Novedades"
+        },
+        {
+          "type": "image_picker",
+          "id": "media",
+          "label": "Foto de la historia",
+          "info": "Vertical. Vacía: usa la tapa."
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video de la historia",
+          "info": "Gana sobre la foto."
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Texto del enlace"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Historias",
+      "blocks": [
+        {
+          "type": "story"
+        },
+        {
+          "type": "story",
+          "settings": {
+            "label": "Ofertas"
+          }
+        },
+        {
+          "type": "story",
+          "settings": {
+            "label": "Clientes"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

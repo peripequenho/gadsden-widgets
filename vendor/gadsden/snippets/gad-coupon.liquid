@@ -1,0 +1,21 @@
+
+<gad-coupon class="gad-cb gad-coupon{% if b.separator %} gad-coupon--sep{% endif %}" style="{{ mg }}" {{ attrs }}>
+  <form class="gad-coupon__form" novalidate>
+    <div class="field">
+      <input
+        class="field__input"
+        type="text"
+        name="discount"
+        id="GadCoupon-{{ key }}"
+        placeholder="{{ b.placeholder | escape }}"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        aria-describedby="GadCouponError-{{ key }}"
+      >
+      <label class="field__label" for="GadCoupon-{{ key }}">{{ b.placeholder | escape }}</label>
+    </div>
+    <button type="submit" class="button gad-coupon__btn">{{ b.button_text | escape }}</button>
+  </form>
+  <p id="GadCouponError-{{ key }}" class="gad-coupon__error" role="alert" hidden>{{ b.error | escape }}</p>
+</gad-coupon>

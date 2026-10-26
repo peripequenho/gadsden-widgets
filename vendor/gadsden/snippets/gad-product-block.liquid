@@ -1,0 +1,421 @@
+
+{%- liquid
+  assign b = block.settings
+  assign margins = '--mt: ' | append: b.margin_top | append: 'px; --mb: ' | append: b.margin_bottom | append: 'px;'
+-%}
+{%- case block.type -%}
+  {%- when 'sticky_bar' -%}
+    {%- render 'gad-sticky-bar', block: block, product: product, section: section, product_form_id: product_form_id -%}
+
+  {%- when 'reviews' -%}
+    {%- capture slides -%}
+      {%- for i in (1..3) -%}
+        {%- liquid
+          assign k_author = 'author_' | append: i
+          assign k_text = 'text_' | append: i
+          assign k_photo = 'photo_' | append: i
+        -%}
+        {%- if b[k_text] != blank -%}
+          <div class="gad-p-reviews__slide">
+            {%- render 'gad-review-card', b: b, author: b[k_author], text: b[k_text], image: b[k_photo] -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if slides != blank -%}
+      {%- liquid
+        assign dots = 'hidden'
+        if b.show_dots
+          assign dots = 'under'
+        endif
+        assign arrows = 'hidden'
+        if b.show_arrows
+          assign arrows = 'under'
+        endif
+        assign rv_key = section.id | append: '-' | append: block.id
+      -%}
+      <div class="gad-pblock gad-p-reviews{% if b.nav_compact %} gad-p-reviews--nav-compact{% endif %}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        {%- render 'gad-carousel',
+          s: b,
+          key: rv_key,
+          slides: slides,
+          d_per_view: 1,
+          m_per_view: 1,
+          force_d_on: true,
+          force_m_on: true,
+          dots_d: dots,
+          dots_m: dots,
+          arrows_d: arrows,
+          arrows_m: arrows,
+          gap_d: 12,
+          gap_m: 12
+        -%}
+      </div>
+    {%- endif -%}
+
+  {%- when 'benefits' -%}
+    {%- if b.benefits != blank -%}
+      <div class="gad-pblock gad-p-benefits rte" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        {{ b.benefits }}
+      </div>
+    {%- endif -%}
+
+  {%- when 'divider' -%}
+    <div
+      class="gad-pblock gad-p-divider gad-p-align--{{ b.align }}{% if b.full_mobile and b.width == 100 %} gad-p-bleed{% endif %}"
+      style="{{ margins }} --div-color: {{ b.color }}; --div-h: {{ b.thickness }}px; --div-w: {{ b.width }}%; --div-r: {{ b.radius }}px;"
+      {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+    >
+      <hr class="gad-p-divider__line">
+    </div>
+
+  {%- when 'urgency' -%}
+    {%- if b.text != blank -%}
+      <div class="gad-pblock gad-p-urgency-wrap gad-p-align--{{ b.align }}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        <p class="gad-p-urgency color-{{ b.color_scheme }}">{{ b.text }}</p>
+      </div>
+    {%- endif -%}
+
+  {%- when 'icons' -%}
+    {%- liquid
+      assign has_item = false
+      for i in (1..3)
+        assign k_title = 'title_' | append: i
+        if b[k_title] != blank
+          assign has_item = true
+        endif
+      endfor
+    -%}
+    {%- if has_item -%}
+      <div
+        class="gad-pblock gad-p-icons gad-p-icons--{{ b.layout }} gad-accent-{{ b.icon_color }}"
+        style="{{ margins }} --ic-d: {{ b.icon_size_d }}px; --ic-m: {{ b.icon_size_m }}px; --gap-d: {{ b.gap_d }}px; --gap-m: {{ b.gap_m }}px; --tx-d: {{ b.text_size_d }}px; --tx-m: {{ b.text_size_m }}px;"
+        {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+      >
+        {%- for i in (1..3) -%}
+          {%- liquid
+            assign k_title = 'title_' | append: i
+            assign k_icon = 'icon_' | append: i
+            assign k_filled = 'filled_' | append: i
+            assign k_image = 'image_' | append: i
+          -%}
+          {%- if b[k_title] != blank -%}
+            <div class="gad-p-icons__item">
+              {%- render 'gad-icon', name: b[k_icon], filled: b[k_filled], image: b[k_image], class: 'gad-p-icons__icon' -%}
+              <span class="gad-p-icons__title">{{ b[k_title] }}</span>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  {%- when 'image' -%}
+    {%- if b.image != blank -%}
+      <div
+        class="gad-pblock gad-p-image gad-p-align--{{ b.align }}{% if b.full_mobile and b.width == 100 %} gad-p-bleed{% endif %}"
+        style="{{ margins }} --img-w: {{ b.width }}%; --img-r: {{ b.radius }}px;"
+        {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+      >
+        {%- assign img_alt = b.image.alt | default: '' -%}
+        {{ b.image | image_url: width: 1500 | image_tag: loading: 'lazy', alt: img_alt, sizes: '(min-width: 990px) 45vw, 100vw', widths: '375, 550, 750, 1100, 1500' }}
+      </div>
+    {%- elsif request.design_mode -%}
+      <div class="gad-pblock gad-p-image" style="{{ margins }} --img-w: 100%;" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {%- endif -%}
+
+  {%- when 'features' -%}
+    {%- render 'gad-features', block: block, section: section -%}
+
+  {%- when 'feature' -%}
+    
+
+  {%- when 'stars' -%}
+    {%- liquid
+      assign rating = b.rating | at_least: 0 | at_most: 5
+      assign fill_pct = rating | times: 20
+      assign star_class = ''
+      if b.empty_style == 'outline'
+        assign star_class = ' gad-p-stars--outline'
+      endif
+      assign target = b.scroll_target | remove: '#' | strip
+    -%}
+    <div
+      class="gad-pblock gad-p-stars-wrap gad-p-align--{{ b.align }}"
+      style="{{ margins }} --star: {{ b.star_color }}; --star-off: {{ b.empty_color }}; --star-size: {{ b.size }}px;"
+      {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+    >
+      {%- if target != blank -%}<a href="#{{ target }}" class="gad-p-stars-link" data-gad-scroll>{%- endif -%}
+      <span class="gad-p-stars{{ star_class }}" role="img" aria-label="{{ 'gadsden.reviews.stars' | t: count: rating }}">
+        <span class="gad-p-stars__base" aria-hidden="true">
+          {%- for i in (1..5) -%}{%- render 'gad-icon', name: 'star', filled: true -%}{%- endfor -%}
+        </span>
+        <span class="gad-p-stars__fill" style="width: {{ fill_pct }}%;" aria-hidden="true">
+          {%- for i in (1..5) -%}{%- render 'gad-icon', name: 'star', filled: true -%}{%- endfor -%}
+        </span>
+      </span>
+      {%- if b.text != blank -%}
+        <span class="gad-p-stars__text">{{ b.text }}</span>
+      {%- endif -%}
+      {%- if target != blank -%}</a>{%- endif -%}
+    </div>
+
+  {%- when 'trustpilot' -%}
+    {%- liquid
+      assign rating = b.rating | at_least: 0 | at_most: 5
+      assign target = b.scroll_target | remove: '#' | strip
+    -%}
+    {%- capture tp_stars -%}
+      <span class="gad-tp__stars" role="img" aria-label="{{ 'gadsden.reviews.stars' | t: count: rating }}">
+        {%- for i in (1..5) -%}
+          {%- liquid
+            assign part = rating | minus: forloop.index0 | at_least: 0 | at_most: 1 | times: 100 | round
+          -%}
+          <span class="gad-tp__star" style="--f: {{ part }}%;" aria-hidden="true">
+            {%- render 'gad-icon', name: 'star', filled: true -%}
+          </span>
+        {%- endfor -%}
+      </span>
+      {%- if b.text != blank -%}
+        <span class="gad-tp__text">{{ b.text }}</span>
+      {%- endif -%}
+    {%- endcapture -%}
+    <div
+      class="gad-pblock gad-tp gad-p-align--{{ b.align }}"
+      style="{{ margins }} --tp: {{ b.color }}; --tp-off: {{ b.empty_color }}; --tp-size: {{ b.size }}px;"
+      {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}
+    >
+      {%- if target != blank -%}
+        <a href="#{{ target }}" class="gad-p-stars-link" data-gad-scroll>{{ tp_stars }}</a>
+      {%- else -%}
+        {{ tp_stars }}
+      {%- endif -%}
+    </div>
+
+  {%- when 'atc' -%}
+    <div class="gad-pblock gad-atc-block gad-p-align--{{ b.align }}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- render 'gad-atc-button', label: b.atc_label, product: b.atc_product, skip_cart: b.atc_skip_cart, secondary: b.secondary -%}
+    </div>
+
+  {%- when 'text_icons' -%}
+    <div class="gad-pblock" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- render 'gad-text-icons', b: b, key: block.id -%}
+    </div>
+
+  {%- when 'quantity_offers' -%}
+    {%- render 'gad-quantity-offers', block: block, product: product, section: section, product_form_id: product_form_id -%}
+  {%- when 'code' -%}
+    {%- if b.code != blank -%}
+      <div class="gad-pblock gad-p-code color-{{ b.color_scheme }}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        <div class="gad-p-code__text">
+          {%- if b.text != blank -%}<span>{{ b.text }}</span>{%- endif -%}
+          <strong class="gad-p-code__value">{{ b.code | escape }}</strong>
+        </div>
+        <button type="button" class="button gad-p-code__btn" data-gad-apply-code="{{ b.code | escape }}">
+          <span class="gad-p-code__apply">{{ b.button_label | escape }}</span>
+          <span class="gad-p-code__done">{%- render 'gad-icon', name: 'check' -%}{{ b.applied_label | escape }}</span>
+          {%- render 'loading-spinner' -%}
+        </button>
+      </div>
+    {%- endif -%}
+
+  {%- when 'addons' -%}
+    {%- if b.products.size > 0 -%}
+      <div class="gad-pblock gad-p-addons" style="{{ margins }}" data-gad-with-main data-form="{{ product_form_id }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        {%- if b.heading != blank -%}<p class="gad-p-addons__title">{{ b.heading | escape }}</p>{%- endif -%}
+        <ul class="list-unstyled gad-p-addons__list" role="list">
+          {%- for p in b.products -%}
+            {%- if p.id == product.id -%}{%- continue -%}{%- endif -%}
+            {%- assign v = p.selected_or_first_available_variant -%}
+            <li>
+              <label class="gad-p-addons__item{% unless v.available %} is-disabled{% endunless %}">
+                <input type="checkbox" value="{{ v.id }}" data-gad-addon{% if b.checked and v.available %} checked{% endif %}{% unless v.available %} disabled{% endunless %}>
+                {%- if p.featured_media -%}
+                  {{ p.featured_media | image_url: width: 120 | image_tag: loading: 'lazy', alt: '', width: 48, height: 48 }}
+                {%- endif -%}
+                <span class="gad-p-addons__name">{{ p.title | escape }}</span>
+                <span class="gad-p-addons__price">+{{ v.price | money }}</span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- elsif request.design_mode -%}
+      <p class="gad-pblock gad-p-note" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>{{ 'gadsden.product.pick_products' | t }}</p>
+    {%- endif -%}
+
+  {%- when 'video', 'payment' -%}
+    <div class="gad-pblock gad-p-align--{{ b.align | default: 'left' }}{% if b.radius > 0 %} gad-p-video--round{% endif %}" style="{{ margins }}{% if b.radius > 0 %} --gad-video-radius: {{ b.radius }}px;{% endif %}">
+      {%- render 'gad-column-block', block: block, section: section -%}
+    </div>
+
+  {%- when 'bundle' -%}
+    {%- capture rows -%}
+      {%- if b.include_current -%}
+        {%- render 'gad-bundle-item', p: product, key: 'current', locked: true -%}
+      {%- endif -%}
+      {%- for p in b.products -%}
+        {%- if p.id == product.id -%}{%- continue -%}{%- endif -%}
+        {%- assign row_key = block.id | append: '-' | append: forloop.index -%}
+        {%- render 'gad-bundle-item', p: p, key: row_key, checked: b.checked -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    <div class="gad-pblock gad-p-bundle" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- if b.heading != blank -%}<p class="gad-p-bundle__title h4">{{ b.heading | escape }}</p>{%- endif -%}
+      {%- render 'gad-bundle-box', s: b, rows: rows -%}
+    </div>
+
+  {%- when 'qty_gifts' -%}
+    <gad-qty-gifts class="gad-pblock gad-p-qgifts" style="{{ margins }}" data-gad-with-main data-form="{{ product_form_id }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- if b.heading != blank -%}<p class="gad-p-qgifts__title">{{ b.heading | escape }}</p>{%- endif -%}
+      <ul class="list-unstyled gad-p-qgifts__list" role="list">
+        {%- for i in (1..3) -%}
+          {%- liquid
+            assign k_min = 'min_' | append: i
+            assign k_gift = 'gift_' | append: i
+            assign k_label = 'gift_text_' | append: i
+            assign gp = b[k_gift]
+            assign gv = gp.selected_or_first_available_variant
+          -%}
+          {%- if gp != blank and gv.available -%}
+            {%- assign gl = b[k_label] | replace: '{cantidad}', b[k_min] | replace: '{regalo}', gp.title -%}
+            <li class="gad-p-qgifts__item" data-gad-qgift data-min="{{ b[k_min] }}" data-variant="{{ gv.id }}">
+              <span class="gad-p-qgifts__media">
+                {%- if gp.featured_media -%}
+                  {{ gp.featured_media | image_url: width: 120 | image_tag: loading: 'lazy', alt: '', width: 48, height: 48 }}
+                {%- endif -%}
+                <span class="gad-p-qgifts__lock">{%- render 'gad-icon', name: 'lock', filled: true -%}</span>
+                <span class="gad-p-qgifts__open">{%- render 'gad-icon', name: 'redeem', filled: true -%}</span>
+              </span>
+              <span class="gad-p-qgifts__label">{{ gl }}</span>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </gad-qty-gifts>
+
+  {%- when 'delivery' -%}
+    {%- liquid
+      assign from_html = '<strong data-gad-days="' | append: b.min_days | append: '"></strong>'
+      assign to_html = '<strong data-gad-days="' | append: b.max_days | append: '"></strong>'
+      assign line = b.text | replace: '{desde}', from_html | replace: '{hasta}', to_html
+    -%}
+    <div class="gad-pblock gad-p-delivery gad-p-align--{{ b.align }}" style="{{ margins }}" data-gad-dates data-skip-weekends="{{ b.skip_weekends }}" data-format="{{ b.format }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- if b.icon != blank -%}{%- render 'gad-icon', name: b.icon, class: 'gad-p-delivery__icon' -%}{%- endif -%}
+      <span>{{ line }}</span>
+    </div>
+
+  {%- when 'shipping_steps' -%}
+    <div class="gad-pblock gad-p-steps" style="{{ margins }} --st: {{ b.color | default: 'rgb(var(--color-button))' }};" data-gad-dates data-skip-weekends="{{ b.skip_weekends }}" data-format="short" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- for i in (1..3) -%}
+        {%- liquid
+          assign k_label = 'label_' | append: i
+          assign k_icon = 'icon_' | append: i
+          assign k_days = 'days_' | append: i
+          assign days = b[k_days] | default: 0
+          if i == 1
+            assign days = 0
+          endif
+        -%}
+        <div class="gad-p-steps__item">
+          <span class="gad-p-steps__icon">{%- render 'gad-icon', name: b[k_icon], filled: true -%}</span>
+          <span class="gad-p-steps__label">{{ b[k_label] | escape }}</span>
+          {%- if b.show_dates != false -%}<span class="gad-p-steps__date" data-gad-days="{{ days }}"></span>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+  {%- when 'custom_snippet' -%}
+    <div class="gad-pblock gad-p-slot" style="{{ margins }}" {{ block.shopify_attributes }}>
+      {%- case b.slot -%}
+        {%- when '2' -%}{%- render 'gad-slot-2', block: block, product: product, section: section, product_form_id: product_form_id -%}
+        {%- when '3' -%}{%- render 'gad-slot-3', block: block, product: product, section: section, product_form_id: product_form_id -%}
+        {%- when '4' -%}{%- render 'gad-slot-4', block: block, product: product, section: section, product_form_id: product_form_id -%}
+        {%- when '5' -%}{%- render 'gad-slot-5', block: block, product: product, section: section, product_form_id: product_form_id -%}
+        {%- else -%}{%- render 'gad-slot-1', block: block, product: product, section: section, product_form_id: product_form_id -%}
+      {%- endcase -%}
+    </div>
+
+  {%- when 'jump' -%}
+    <div class="gad-pblock gad-p-jump gad-p-align--{{ b.align }}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- for i in (1..4) -%}
+        {%- liquid
+          assign k_label = 'label_' | append: i
+          assign k_target = 'target_' | append: i
+          assign target = b[k_target] | remove: '#' | strip | handleize
+        -%}
+        {%- if b[k_label] != blank and target != blank -%}
+          <a href="#{{ target }}" class="gad-p-jump__link gad-p-jump__link--{{ b.style }}" data-gad-scroll>{{ b[k_label] | escape }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+  {%- when 'avatars' -%}
+    <div class="gad-pblock gad-p-avatars gad-p-align--{{ b.align }}" style="{{ margins }} --av: {{ b.size }}px;" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      <span class="gad-p-avatars__faces" aria-hidden="true">
+        {%- assign initials = b.initials | split: ',' -%}
+        {%- for i in (1..5) -%}
+          {%- assign k_img = 'image_' | append: i -%}
+          {%- assign ini = initials[forloop.index0] | strip -%}
+          {%- if b[k_img] != blank -%}
+            {{ b[k_img] | image_url: width: 120 | image_tag: loading: 'lazy', alt: '', class: 'gad-p-avatars__face' }}
+          {%- elsif ini != blank -%}
+            <span class="gad-p-avatars__face gad-p-avatars__face--{{ forloop.index }}">{{ ini | slice: 0, 2 | upcase }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </span>
+      {%- if b.text != blank -%}<span class="gad-p-avatars__text">{{ b.text }}</span>{%- endif -%}
+    </div>
+
+  {%- when 'field' -%}
+    {%- liquid
+      assign fid = 'GadField-' | append: block.id
+      assign fname = 'properties[' | append: b.label | append: ']'
+      assign opts = b.options | split: ','
+    -%}
+    <div class="gad-pblock gad-p-field" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+      {%- if b.type == 'checkbox' -%}
+        <label class="gad-p-field__check" for="{{ fid }}">
+          <input type="checkbox" id="{{ fid }}" name="{{ fname }}" value="{{ b.checked_value | escape }}" form="{{ product_form_id }}"{% if b.required %} required{% endif %}>
+          <span>{{ b.label | escape }}</span>
+        </label>
+      {%- else -%}
+        <label class="gad-p-field__label form__label" for="{{ fid }}">{{ b.label | escape }}{% if b.required %} *{% endif %}</label>
+        {%- case b.type -%}
+          {%- when 'textarea' -%}
+            <textarea id="{{ fid }}" class="field__input gad-p-field__input" name="{{ fname }}" form="{{ product_form_id }}" rows="3" placeholder="{{ b.placeholder | escape }}"{% if b.max_length > 0 %} maxlength="{{ b.max_length }}"{% endif %}{% if b.required %} required{% endif %}></textarea>
+          {%- when 'select' -%}
+            <div class="select">
+              <select id="{{ fid }}" class="select__select" name="{{ fname }}" form="{{ product_form_id }}"{% if b.required %} required{% endif %}>
+                {%- if b.placeholder != blank -%}<option value="" disabled selected>{{ b.placeholder | escape }}</option>{%- endif -%}
+                {%- for o in opts -%}
+                  {%- assign ov = o | strip -%}
+                  {%- if ov != blank -%}<option value="{{ ov | escape }}">{{ ov | escape }}</option>{%- endif -%}
+                {%- endfor -%}
+              </select>
+              <span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+            </div>
+          {%- else -%}
+            <input type="text" id="{{ fid }}" class="field__input gad-p-field__input" name="{{ fname }}" form="{{ product_form_id }}" placeholder="{{ b.placeholder | escape }}"{% if b.max_length > 0 %} maxlength="{{ b.max_length }}"{% endif %}{% if b.required %} required{% endif %}>
+        {%- endcase -%}
+      {%- endif -%}
+      {%- if b.help != blank -%}<p class="gad-p-field__help">{{ b.help }}</p>{%- endif -%}
+    </div>
+
+  {%- when 'button' -%}
+    {%- if b.label != blank -%}
+      <div class="gad-pblock gad-p-align--{{ b.align }}" style="{{ margins }}" {{ block.shopify_attributes }}{% render 'gad-fs', b: block %}>
+        <a
+          href="{{ b.link | default: '#' }}"
+          class="{% if b.style == 'link' %}link{% else %}button{% if b.style == 'outline' %} button--secondary{% endif %}{% if b.full_width %} button--full-width{% endif %}{% endif %} gad-p-btn"
+          {% if b.new_tab %}
+            target="_blank" rel="noopener"
+          {% endif %}
+        >
+          {%- if b.icon != blank -%}{%- render 'gad-icon', name: b.icon -%}{%- endif -%}
+          {{- b.label | escape -}}
+        </a>
+      </div>
+    {%- endif -%}
+{%- endcase -%}

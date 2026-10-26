@@ -1,0 +1,21 @@
+# El script de NubeSDK y la configuración de cada tienda (dist/, archivos estáticos) en una URL pública y fija, la que
+# va en el portal; y lo mínimo de la app: /callback (instalación) y los webhooks obligatorios (worker.ts).
+name = "gadsden-widgets-tn"
+main = "worker.ts"
+compatibility_date = "2026-09-21"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = ["/callback", "/webhooks/*", "/productos/*", "/config/*", "/api/*", "/img/*"]
+
+# El secret CLIENT_SECRET va en .dev.vars (local) y con `npx wrangler secret put CLIENT_SECRET` (publicado).
+[vars]
+CLIENT_ID = "48010"
+# El correo de soporte de las páginas /privacidad y /soporte (src/paginas/; lo pone construir.mjs): el de TicketUp.
+SOPORTE_EMAIL = "admin@lga-arg.com"
+
+# Los tokens de las tiendas (clave: el id) y la configuración de cada una (clave: config:<id>; worker.ts). Sin id:
+# wrangler crea el namespace en el primer deploy.
+[[kv_namespaces]]
+binding = "TOKENS"

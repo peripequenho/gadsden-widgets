@@ -1,0 +1,91 @@
+{
+ "gadsden": {
+  "carousel": {
+   "region": "Carrusel",
+   "roledescription": "carrusel",
+   "previous": "Diapositiva anterior",
+   "next": "Diapositiva siguiente",
+   "go_to": "Ir a la página {{ index }}",
+   "slide_of": "{{ index }} de {{ count }}"
+  },
+  "video": {
+   "play": "Reproducir video",
+   "pause": "Pausar video",
+   "mute": "Silenciar",
+   "unmute": "Activar sonido"
+  },
+  "back_to_top": "Volver arriba",
+  "ticker": {
+   "hidden_here": "Esta cinta está oculta en esta página por su visibilidad por producto."
+  },
+  "reviews": {
+   "stars": "{{ count }} de 5 estrellas",
+   "verified": "Comprador verificado",
+   "empty": "Agregá reseñas para que se vea el muro."
+  },
+  "compare": {
+   "benefit": "Beneficio",
+   "yes": "Incluido",
+   "no": "No incluido",
+   "partial": "Parcial"
+  },
+  "before_after": {
+   "label": "Arrastrá para comparar el antes y el después"
+  },
+  "features": {
+   "empty": "Agregá bloques \"Característica\" justo debajo de este bloque para llenar el slider."
+  },
+  "offers": {
+   "label": "Opciones de cantidad"
+  },
+  "buy": {
+   "buy_now": "Comprar ahora"
+  },
+  "sticky": {
+   "label": "Compra rápida",
+   "variant": "Variante"
+  },
+  "cart": {
+   "gift_badge": "Regalo",
+   "upsell_add": "Sumar {{ product }} al carrito"
+  },
+  "contact": {
+   "field": "Campo",
+   "required": "Completá este campo.",
+   "email": "Ingresá un email válido."
+  },
+  "music": {
+   "play": "Poner música",
+   "pause": "Pausar la música",
+   "seek": "Avance del tema",
+   "empty": "Cargá la dirección del audio para mostrar el reproductor."
+  },
+  "bundle": {
+   "empty": "Elegí los productos del combo en el editor."
+  },
+  "merge": {
+   "missing": "Unión: escribí el ancla de dos secciones de esta página. Todavía no están puestas o no se encontraron."
+  },
+  "shoppable": {
+   "pick": "Elegí un producto para este punto."
+  },
+  "product": {
+   "pick_products": "Elegí productos en este bloque."
+  },
+  "menu": {
+   "view_all": "Ver todo"
+  },
+  "page_style": {
+   "note": "Estilo de esta página: esta sección no se ve, sólo cambia el aspecto de esta página."
+  },
+  "offer": {
+   "pick": "Elegí un producto para esta oferta."
+  },
+  "stamps": {
+   "media": "Subí un video o una imagen para la parte de arriba de esta sección."
+  },
+  "legal": {
+   "missing": "Falta: completalo o conectá un metacampo."
+  }
+ }
+}

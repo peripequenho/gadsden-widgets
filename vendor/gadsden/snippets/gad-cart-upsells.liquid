@@ -1,0 +1,107 @@
+
+{%- assign b = block.settings -%}
+{%- liquid
+  assign show = true
+  if b.trigger_products != blank
+    assign show = false
+    for item in cart.items
+      for p in b.trigger_products
+        if item.product_id == p.id
+          assign show = true
+        endif
+      endfor
+    endfor
+  endif
+  assign keep_pct = 100 | minus: b.discount
+-%}
+{%- if show -%}
+  {%- capture upsell_items -%}
+    {%- for i in (1..3) -%}
+      {%- liquid
+        assign k = 'product_' | append: i
+        assign p = b[k]
+        if p == blank or p.available == false
+          continue
+        endif
+        assign v = p.selected_or_first_available_variant
+        assign extra_key = ''
+        assign normal_in_cart = false
+        for item in cart.items
+          if item.variant.id == v.id
+            if item.properties._gad_extra == 'sumar'
+              assign extra_key = item.key
+            else
+              assign normal_in_cart = true
+            endif
+          endif
+        endfor
+        if normal_in_cart
+          continue
+        endif
+        if b.control == 'button' and extra_key != ''
+          continue
+        endif
+        assign shown = v.price
+        assign was = v.compare_at_price
+        if b.discount > 0
+          assign shown = v.price | times: keep_pct | divided_by: 100
+          assign was = v.price
+        endif
+      -%}
+      <div class="gad-cart-ups__item">
+        <div class="gad-cart-ups__media">
+          {%- if p.featured_media -%}
+            {{ p.featured_media | image_url: width: 160 | image_tag: loading: 'lazy', alt: '', width: 80, height: 80 }}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+        <div class="gad-cart-ups__info">
+          <a href="{{ p.url }}" class="gad-cart-ups__name">{{ p.title | escape }}</a>
+          <span class="gad-cart-ups__price">
+            {%- if was > shown -%}<s>{{ was | money }}</s> {% endif -%}
+            <span>{{ shown | money }}</span>
+          </span>
+        </div>
+        {%- capture aria -%}{{ 'gadsden.cart.upsell_add' | t: product: p.title }}{%- endcapture -%}
+        {%- case b.control -%}
+          {%- when 'button' -%}
+            <button
+              type="button"
+              class="button button--secondary gad-cart-ups__btn"
+              data-gad-upsell
+              data-variant="{{ v.id }}"
+              aria-label="{{ aria | escape }}"
+            >
+              {{ b.button_text }}
+            </button>
+          {%- else -%}
+            <label class="gad-cart-ups__control gad-cart-ups__control--{{ b.control }}">
+              <input
+                type="checkbox"
+                {% if b.control == 'toggle' %}
+                  role="switch"
+                {% endif %}
+                data-gad-upsell
+                data-variant="{{ v.id }}"
+                data-key="{{ extra_key }}"
+                {% if extra_key != '' %}
+                  checked
+                {% endif %}
+              >
+              <span class="gad-cart-ups__mark" aria-hidden="true"></span>
+              <span class="visually-hidden">{{ aria }}</span>
+            </label>
+        {%- endcase -%}
+      </div>
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- if upsell_items != blank -%}
+    <gad-cart-upsells class="gad-cb gad-cart-ups" style="{{ mg }}" {{ block.shopify_attributes }}>
+      {%- if b.title != blank -%}
+        <p class="gad-cart-ups__title">{{ b.title }}</p>
+      {%- endif -%}
+      {{ upsell_items }}
+    </gad-cart-upsells>
+  {%- endif -%}
+{%- endif -%}

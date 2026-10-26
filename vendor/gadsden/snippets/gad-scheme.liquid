@@ -1,0 +1,21 @@
+
+{%- liquid
+  assign p = prefix | default: ''
+  assign k_on = p | append: 'custom_colors'
+  assign k_scheme = p | append: 'color_scheme'
+-%}
+{%- if s[k_on] -%}
+  {%- liquid
+    assign k_bg = p | append: 'cc_bg'
+    assign gad_bright = s[k_bg] | default: '#ffffff' | color_brightness
+  -%}
+  gad-cc gad-cc-{{ key }} gradient{% if gad_bright < 128 %} gad-dark{% endif %}
+{%- elsif tint -%}
+  gad-tint
+{%- else -%}
+  {%- liquid
+    assign gad_scheme = s[k_scheme] | default: 'scheme-1'
+    assign gad_bright = settings.color_schemes[gad_scheme].settings.background | color_brightness
+  -%}
+  color-{{ gad_scheme }} gradient{% if gad_bright < 128 %} gad-dark{% endif %}
+{%- endif -%}

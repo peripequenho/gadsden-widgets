@@ -1,0 +1,665 @@
+
+{%- assign s = section.settings -%}
+{%- render 'gad-colors', s: s, key: section.id -%}
+<div
+  class="gad-plans gad-pad {% render 'gad-scheme', s: s, key: section.id %}"
+  style="--pt: {{ s.padding_top }}px; --pb: {{ s.padding_bottom }}px; --plans-d: {{ section.blocks.size | at_most: s.columns_d | at_least: 1 }};"
+  {% render 'gad-section-attrs', s: s %}
+>
+  <div class="page-width">
+    {%- render 'gad-heading', caption: s.caption, caption_color: s.caption_color, title: s.heading, size: s.heading_size, accent: s.heading_accent, text: s.text, align: s.heading_align, align_m: s.heading_align_m -%}
+    <div class="gad-plans__grid" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign p = b.product
+          assign scheme = s.card_scheme
+          assign outline = true
+          if b.highlight
+            assign scheme = s.highlight_scheme
+            assign outline = false
+          endif
+          assign lines = b.features | newline_to_br | split: '<br />'
+        -%}
+        <div class="gad-plans__card color-{{ scheme }}{% if b.highlight %} gad-plans__card--hl{% endif %}" role="listitem" {{ block.shopify_attributes }}>
+          {%- if b.badge != blank -%}<span class="gad-plans__badge">{{ b.badge | escape }}</span>{%- endif -%}
+          {%- if b.image != blank -%}
+            <div class="gad-plans__img">{{ b.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: '', sizes: '(min-width: 990px) 25vw, 80vw', widths: '300, 600' }}</div>
+          {%- endif -%}
+          <h3 class="gad-plans__name h4">{{ b.name | escape }}</h3>
+          <p class="gad-plans__price">
+            {%- if b.compare_price != blank -%}
+              <s class="gad-plans__compare">{{ b.compare_price | escape }}</s>
+            {%- elsif p != blank and p.compare_at_price > p.price -%}
+              <s class="gad-plans__compare">{{ p.compare_at_price | money }}</s>
+            {%- endif -%}
+            <span class="gad-plans__amount h2">
+              {%- if b.price != blank -%}{{ b.price | escape }}{%- elsif p != blank -%}{{ p.price | money }}{%- endif -%}
+            </span>
+            {%- if b.period != blank -%}<span class="gad-plans__period">{{ b.period | escape }}</span>{%- endif -%}
+          </p>
+          {%- if b.installments != blank -%}<p class="gad-plans__inst">{{ b.installments }}</p>{%- endif -%}
+          {%- if b.description != blank -%}<div class="gad-plans__desc rte">{{ b.description }}</div>{%- endif -%}
+          {%- if b.features != blank -%}
+            <ul class="gad-plans__features list-unstyled" role="list">
+              {%- for line in lines -%}
+                {%- assign f = line | strip -%}
+                {%- if f == blank -%}{%- continue -%}{%- endif -%}
+                {%- assign first = f | slice: 0 -%}
+                {%- if first == '-' -%}
+                  <li class="gad-plans__feature gad-plans__feature--off">
+                    {%- render 'gad-icon', name: 'close' -%}<span>{{ f | remove_first: '-' | strip }}</span>
+                  </li>
+                {%- else -%}
+                  <li class="gad-plans__feature">{%- render 'gad-icon', name: 'check', class: 'gad-plans__check' -%}<span>{{ f }}</span></li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+          <div class="gad-plans__cta">
+            {%- if p != blank -%}
+              {%- render 'gad-atc-button', label: b.button_label, product: p, secondary: outline -%}
+            {%- elsif b.button_label != blank -%}
+              <a href="{{ b.button_link | default: '#' }}" class="button{% unless b.highlight %} button--secondary{% endunless %}">{{ b.button_label | escape }}</a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gad-plans__grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    gap: 1.6rem;
+    align-items: stretch;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding: 1.6rem 0.2rem;
+  }
+
+  .gad-plans__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-plans__grid {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(var(--plans-d, 3), minmax(0, 1fr));
+      max-width: calc(var(--plans-d, 3) * 38rem);
+      margin-inline: auto;
+      overflow: visible;
+    }
+  }
+
+  .gad-plans__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 2.8rem 2.4rem;
+    border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+    border-radius: 1.2rem;
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    scroll-snap-align: center;
+  }
+
+  .gad-plans__card--hl {
+    border-color: rgb(var(--color-button));
+    box-shadow: 0 1rem 3rem rgba(var(--color-shadow), 0.12);
+  }
+
+  @media screen and (min-width: 750px) {
+    .gad-plans__card--hl {
+      transform: scale(1.03);
+    }
+  }
+
+  .gad-plans__badge {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    translate: -50% -50%;
+    padding: 0.4rem 1.2rem;
+    border-radius: 99rem;
+    background: rgb(var(--color-button));
+    color: rgb(var(--color-button-text));
+    font-size: 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .gad-plans__name,
+  .gad-plans__price {
+    margin: 0;
+  }
+
+  .gad-plans__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .gad-plans__amount {
+    margin: 0;
+  }
+
+  .gad-plans__compare,
+  .gad-plans__period {
+    font-size: 1.4rem;
+    opacity: 0.7;
+  }
+
+  .gad-plans__img img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 18rem;
+    object-fit: contain;
+  }
+
+  .gad-plans__inst {
+    margin: -0.6rem 0 0;
+    font-size: 1.3rem;
+  }
+
+  .gad-plans__desc p {
+    margin: 0;
+  }
+
+  .gad-plans__features {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .gad-plans__feature {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .gad-plans__feature .gad-icon {
+    flex: 0 0 auto;
+    font-size: 2rem;
+  }
+
+  .gad-plans__check {
+    color: rgb(var(--color-accent, var(--color-button)));
+  }
+
+  .gad-plans__feature--off {
+    opacity: 0.5;
+  }
+
+  .gad-plans__cta {
+    margin-top: auto;
+    padding-top: 0.8rem;
+  }
+
+  .gad-plans__cta .button,
+  .gad-plans__cta .gad-atc {
+    width: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Tabla de planes",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Volanta",
+      "info": "Texto chico arriba del título. Vacío: no se muestra."
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Color de la volanta",
+      "info": "Vacío: el color del texto."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Título",
+      "default": "Elegí tu <strong>plan</strong>",
+      "info": "Marcá en negrita las palabras que querés resaltar."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Tamaño del título",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Chico"
+        },
+        {
+          "value": "h1",
+          "label": "Mediano"
+        },
+        {
+          "value": "h0",
+          "label": "Grande"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "color",
+      "id": "heading_accent",
+      "label": "Color de las palabras resaltadas",
+      "info": "Vacío: el acento de la combinación de colores."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alineación del encabezado",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "info": "Volanta, título y texto de arriba."
+    },
+    {
+      "type": "select",
+      "id": "heading_align_m",
+      "label": "Alineación del encabezado en mobile",
+      "default": "same",
+      "options": [
+        {
+          "value": "same",
+          "label": "Igual que en desktop"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto"
+    },
+    {
+      "type": "range",
+      "id": "columns_d",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Columnas en desktop",
+      "default": 3,
+      "info": "En mobile los planes se deslizan de costado."
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_scheme",
+      "label": "Combinación de los planes",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "highlight_scheme",
+      "label": "Combinación del plan destacado",
+      "default": "scheme-3"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Espaciado"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno arriba",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Relleno abajo",
+      "default": 36,
+      "info": "En mobile se aplica el 75 %."
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "plan",
+      "name": "Plan",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Nombre",
+          "default": "Básico"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Etiqueta",
+          "info": "Ej. Más elegido. Vacía: sin etiqueta."
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight",
+          "label": "Destacado",
+          "default": false
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Producto (opcional)",
+          "info": "Con producto, el precio y el botón de agregar al carrito salen de él."
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Precio",
+          "default": "$9.999",
+          "info": "Gana sobre el precio del producto."
+        },
+        {
+          "type": "text",
+          "id": "compare_price",
+          "label": "Precio tachado"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "installments",
+          "label": "Cuotas",
+          "info": "Ej. 3 cuotas sin interés."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "period",
+          "label": "Período",
+          "default": "/ mes"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Descripción"
+        },
+        {
+          "type": "textarea",
+          "id": "features",
+          "label": "Características",
+          "default": "Envío gratis\nSoporte por WhatsApp\n- Regalo de bienvenida",
+          "info": "Una por renglón. Empezá con un guion (-) para mostrarla como no incluida."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "default": "Lo quiero"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Enlace del botón",
+          "info": "Sin producto."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabla de planes",
+      "blocks": [
+        {
+          "type": "plan"
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "name": "Completo",
+            "badge": "Más elegido",
+            "highlight": true,
+            "price": "$19.999",
+            "features": "Envío gratis\nSoporte por WhatsApp\nRegalo de bienvenida"
+          }
+        },
+        {
+          "type": "plan",
+          "settings": {
+            "name": "Premium",
+            "price": "$29.999",
+            "features": "Envío gratis\nSoporte por WhatsApp\nRegalo de bienvenida\nAtención prioritaria"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

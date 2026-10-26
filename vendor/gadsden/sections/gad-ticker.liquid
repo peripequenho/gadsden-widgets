@@ -1,0 +1,1568 @@
+{%- liquid
+  assign s = section.settings
+  assign hidden_here = false
+  if request.page_type == 'product'
+    for p in s.hide_on_products
+      if p.id == product.id
+        assign hidden_here = true
+      endif
+    endfor
+    if s.only_on_products_enabled
+      assign found = false
+      for p in s.only_on_products
+        if p.id == product.id
+          assign found = true
+        endif
+      endfor
+      unless found
+        assign hidden_here = true
+      endunless
+    endif
+  elsif s.only_on_products_enabled
+    assign hidden_here = true
+  endif
+-%}
+
+{%- if hidden_here -%}
+  {%- if request.design_mode -%}
+    <div class="gad-ticker-note page-width">{{ 'gadsden.ticker.hidden_here' | t }}</div>
+  {%- endif -%}
+{%- else -%}
+  {%- render 'gad-colors', s: s, key: section.id -%}
+  <gad-ticker
+    class="gad-ticker {% render 'gad-scheme', s: s, key: section.id %}{% if s.pause_hover %} gad-ticker--pause{% endif %}{% if s.text_effect != blank and s.text_effect != 'none' %} gad-ticker--fx-{{ s.text_effect }}{% endif %}{% if s.direction == 'reverse' or s.direction == 'down' %} gad-ticker--reverse{% endif %}{% if s.direction == 'up' or s.direction == 'down' %} gad-ticker--vertical{% endif %}"
+    data-speed="{{ s.speed }}"
+    style="--h-m: {{ s.height_m }}px; --h-d: {{ s.height_d }}px; --gap-m: {{ s.gap_m }}px; --gap-d: {{ s.gap_d }}px; --size-m: {{ s.text_size_m }}px; --size-d: {{ s.text_size_d }}px; --img-m: {{ s.image_height_m }}px; --img-d: {{ s.image_height_d }}px; --rv-m: {{ s.review_width_m }}px; --rv-d: {{ s.review_width_d }}px; --pt-m: {{ s.padding_top_m }}px; --pb-m: {{ s.padding_bottom_m }}px; --pt-d: {{ s.padding_top_d }}px; --pb-d: {{ s.padding_bottom_d }}px;"
+    {% render 'gad-section-attrs', s: s %}
+  >
+    <div class="gad-ticker__track">
+      <div class="gad-ticker__group">
+        {%- for block in section.blocks -%}
+          {%- assign b = block.settings -%}
+          <div class="gad-ticker__item gad-ticker__item--{{ block.type }}" {{ block.shopify_attributes }}>
+            {%- case block.type -%}
+              {%- when 'text' -%}
+                <span class="gad-ticker__text{% if s.italic %} gad-ticker__text--italic{% endif %}{% if s.uppercase %} gad-ticker__text--upper{% endif %}{% if s.bold %} gad-ticker__text--bold{% endif %}">
+                  {%- if b.link != blank -%}
+                    <a href="{{ b.link }}" class="gad-ticker__link">{{ b.text }}</a>
+                  {%- else -%}
+                    {{ b.text }}
+                  {%- endif -%}
+                </span>
+              {%- when 'image' -%}
+                {%- if b.image != blank -%}
+                  {%- assign img_alt = b.image.alt | default: '' -%}
+                  {%- if b.link != blank -%}<a href="{{ b.link }}" class="gad-ticker__link">{%- endif -%}
+                  {{ b.image | image_url: height: 240 | image_tag: loading: 'lazy', class: 'gad-ticker__img', alt: img_alt }}
+                  {%- if b.link != blank -%}</a>{%- endif -%}
+                {%- elsif request.design_mode -%}
+                  {{ 'image' | placeholder_svg_tag: 'gad-ticker__img gad-ticker__placeholder' }}
+                {%- endif -%}
+              {%- when 'review' -%}
+                <div class="gad-ticker__review">
+                  {%- render 'gad-review-card', b: b, author: b.author, text: b.text, image: b.photo -%}
+                </div>
+              {%- when 'text_icons' -%}
+                <div class="gad-ticker__ti{% if b.fixed_width %} gad-ticker__ti--fixed{% endif %}" style="--w-m: {{ b.width_m }}px; --w-d: {{ b.width_d }}px;">
+                  {%- render 'gad-text-icons', b: b, key: block.id -%}
+                </div>
+              {%- when 'icon_content' -%}
+                {%- liquid
+                  case b.icon_size
+                    when 'xs'
+                      assign isz = 20
+                    when 's'
+                      assign isz = 28
+                    when 'l'
+                      assign isz = 48
+                    when 'xl'
+                      assign isz = 60
+                    when 'xxl'
+                      assign isz = 76
+                    else
+                      assign isz = 36
+                  endcase
+                -%}
+                <div class="gad-ticker__ic gad-ticker__ic--{{ b.icon_position }} gad-ticker__ic--align-{{ b.align }}{% if b.fixed_width %} gad-ticker__ic--fixed{% endif %}" style="--w-m: {{ b.width_m }}px; --w-d: {{ b.width_d }}px; --isz: {{ isz }}px;">
+                  {%- capture ic_icon -%}
+                    {%- if b.icon != blank or b.icon_image != blank -%}
+                      <span class="gad-ticker__ic-icon gad-accent-{{ b.icon_color }}">
+                        {%- render 'gad-icon', name: b.icon, filled: b.icon_filled, image: b.icon_image, size: isz -%}
+                      </span>
+                    {%- endif -%}
+                  {%- endcapture -%}
+                  {%- unless b.icon_position == 'title' -%}{{ ic_icon }}{%- endunless -%}
+                  <div class="gad-ticker__ic-body">
+                    {%- if b.title != blank -%}
+                      <p class="gad-ticker__ic-title {{ b.title_size }}">
+                        {%- if b.icon_position == 'title' -%}{{ ic_icon }}{%- endif -%}
+                        <span>{{ b.title }}</span>
+                      </p>
+                    {%- elsif b.icon_position == 'title' -%}
+                      {{ ic_icon }}
+                    {%- endif -%}
+                    {%- if b.text != blank -%}
+                      <div class="gad-ticker__ic-text rte">{{ b.text }}</div>
+                    {%- endif -%}
+                  </div>
+                </div>
+            {%- endcase -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </gad-ticker>
+{%- endif -%}
+
+{% stylesheet %}
+  .gad-ticker-note {
+    padding: 1.2rem 1.5rem;
+    border: 0.1rem dashed rgba(var(--color-foreground), 0.3);
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  gad-ticker {
+    display: block;
+    overflow: hidden;
+    padding-top: var(--pt-m);
+    padding-bottom: var(--pb-m);
+    font-size: calc(var(--size-m) * var(--font-body-scale));
+    --gap: var(--gap-m);
+    --img-h: var(--img-m);
+    --rv-w: var(--rv-m);
+  }
+
+  .gad-ticker__track {
+    display: flex;
+    width: max-content;
+  }
+
+  .gad-ticker__group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--gap);
+    padding-right: var(--gap);
+  }
+
+  gad-ticker.is-running .gad-ticker__track {
+    animation: gadTicker var(--dur, 30s) linear infinite;
+  }
+
+  gad-ticker.gad-ticker--reverse.is-running .gad-ticker__track {
+    animation-direction: reverse;
+  }
+
+  gad-ticker.is-paused .gad-ticker__track,
+  html.gad-reduce gad-ticker .gad-ticker__track {
+    animation-play-state: paused;
+  }
+
+  @media (hover: hover) {
+    gad-ticker.gad-ticker--pause:hover .gad-ticker__track {
+      animation-play-state: paused;
+    }
+  }
+
+  html.gad-reduce gad-ticker {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  gad-ticker.gad-ticker--vertical {
+    height: var(--h-m);
+  }
+
+  .gad-ticker--vertical .gad-ticker__track,
+  .gad-ticker--vertical .gad-ticker__group {
+    flex-direction: column;
+    width: auto;
+  }
+
+  .gad-ticker--vertical .gad-ticker__group {
+    padding-right: 0;
+    padding-bottom: var(--gap);
+  }
+
+  gad-ticker.gad-ticker--vertical.is-running .gad-ticker__track {
+    animation-name: gadTickerY;
+  }
+
+  html.gad-reduce gad-ticker.gad-ticker--vertical {
+    overflow: hidden auto;
+  }
+
+  @keyframes gadTickerY {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(0, -50%, 0);
+    }
+  }
+
+  @keyframes gadTicker {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .gad-ticker__item {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .gad-ticker__text {
+    white-space: nowrap;
+    line-height: 1.2;
+    color: rgb(var(--color-foreground));
+  }
+
+  .gad-ticker--fx-outline .gad-ticker__text,
+  .gad-ticker--fx-outline_alt .gad-ticker__item--text:nth-child(even) .gad-ticker__text {
+    color: transparent;
+    -webkit-text-stroke: max(1px, 0.025em) rgb(var(--color-foreground));
+  }
+
+  .gad-ticker__text--italic {
+    font-style: italic;
+  }
+
+  .gad-ticker__text--upper {
+    text-transform: uppercase;
+  }
+
+  .gad-ticker__text--bold {
+    font-weight: 700;
+  }
+
+  .gad-ticker__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .gad-ticker__img {
+    display: block;
+    width: auto;
+    height: var(--img-h);
+  }
+
+  .gad-ticker__placeholder {
+    width: calc(var(--img-h) * 2);
+    background: rgba(var(--color-foreground), 0.06);
+  }
+
+  .gad-ticker__review {
+    width: var(--rv-w);
+    font-size: 1.4rem;
+  }
+
+  .gad-ticker__ti--fixed,
+  .gad-ticker__ic--fixed {
+    width: var(--w-m);
+  }
+
+  .gad-ticker__ic {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    white-space: normal;
+  }
+
+  .gad-ticker__ic--above {
+    flex-direction: column;
+  }
+
+  .gad-ticker__ic--align-center {
+    text-align: center;
+  }
+
+  .gad-ticker__ic--align-right {
+    text-align: right;
+  }
+
+  .gad-ticker__ic-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: var(--isz);
+  }
+
+  .gad-ticker__ic-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  .gad-ticker__ic--title .gad-ticker__ic-icon {
+    font-size: 1.2em;
+  }
+
+  .gad-ticker__ic-text {
+    margin-top: 0.4rem;
+    font-size: 1.3rem;
+  }
+
+  .gad-ticker__ic-text p {
+    margin: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    gad-ticker {
+      padding-top: var(--pt-d);
+      padding-bottom: var(--pb-d);
+      font-size: calc(var(--size-d) * var(--font-body-scale));
+      --gap: var(--gap-d);
+      --img-h: var(--img-d);
+      --rv-w: var(--rv-d);
+    }
+
+    gad-ticker.gad-ticker--vertical {
+      height: var(--h-d);
+    }
+
+    .gad-ticker__ti--fixed,
+    .gad-ticker__ic--fixed {
+      width: var(--w-d);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class GadTicker extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+      this.track = this.querySelector('.gad-ticker__track');
+      this.group = this.querySelector('.gad-ticker__group');
+      if (!this.track || !this.group) return;
+      this.base = Array.from(this.group.children);
+      if (!this.base.length) return;
+      this.speed = parseFloat(this.dataset.speed) || 2;
+      this.addEventListener('touchstart', () => this.classList.contains('gad-ticker--pause') && this.classList.add('is-paused'), { passive: true });
+      this.addEventListener('touchend', () => this.classList.remove('is-paused'));
+      this.addEventListener('shopify:block:select', () => this.classList.add('is-paused'));
+      this.addEventListener('shopify:block:deselect', () => this.classList.remove('is-paused'));
+      this.ro = new ResizeObserver(() => {
+        cancelAnimationFrame(this.raf);
+        this.raf = requestAnimationFrame(() => this.build());
+      });
+      this.ro.observe(this);
+      this.build();
+      this.track.addEventListener(
+        'load',
+        () => {
+          this._built = false;
+          this.build();
+        },
+        true
+      );
+    }
+
+    disconnectedCallback() {
+      if (this.ro) this.ro.disconnect();
+      this._ready = false;
+    }
+
+    build() {
+      const vertical = this.classList.contains('gad-ticker--vertical');
+      const width = vertical ? this.clientHeight : this.clientWidth;
+      if (!width) return;
+      if (this._lastWidth === width && this._built) return;
+      this._lastWidth = width;
+      this.track.querySelectorAll('[data-ticker-clone]').forEach((el) => el.remove());
+      this.base.forEach((el) => this.group.appendChild(el));
+      if (window.Gadsden && Gadsden.reduceMotion()) {
+        this.classList.remove('is-running');
+        this._built = true;
+        return;
+      }
+      const measure = () => (vertical ? this.group.scrollHeight : this.group.scrollWidth);
+      let unitWidth = measure();
+      let guard = 0;
+      while (unitWidth > 0 && unitWidth < width && guard < 30) {
+        this.base.forEach((el) => this.group.appendChild(this.cloneItem(el)));
+        unitWidth = measure();
+        guard++;
+      }
+      const copy = this.group.cloneNode(true);
+      copy.setAttribute('data-ticker-clone', '');
+      copy.setAttribute('aria-hidden', 'true');
+      copy.inert = true;
+      copy.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+      this.track.appendChild(copy);
+      const pxPerSecond = this.speed * 30;
+      this.style.setProperty('--dur', `${Math.max(4, unitWidth / pxPerSecond)}s`);
+      this.classList.add('is-running');
+      this._built = true;
+    }
+
+    cloneItem(el) {
+      const clone = el.cloneNode(true);
+      clone.setAttribute('data-ticker-clone', '');
+      clone.setAttribute('aria-hidden', 'true');
+      clone.removeAttribute('data-shopify-editor-block');
+      clone.inert = true;
+      return clone;
+    }
+  }
+
+  if (!customElements.get('gad-ticker')) customElements.define('gad-ticker', GadTicker);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Cinta deslizante",
+  "tag": "section",
+  "class": "section gad-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Movimiento"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "label": "Velocidad",
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Dirección",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Hacia la izquierda"
+        },
+        {
+          "value": "reverse",
+          "label": "Hacia la derecha"
+        },
+        {
+          "value": "up",
+          "label": "Hacia arriba (cinta vertical)"
+        },
+        {
+          "value": "down",
+          "label": "Hacia abajo (cinta vertical)"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "height_m",
+      "min": 100,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Alto de la cinta vertical en mobile",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "height_d",
+      "min": 100,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Alto de la cinta vertical en desktop",
+      "default": 360
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_hover",
+      "label": "Pausar al pasar el mouse o al tocar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "gap_m",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Separación entre elementos en mobile",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "gap_d",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Separación entre elementos en desktop",
+      "default": 80
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Combinación de colores",
+      "default": "scheme-4"
+    },
+    {
+      "type": "header",
+      "content": "Colores propios"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_colors",
+      "label": "Usar colores propios",
+      "default": false,
+      "info": "Pisan a la combinación de colores elegida arriba."
+    },
+    {
+      "type": "color",
+      "id": "cc_bg",
+      "label": "Fondo",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "cc_bg_gradient",
+      "label": "Degradé de fondo",
+      "info": "Si cargás un degradé, reemplaza al color de fondo."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image",
+      "label": "Imagen de fondo",
+      "info": "Cubre todo el fondo y le gana al degradé."
+    },
+    {
+      "type": "image_picker",
+      "id": "cc_bg_image_mobile",
+      "label": "Imagen de fondo en mobile",
+      "info": "Vacía: usa la de desktop."
+    },
+    {
+      "type": "color",
+      "id": "cc_text",
+      "label": "Texto",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_accent",
+      "label": "Acento",
+      "default": "#334FB4"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_bg",
+      "label": "Fondo del botón lleno",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "cc_btn_text",
+      "label": "Texto del botón lleno",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "cc_outline",
+      "label": "Botón de contorno y enlaces",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Texto"
+    },
+    {
+      "type": "range",
+      "id": "text_size_m",
+      "min": 8,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño en mobile",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "text_size_d",
+      "min": 10,
+      "max": 110,
+      "step": 1,
+      "unit": "px",
+      "label": "Tamaño en desktop",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "text_effect",
+      "label": "Efecto del texto",
+      "options": [
+        {
+          "value": "none",
+          "label": "Lleno"
+        },
+        {
+          "value": "outline",
+          "label": "Sólo contorno"
+        },
+        {
+          "value": "outline_alt",
+          "label": "Contorno y lleno alternados"
+        }
+      ],
+      "default": "none",
+      "info": "El contorno luce con texto grande, por ejemplo 60 px o más."
+    },
+    {
+      "type": "checkbox",
+      "id": "italic",
+      "label": "Cursiva",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Mayúsculas",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "bold",
+      "label": "Negrita",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Imágenes y reseñas"
+    },
+    {
+      "type": "range",
+      "id": "image_height_m",
+      "min": 10,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Alto de las imágenes en mobile",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "image_height_d",
+      "min": 10,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Alto de las imágenes en desktop",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "review_width_m",
+      "min": 150,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "label": "Ancho de las reseñas en mobile",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "review_width_d",
+      "min": 150,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "label": "Ancho de las reseñas en desktop",
+      "default": 380
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad por producto"
+    },
+    {
+      "type": "paragraph",
+      "content": "Útil cuando la cinta está en la cabecera, que se ve en toda la tienda."
+    },
+    {
+      "type": "product_list",
+      "id": "hide_on_products",
+      "label": "No mostrar en estas fichas",
+      "limit": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "only_on_products_enabled",
+      "label": "Mostrar sólo en ciertas fichas",
+      "default": false
+    },
+    {
+      "type": "product_list",
+      "id": "only_on_products",
+      "label": "Fichas donde se muestra",
+      "limit": 50
+    },
+    {
+      "type": "header",
+      "content": "Relleno"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Arriba en mobile",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Abajo en mobile",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_top_d",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Arriba en desktop",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_d",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Abajo en desktop",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Visibilidad y ancla"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Mostrar en",
+      "options": [
+        {
+          "value": "all",
+          "label": "Todos los dispositivos"
+        },
+        {
+          "value": "mobile",
+          "label": "Sólo mobile"
+        },
+        {
+          "value": "desktop",
+          "label": "Sólo desktop"
+        }
+      ],
+      "default": "all",
+      "info": "Desktop empieza en el ancho que se elige en Configuración del tema > Gadsden · Carruseles."
+    },
+    {
+      "type": "text",
+      "id": "anchor",
+      "label": "Nombre del ancla",
+      "placeholder": "beneficios",
+      "info": "Para que un botón lleve hasta acá: poné como enlace del botón #beneficios (el nombre que elegiste)."
+    },
+    {
+      "type": "header",
+      "content": "Tamaño de la letra"
+    },
+    {
+      "type": "select",
+      "id": "title_scale",
+      "label": "Tamaño de los títulos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100"
+    },
+    {
+      "type": "select",
+      "id": "text_scale",
+      "label": "Tamaño de los textos",
+      "options": [
+        {
+          "value": "70",
+          "label": "70 %"
+        },
+        {
+          "value": "80",
+          "label": "80 %"
+        },
+        {
+          "value": "90",
+          "label": "90 %"
+        },
+        {
+          "value": "100",
+          "label": "Normal"
+        },
+        {
+          "value": "110",
+          "label": "110 %"
+        },
+        {
+          "value": "125",
+          "label": "125 %"
+        },
+        {
+          "value": "150",
+          "label": "150 %"
+        },
+        {
+          "value": "175",
+          "label": "175 %"
+        },
+        {
+          "value": "200",
+          "label": "200 %"
+        }
+      ],
+      "default": "100",
+      "info": "Agranda o achica los títulos y los textos de esta sección respecto del tamaño global."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Texto",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "Envíos a todo el país"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Imagen o logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Reseña",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "author",
+          "label": "Autor",
+          "default": "Nombre del cliente {verificado}",
+          "info": "Podés usar {estrellas} (o {estrellas:4}) y {verificado} para ubicar las estrellas y el tilde."
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Foto",
+          "info": "Sin foto se muestra la inicial del nombre."
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Escribí acá lo que dijo el cliente.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Tarjeta"
+        },
+        {
+          "type": "color_scheme",
+          "id": "rv_color_scheme",
+          "label": "Combinación de colores",
+          "default": "scheme-1"
+        },
+        {
+          "type": "checkbox",
+          "id": "rv_custom_bg",
+          "label": "Fondo propio",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "rv_bg",
+          "label": "Color del fondo",
+          "default": "#F3F3F3"
+        },
+        {
+          "type": "range",
+          "id": "rv_radius",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Redondeo",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "rv_border",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "unit": "px",
+          "label": "Borde",
+          "default": 1
+        },
+        {
+          "type": "color",
+          "id": "rv_border_color",
+          "label": "Color del borde",
+          "default": "#E5E5E5"
+        },
+        {
+          "type": "select",
+          "id": "rv_avatar_align",
+          "label": "Alineación del avatar",
+          "options": [
+            {
+              "value": "top",
+              "label": "Arriba"
+            },
+            {
+              "value": "middle",
+              "label": "Al medio"
+            }
+          ],
+          "default": "top"
+        },
+        {
+          "type": "range",
+          "id": "rv_avatar_radius",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Redondeo del avatar",
+          "default": 40
+        },
+        {
+          "type": "range",
+          "id": "rv_lines",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "label": "Renglones del texto",
+          "default": 0,
+          "info": "0: todo el texto."
+        },
+        {
+          "type": "color",
+          "id": "rv_star_color",
+          "label": "Color de las estrellas",
+          "default": "#F5B301"
+        },
+        {
+          "type": "range",
+          "id": "rv_star_offset",
+          "min": -10,
+          "max": 20,
+          "step": 1,
+          "unit": "%",
+          "label": "Ajuste vertical de las estrellas",
+          "default": 0,
+          "info": "Para alinearlas con el nombre según la fuente."
+        },
+        {
+          "type": "color",
+          "id": "rv_check_bg",
+          "label": "Círculo del tilde de verificado",
+          "default": "#121212"
+        },
+        {
+          "type": "color",
+          "id": "rv_check_color",
+          "label": "Tilde de verificado",
+          "default": "#FFFFFF"
+        }
+      ]
+    },
+    {
+      "type": "text_icons",
+      "name": "Texto con íconos",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "fixed_width",
+          "label": "Ancho fijo",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "width_m",
+          "min": 100,
+          "max": 600,
+          "step": 10,
+          "unit": "px",
+          "label": "Ancho en mobile",
+          "default": 260
+        },
+        {
+          "type": "range",
+          "id": "width_d",
+          "min": 100,
+          "max": 600,
+          "step": 10,
+          "unit": "px",
+          "label": "Ancho en desktop",
+          "default": 320
+        },
+        {
+          "type": "header",
+          "content": "Renglón 1"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "ti_text_1",
+          "label": "Texto",
+          "default": "Texto del renglón",
+          "info": "Acepta metacampos. Sin texto, el renglón no aparece."
+        },
+        {
+          "type": "text",
+          "id": "ti_icon_1",
+          "label": "Ícono",
+          "default": "check_circle",
+          "info": "Nombre en inglés de Material Symbols, ej. local_shipping. Acepta metacampos."
+        },
+        {
+          "type": "checkbox",
+          "id": "ti_filled_1",
+          "label": "Ícono relleno",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "ti_image_1",
+          "label": "Ícono propio (imagen)",
+          "info": "Si cargás una imagen, reemplaza al ícono por nombre."
+        },
+        {
+          "type": "header",
+          "content": "Renglón 2"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "ti_text_2",
+          "label": "Texto"
+        },
+        {
+          "type": "text",
+          "id": "ti_icon_2",
+          "label": "Ícono"
+        },
+        {
+          "type": "checkbox",
+          "id": "ti_filled_2",
+          "label": "Ícono relleno",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "ti_image_2",
+          "label": "Ícono propio (imagen)"
+        },
+        {
+          "type": "header",
+          "content": "Renglón 3"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "ti_text_3",
+          "label": "Texto"
+        },
+        {
+          "type": "text",
+          "id": "ti_icon_3",
+          "label": "Ícono"
+        },
+        {
+          "type": "checkbox",
+          "id": "ti_filled_3",
+          "label": "Ícono relleno",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "ti_image_3",
+          "label": "Ícono propio (imagen)"
+        },
+        {
+          "type": "header",
+          "content": "Estilo de los renglones"
+        },
+        {
+          "type": "range",
+          "id": "ti_size_m",
+          "min": 8,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "label": "Tamaño del texto en mobile",
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "ti_size_d",
+          "min": 10,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Tamaño del texto en desktop",
+          "default": 16
+        },
+        {
+          "type": "select",
+          "id": "ti_align",
+          "label": "Alineación",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "color",
+          "id": "ti_color",
+          "label": "Color del texto",
+          "info": "Vacío: el de la combinación."
+        },
+        {
+          "type": "range",
+          "id": "ti_icon_scale",
+          "min": 100,
+          "max": 200,
+          "step": 5,
+          "unit": "%",
+          "label": "Escala de los íconos",
+          "default": 120
+        },
+        {
+          "type": "color",
+          "id": "ti_icon_color",
+          "label": "Color de los íconos",
+          "info": "Vacío: el del texto."
+        },
+        {
+          "type": "select",
+          "id": "ti_stack",
+          "label": "Apilado",
+          "options": [
+            {
+              "value": "vertical",
+              "label": "En columna"
+            },
+            {
+              "value": "horizontal",
+              "label": "En fila"
+            }
+          ],
+          "default": "vertical"
+        },
+        {
+          "type": "range",
+          "id": "ti_gap",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Separación",
+          "default": 8
+        },
+        {
+          "type": "checkbox",
+          "id": "ti_bg",
+          "label": "Fondo tipo pastilla",
+          "default": false
+        },
+        {
+          "type": "color",
+          "id": "ti_bg_color",
+          "label": "Color del fondo",
+          "default": "#F3F3F3"
+        },
+        {
+          "type": "range",
+          "id": "ti_radius",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Redondeo del fondo",
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "ti_padding",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Relleno del fondo",
+          "default": 12
+        },
+        {
+          "type": "checkbox",
+          "id": "ti_pad_axes",
+          "label": "Relleno distinto arriba y a los costados",
+          "default": false,
+          "visible_if": "{{ block.settings.ti_bg }}"
+        },
+        {
+          "type": "range",
+          "id": "ti_padding_y",
+          "label": "Relleno arriba y abajo",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 8,
+          "visible_if": "{{ block.settings.ti_bg and block.settings.ti_pad_axes }}"
+        },
+        {
+          "type": "range",
+          "id": "ti_padding_x",
+          "label": "Relleno a los costados",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 16,
+          "visible_if": "{{ block.settings.ti_bg and block.settings.ti_pad_axes }}"
+        },
+        {
+          "type": "range",
+          "id": "ti_border",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "unit": "px",
+          "label": "Borde",
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "ti_border_color",
+          "label": "Color del borde",
+          "default": "#121212"
+        }
+      ]
+    },
+    {
+      "type": "icon_content",
+      "name": "Ícono con contenido",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "fixed_width",
+          "label": "Ancho fijo",
+          "default": false
+        },
+        {
+          "type": "range",
+          "id": "width_m",
+          "min": 100,
+          "max": 600,
+          "step": 10,
+          "unit": "px",
+          "label": "Ancho en mobile",
+          "default": 240
+        },
+        {
+          "type": "range",
+          "id": "width_d",
+          "min": 100,
+          "max": 600,
+          "step": 10,
+          "unit": "px",
+          "label": "Ancho en desktop",
+          "default": 300
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Ícono",
+          "default": "star",
+          "info": "Nombre en inglés de Material Symbols."
+        },
+        {
+          "type": "checkbox",
+          "id": "icon_filled",
+          "label": "Ícono relleno",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Ícono propio (imagen)"
+        },
+        {
+          "type": "select",
+          "id": "icon_size",
+          "label": "Tamaño del ícono",
+          "options": [
+            {
+              "value": "xs",
+              "label": "Extra chico"
+            },
+            {
+              "value": "s",
+              "label": "Chico"
+            },
+            {
+              "value": "m",
+              "label": "Mediano"
+            },
+            {
+              "value": "l",
+              "label": "Grande"
+            },
+            {
+              "value": "xl",
+              "label": "Extra grande"
+            },
+            {
+              "value": "xxl",
+              "label": "Enorme"
+            }
+          ],
+          "default": "m"
+        },
+        {
+          "type": "select",
+          "id": "icon_position",
+          "label": "Posición del ícono",
+          "options": [
+            {
+              "value": "above",
+              "label": "Arriba"
+            },
+            {
+              "value": "title",
+              "label": "Junto al título"
+            },
+            {
+              "value": "content",
+              "label": "Junto al título y al texto"
+            }
+          ],
+          "default": "content"
+        },
+        {
+          "type": "select",
+          "id": "icon_color",
+          "label": "Color del ícono",
+          "options": [
+            {
+              "value": "accent",
+              "label": "Acento de la combinación"
+            },
+            {
+              "value": "text",
+              "label": "Texto"
+            },
+            {
+              "value": "button",
+              "label": "Botón"
+            }
+          ],
+          "default": "accent"
+        },
+        {
+          "type": "select",
+          "id": "title_size",
+          "label": "Tamaño del título",
+          "options": [
+            {
+              "value": "h5",
+              "label": "Chico"
+            },
+            {
+              "value": "h4",
+              "label": "Mediano"
+            },
+            {
+              "value": "h3",
+              "label": "Grande"
+            }
+          ],
+          "default": "h4"
+        },
+        {
+          "type": "select",
+          "id": "align",
+          "label": "Alineación",
+          "options": [
+            {
+              "value": "left",
+              "label": "Izquierda"
+            },
+            {
+              "value": "center",
+              "label": "Centro"
+            },
+            {
+              "value": "right",
+              "label": "Derecha"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "title",
+          "label": "Título",
+          "default": "Título"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cinta deslizante",
+      "blocks": [
+        {
+          "type": "text",
+          "settings": {
+            "text": "Envíos a todo el país"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Pagá en cuotas"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Cambios sin vueltas"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cinta vertical",
+      "settings": {
+        "direction": "up",
+        "uppercase": false,
+        "text_size_d": 24
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "settings": {
+            "text": "Envíos a todo el país"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Pagá en cuotas"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Cambios sin vueltas"
+          }
+        },
+        {
+          "type": "text",
+          "settings": {
+            "text": "Atención por WhatsApp"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

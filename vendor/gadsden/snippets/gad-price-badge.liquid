@@ -1,0 +1,19 @@
+
+{%- liquid
+  assign b = block.settings
+  assign variant = product.selected_or_first_available_variant
+-%}
+{%- if b.badge == 'custom' and b.badge_text != blank and variant.available and variant.compare_at_price > variant.price -%}
+  {%- liquid
+    assign pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round | append: '%'
+    assign saved = variant.compare_at_price | minus: variant.price | money
+  -%}
+  {%- capture icon_1 -%}{%- render 'gad-icon', name: b.badge_icon_1, filled: b.badge_icon_1_filled, image: b.badge_icon_1_image, class: 'gad-price__badge-icon' -%}{%- endcapture -%}
+  {%- capture icon_2 -%}{%- render 'gad-icon', name: b.badge_icon_2, filled: b.badge_icon_2_filled, image: b.badge_icon_2_image, class: 'gad-price__badge-icon' -%}{%- endcapture -%}
+  {%- liquid
+    assign text = b.badge_text | escape | replace: '{porcentaje}', pct | replace: '{monto}', saved | replace: '{icono1}', icon_1 | replace: '{icono2}', icon_2
+  -%}
+  <span class="badge gad-price__badge color-{{ settings.sale_badge_color_scheme }}" style="--badge-icon-scale: {{ b.badge_icon_scale | default: 140 | divided_by: 100.0 }};">
+    {{- text -}}
+  </span>
+{%- endif -%}
